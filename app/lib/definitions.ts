@@ -5,14 +5,14 @@
 import { DateTime } from 'next-auth/providers/kakao'
 
 // However, these types are generated automatically if you're using an ORM such as Prisma.
-// export type User = {
-//   id: string
-//   name: string
-//   email: string
-//   password: string
-// }
-
 export type User = {
+  id: string
+  name: string
+  email: string
+  password: string
+}
+
+export type Userrecord = {
   u_uid: number
   u_hash: string
   u_user: string

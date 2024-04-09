@@ -3,10 +3,10 @@ import Credentials from 'next-auth/providers/credentials'
 import { authConfig } from './auth.config'
 import { z } from 'zod'
 import { sql } from '@vercel/postgres'
-import type { User } from '@/app/lib/definitions'
+import type { User, Userrecord } from '@/app/lib/definitions'
 import bcrypt from 'bcrypt'
 // ----------------------------------------------------------------------
-//  Check User & Password
+//  Check User/Password
 // ----------------------------------------------------------------------
 export const { auth, signIn, signOut } = NextAuth({
   ...authConfig,
@@ -32,7 +32,7 @@ export const { auth, signIn, signOut } = NextAuth({
         //
         //  Check password
         //
-        const passwordsMatch = await bcrypt.compare(password, user.u_hash)
+        const passwordsMatch = await bcrypt.compare(password, user.password)
         if (!passwordsMatch) {
           console.log('Invalid credentials - password')
           return null
@@ -52,8 +52,14 @@ async function getUser(email: string): Promise<User | undefined> {
   try {
     const sqlstatement = `SELECT * FROM users WHERE u_email=${email}`
     console.log('sqlstatement:', sqlstatement)
-    const user = await sql<User>`SELECT * FROM users WHERE u_email=${email}`
-    return user.rows[0]
+    const userrecord = await sql<Userrecord>`SELECT * FROM users WHERE u_email=${email}`
+    const r = userrecord.rows[0]
+    return {
+      id: r.u_uid.toString(),
+      name: r.u_name,
+      email: r.u_email,
+      password: r.u_hash
+    }
   } catch (error) {
     console.error('Failed to fetch user:', error)
     throw new Error('Failed to fetch user.')
