@@ -27,6 +27,19 @@ export type State = {
   }
   message?: string | null
 }
+
+const FormSchemaRegister = z.object({
+  email: z.string().email(),
+  password: z.string()
+})
+
+export type StateRegister = {
+  errors?: {
+    email?: string[]
+    password?: string[]
+  }
+  message?: string | null
+}
 // ----------------------------------------------------------------------
 //  Authenticate Login
 // ----------------------------------------------------------------------
@@ -47,6 +60,65 @@ export async function authenticate(prevState: string | undefined, formData: Form
     }
     throw error
   }
+}
+// ----------------------------------------------------------------------
+//  Register
+// ----------------------------------------------------------------------
+const Register = FormSchemaRegister
+
+export async function registerUser(prevState: StateRegister, formData: FormData) {
+  console.log('Register User - start')
+  const validatedFields = Register.safeParse({
+    email: formData.get('email'),
+    password: formData.get('password')
+  })
+  //
+  // If form validation fails, return errors early. Otherwise, continue.
+  //
+  if (!validatedFields.success) {
+    console.log('Register User - field errors')
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Register.'
+    }
+  }
+  //
+  // Prepare data for insertion into the database
+  //
+  const { email, password } = validatedFields.data
+  const u_email = email
+  const u_hash = password
+  const u_user = email
+  const u_name = email
+  const u_joined = new Date().toISOString().slice(0, 19).replace('T', ' ')
+  const u_fedid = 'dummy'
+  const u_admin = false
+  const u_showprogress = true
+  const u_showscore = true
+  const u_sortquestions = true
+  const u_skipcorrect = true
+  const u_dftmaxquestions = 20
+  const u_fedcountry = 'NZ'
+  const u_dev = false
+  //
+  // Insert data into the database
+  //
+  try {
+    await sql`
+    INSERT INTO users (u_email, u_hash, u_user, u_name, u_joined, u_fedid, u_admin, u_showprogress, u_showscore, u_sortquestions, u_skipcorrect, u_dftmaxquestions, u_fedcountry, u_dev)
+    VALUES (${u_email}, ${u_hash}, ${u_user}, ${u_name}, ${u_joined}, ${u_fedid}, ${u_admin}, ${u_showprogress}, ${u_showscore}, ${u_sortquestions}, ${u_skipcorrect}, ${u_dftmaxquestions}, ${u_fedcountry}, ${u_dev})
+  `
+  } catch (error) {
+    console.log('Register User - database errors')
+    return {
+      message: 'Database Error: Failed to Register User.'
+    }
+  }
+  //
+  // Revalidate the cache and redirect the user.
+  //
+  revalidatePath('/login')
+  redirect('/login')
 }
 // ----------------------------------------------------------------------
 //  Create Invoice
