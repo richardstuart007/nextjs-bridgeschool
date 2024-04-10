@@ -6,8 +6,12 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { signIn } from '@/auth'
 import { AuthError } from 'next-auth'
-
-const FormSchema = z.object({
+import bcrypt from 'bcrypt'
+import type { Userrecord } from '@/app/lib/definitions'
+//
+//  Invoice
+//
+const FormSchemaInvoice = z.object({
   id: z.string(),
   customerId: z.string({
     invalid_type_error: 'Please select a customer.'
@@ -19,7 +23,7 @@ const FormSchema = z.object({
   date: z.string()
 })
 
-export type State = {
+export type StateInvoice = {
   errors?: {
     customerId?: string[]
     amount?: string[]
@@ -27,9 +31,11 @@ export type State = {
   }
   message?: string | null
 }
-
+//
+//  Register
+//
 const FormSchemaRegister = z.object({
-  email: z.string().email(),
+  email: z.string().email().toLowerCase(),
   password: z.string()
 })
 
@@ -48,12 +54,11 @@ export async function authenticate(prevState: string | undefined, formData: Form
     await signIn('credentials', formData)
   } catch (error) {
     if (error instanceof AuthError) {
-      console.log('error-type:', error.type)
       switch (error.type) {
         case 'CallbackRouteError':
-          return 'Invalid credentials. CallbackRouteError'
+          return 'CallbackRouteError'
         case 'CredentialsSignin':
-          return 'Invalid credentials. CredentialsSignin'
+          return 'Invalid credentials.'
         default:
           return 'Something went wrong.'
       }
@@ -67,7 +72,6 @@ export async function authenticate(prevState: string | undefined, formData: Form
 const Register = FormSchemaRegister
 
 export async function registerUser(prevState: StateRegister, formData: FormData) {
-  console.log('Register User - start')
   const validatedFields = Register.safeParse({
     email: formData.get('email'),
     password: formData.get('password')
@@ -76,18 +80,35 @@ export async function registerUser(prevState: StateRegister, formData: FormData)
   // If form validation fails, return errors early. Otherwise, continue.
   //
   if (!validatedFields.success) {
-    console.log('Register User - field errors')
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       message: 'Missing Fields. Failed to Register.'
     }
   }
   //
-  // Prepare data for insertion into the database
+  // Unpack form data
   //
   const { email, password } = validatedFields.data
+  //
+  // Check if email exists already
+  //
+  try {
+    const userrecord = await sql<Userrecord>`SELECT * FROM users WHERE u_email=${email}`
+    if (userrecord.rowCount > 0) {
+      return {
+        message: 'Email already exists.'
+      }
+    }
+  } catch (error) {
+    return {
+      message: 'Database Error: Failed to check User.'
+    }
+  }
+  //
+  // Prepare data for insertion into the database
+  //
   const u_email = email
-  const u_hash = password
+  const u_hash = await bcrypt.hash(password, 10)
   const u_user = email
   const u_name = email
   const u_joined = new Date().toISOString().slice(0, 19).replace('T', ' ')
@@ -109,7 +130,6 @@ export async function registerUser(prevState: StateRegister, formData: FormData)
     VALUES (${u_email}, ${u_hash}, ${u_user}, ${u_name}, ${u_joined}, ${u_fedid}, ${u_admin}, ${u_showprogress}, ${u_showscore}, ${u_sortquestions}, ${u_skipcorrect}, ${u_dftmaxquestions}, ${u_fedcountry}, ${u_dev})
   `
   } catch (error) {
-    console.log('Register User - database errors')
     return {
       message: 'Database Error: Failed to Register User.'
     }
@@ -121,11 +141,11 @@ export async function registerUser(prevState: StateRegister, formData: FormData)
   redirect('/login')
 }
 // ----------------------------------------------------------------------
-//  Create Invoice
+//  CREATE Invoice
 // ----------------------------------------------------------------------
-const CreateInvoice = FormSchema.omit({ id: true, date: true })
+const CreateInvoice = FormSchemaInvoice.omit({ id: true, date: true })
 
-export async function createInvoice(prevState: State, formData: FormData) {
+export async function createInvoice(prevState: StateInvoice, formData: FormData) {
   const validatedFields = CreateInvoice.safeParse({
     customerId: formData.get('customerId'),
     amount: formData.get('amount'),
@@ -160,11 +180,13 @@ export async function createInvoice(prevState: State, formData: FormData) {
   revalidatePath('/dashboard/invoices')
   redirect('/dashboard/invoices')
 }
-
+// ----------------------------------------------------------------------
+//  UPDATE Invoice
+// ----------------------------------------------------------------------
 // Use Zod to update the expected types
-const UpdateInvoice = FormSchema.omit({ id: true, date: true })
+const UpdateInvoice = FormSchemaInvoice.omit({ id: true, date: true })
 
-export async function updateInvoice(id: string, prevState: State, formData: FormData) {
+export async function updateInvoice(id: string, prevState: StateInvoice, formData: FormData) {
   const validatedFields = UpdateInvoice.safeParse({
     customerId: formData.get('customerId'),
     amount: formData.get('amount'),
@@ -198,7 +220,9 @@ export async function updateInvoice(id: string, prevState: State, formData: Form
   revalidatePath('/dashboard/invoices')
   redirect('/dashboard/invoices')
 }
-
+// ----------------------------------------------------------------------
+//  DELETE Invoice
+// ----------------------------------------------------------------------
 export async function deleteInvoice(id: string) {
   try {
     await sql`DELETE FROM invoices WHERE id = ${id}`

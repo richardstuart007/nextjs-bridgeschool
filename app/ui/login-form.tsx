@@ -15,7 +15,7 @@ export default function LoginForm() {
   //
   const router = useRouter()
   const handleRegisterClick = () => {
-    router.push('/register')
+    router.push('/login/register')
   }
   return (
     <form action={dispatch} className='space-y-3'>
