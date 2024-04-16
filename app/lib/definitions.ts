@@ -107,3 +107,37 @@ export type InvoiceForm = {
   amount: number
   status: 'pending' | 'paid'
 }
+
+export type LibraryTable = {
+  lrlid: number
+  lrref: string
+  lrdesc: string
+  lrlink: string
+  lrwho: string
+  lrtype: string
+  lrowner: string
+  lrgroup: string
+  ogcntquestions: number
+  ogcntlibrary: number
+}
+
+export type QuestionsTable = {
+  qqid: number
+  qowner: string
+  qdetail: string
+  qgroup: string
+  qpoints: number[]
+  qans: number[]
+  qseq: number
+  qrounds: string[] | null
+  qnorth: string[] | null
+  qeast: string[] | null
+  qsouth: string[] | null
+  qwest: string[] | null
+}
+
+export type QuizForm = {
+  qqid: number
+  qowner: string
+  qgroup: string
+}
