@@ -357,12 +357,23 @@ export async function fetchQuestionsByOwnerGroup(qowner: string, qgroup: string)
     `
 
     //
-    //  Return ONLY 1 ROW - temp
+    //  Return rows
     //
-    const questions = data.rows[0]
+    const questions = data.rows
     return questions
   } catch (error) {
     console.error('Database Error:', error)
     throw new Error('Failed to fetch questions.')
+  }
+}
+//---------------------------------------------------------------------
+//  Write User History
+//---------------------------------------------------------------------
+export async function writeUserHistory() {
+  try {
+    return null
+  } catch (error) {
+    console.error('Database Error:', error)
+    throw new Error('Failed to write user history.')
   }
 }
