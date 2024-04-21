@@ -286,7 +286,8 @@ export async function fetchFilteredLibrary(query: string, currentPage: number) {
       lrgroup,
       lrlink,
       ogcntquestions,
-      ogcntlibrary
+      ogcntlibrary,
+      lrgid
     FROM library
     LEFT JOIN ownergroup ON lrowner = ogowner and lrgroup = oggroup
     WHERE
@@ -319,7 +320,8 @@ export async function fetchLibraryById(lrlid: number) {
       lrwho,
       lrtype,
       lrowner,
-      lrgroup
+      lrgroup,
+      lrgid,
       FROM library
       WHERE lrlid = ${lrlid};
     `
@@ -350,12 +352,12 @@ export async function fetchQuestionsByOwnerGroup(qowner: string, qgroup: string)
         qnorth,
         qeast,
         qsouth,
-        qwest
+        qwest,
+        qgid
       FROM questions
       WHERE qowner = ${qowner} and qgroup = ${qgroup}
       ORDER BY qowner, qgroup, qseq;
     `
-
     //
     //  Return rows
     //
@@ -367,13 +369,37 @@ export async function fetchQuestionsByOwnerGroup(qowner: string, qgroup: string)
   }
 }
 //---------------------------------------------------------------------
-//  Write User History
+//  Questions data by Owner/Group - ID
 //---------------------------------------------------------------------
-export async function writeUserHistory() {
+export async function fetchQuestionsByGid(qgid: number) {
+  noStore()
   try {
-    return null
+    const data = await sql<QuestionsTable>`
+      SELECT
+        qqid,
+        qowner,
+        qdetail,
+        qgroup,
+        qpoints,
+        qans,
+        qseq,
+        qrounds,
+        qnorth,
+        qeast,
+        qsouth,
+        qwest,
+        qgid
+      FROM questions
+      WHERE qgid = ${qgid}
+      ORDER BY qgid, qseq;
+    `
+    //
+    //  Return rows
+    //
+    const questions = data.rows
+    return questions
   } catch (error) {
     console.error('Database Error:', error)
-    throw new Error('Failed to write user history.')
+    throw new Error('Failed to fetch questions.')
   }
 }

@@ -5,6 +5,7 @@ import { z } from 'zod'
 import { sql } from '@vercel/postgres'
 import type { User, Userrecord } from '@/app/lib/definitions'
 import bcrypt from 'bcrypt'
+import { cookies } from 'next/headers'
 // ----------------------------------------------------------------------
 //  Check User/Password
 // ----------------------------------------------------------------------
@@ -24,23 +25,43 @@ export const { auth, signIn, signOut } = NextAuth({
         //  Get user from database
         //
         const { email, password } = parsedCredentials.data
-        const user = await getUser(email)
-        if (!user) {
+        const userRecord = await getUser(email)
+        if (!userRecord) {
           console.log('Invalid credentials - User')
           return null
         }
         //
         //  Check password
         //
-        const passwordsMatch = await bcrypt.compare(password, user.password)
+        const passwordsMatch = await bcrypt.compare(password, userRecord.u_hash)
         if (!passwordsMatch) {
           console.log('Invalid credentials - password')
           return null
         }
         //
-        //  OK
+        //  User Authenticated - create session cookie
         //
-        return user
+        // const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+        const { u_uid, u_user, u_name, u_email } = userRecord
+        const newUserRecord = { u_uid, u_user, u_name, u_email }
+        const JSONnewUserRecord = JSON.stringify(newUserRecord)
+        console.log('JSONnewUserRecord:', JSONnewUserRecord)
+        cookies().set('BridgeSchool_Session', JSONnewUserRecord, {
+          httpOnly: false,
+          secure: true,
+          // expires: expires,
+          sameSite: 'lax',
+          path: '/'
+        })
+        //
+        //  Return in correct format
+        //
+        return {
+          id: userRecord.u_uid.toString(),
+          name: userRecord.u_name,
+          email: userRecord.u_email,
+          password: userRecord.u_hash
+        } as User
       }
     })
   ]
@@ -48,7 +69,7 @@ export const { auth, signIn, signOut } = NextAuth({
 // ----------------------------------------------------------------------
 //  Get user by email
 // ----------------------------------------------------------------------
-async function getUser(email: string): Promise<User | undefined> {
+async function getUser(email: string): Promise<Userrecord | undefined> {
   try {
     const userrecord = await sql<Userrecord>`SELECT * FROM users WHERE u_email=${email}`
     //
@@ -60,13 +81,8 @@ async function getUser(email: string): Promise<User | undefined> {
     //
     //  Return data
     //
-    const data = userrecord.rows[0]
-    return {
-      id: data.u_uid.toString(),
-      name: data.u_name,
-      email: data.u_email,
-      password: data.u_hash
-    }
+    const user = userrecord.rows[0]
+    return user
   } catch (error) {
     throw new Error('Failed to fetch user.')
   }

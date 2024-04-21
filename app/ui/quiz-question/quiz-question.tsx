@@ -26,8 +26,8 @@ export default function QuizQuestion(props: RadioGroupProps): JSX.Element {
   //.  Render the form
   //...................................................................................
   return (
-    <>
+    <div className='rounded-md bg-gray-50 p-4 md:p-6'>
       <p>{QuestionInfo}</p>
-    </>
+    </div>
   )
 }

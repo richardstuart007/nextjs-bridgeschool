@@ -26,9 +26,9 @@ export function BookView({ lrtype, lrlink }: BookViewProps) {
 //-------------------------------------------------------------------------------------
 //  Book Quiz Button
 //-------------------------------------------------------------------------------------
-export function BookQuiz({ lrlid }: { lrlid: number }) {
+export function BookQuiz({ lrgid }: { lrgid: number }) {
   return (
-    <Link href={`/dashboard/library/${lrlid}/quiz`} className='hover:bg-gray-200'>
+    <Link href={`/dashboard/quiz/${lrgid}/quiz`} className='hover:bg-gray-200'>
       <TrophyIcon className='w-5' />
     </Link>
   )

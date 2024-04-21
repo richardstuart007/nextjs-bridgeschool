@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 interface RadioOption {
   id: string
@@ -15,28 +15,67 @@ interface RadioGroupProps {
 export default function RadioGroup(props: RadioGroupProps): JSX.Element {
   const { options, selectedOption, onChange } = props
   const [selectedValue, setSelectedValue] = useState<number>(selectedOption)
-
-  const handleOptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //
+  //  Only update the selected value when the selected option changes
+  //
+  useEffect(() => {
+    setSelectedValue(selectedOption)
+  }, [selectedOption])
+  //---------------------------------------------------------------------------
+  //  Option change handler
+  //---------------------------------------------------------------------------
+  function handleOptionChange(event: React.ChangeEvent<HTMLInputElement>) {
     const value = event.target.value
-    const int = parseInt(value)
+    const int = parseInt(value, 10)
+    //
+    //  If the value is not a number, throw an error in development mode
+    //
+    if (isNaN(int)) {
+      if (process.env.NODE_ENV !== 'production') {
+        throw new Error(`Invalid value "${value}" for radio button option`)
+      }
+      return
+    }
+
     setSelectedValue(int)
     onChange(int)
-    console.log('int', int)
   }
-
+  //---------------------------------------------------------------------------
   return (
     <div>
       {options.map(option => (
-        <div key={option.id}>
-          <input
-            type='radio'
-            id={option.id}
-            name='options'
-            value={option.value}
-            checked={selectedValue === option.value}
-            onChange={handleOptionChange}
-          />
-          <label htmlFor={option.id}>{option.label}</label>
+        <div key={option.id} className='flex items-center ml-2'>
+          <label htmlFor={option.id} className='flex items-center cursor-pointer'>
+            <div className='w-6 h-6 relative'>
+              <input
+                type='radio'
+                id={option.id}
+                name='options'
+                value={option.value}
+                checked={selectedValue === option.value}
+                onChange={handleOptionChange}
+                className='sr-only'
+              />
+              <div
+                className={`block rounded-full absolute inset-0 m-auto ${selectedValue === option.value ? 'w-6 h-6 bg-transparent' : 'w-4 h-4 bg-gray-400'}`}
+              ></div>
+              {selectedValue === option.value && (
+                <div className='absolute inset-0 flex items-center justify-center'>
+                  <svg
+                    className={`fill-current ${selectedValue === option.value ? 'w-6 h-6 text-red-500' : 'w-4 h-4 text-gray-700'}`}
+                    viewBox='0 0 20 20'
+                  >
+                    <path d='M0 11l2-2 5 5L18 3l2 2L7 18z' />
+                  </svg>
+                </div>
+              )}
+            </div>
+            <div
+              className={`ml-2 ${selectedValue === option.value ? 'text-red-500' : 'text-gray-700'}`}
+            >
+              {option.label}
+            </div>
+          </label>
         </div>
       ))}
     </div>

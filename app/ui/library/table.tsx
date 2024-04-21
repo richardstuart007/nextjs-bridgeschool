@@ -83,7 +83,7 @@ export default async function LibraryTable({
                     <BookView lrtype={library.lrtype} lrlink={library.lrlink} />
                   </td>
                   <td className='whitespace-nowrap px-3'>
-                    {library.ogcntquestions > 0 ? <BookQuiz lrlid={library.lrlid} /> : null}
+                    {library.ogcntquestions > 0 ? <BookQuiz lrgid={library.lrgid} /> : null}
                   </td>
                 </tr>
               ))}

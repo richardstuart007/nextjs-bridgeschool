@@ -3,6 +3,7 @@ export default function QuizHandsTableHeader() {
   return (
     <thead className='rounded-lg text-left text-sm font-normal'>
       <tr>
+        <th scope='col' className='px-4  font-medium'></th>
         <th scope='col' className='px-4  font-medium'>
           <Image src='/suits/spade.svg' width={15} height={15} alt='spade' />
         </th>

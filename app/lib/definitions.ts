@@ -119,6 +119,7 @@ export type LibraryTable = {
   lrgroup: string
   ogcntquestions: number
   ogcntlibrary: number
+  lrgid: number
 }
 
 export type QuestionsTable = {
@@ -129,15 +130,37 @@ export type QuestionsTable = {
   qpoints: number[]
   qans: number[]
   qseq: number
-  qrounds: string[] | null
+  qrounds: string[][] | null
   qnorth: string[] | null
   qeast: string[] | null
   qsouth: string[] | null
   qwest: string[] | null
+  qgid: number
 }
 
-export type QuizForm = {
-  qqid: number
-  qowner: string
-  qgroup: string
+export type UsershistoryTable = {
+  r_hid: number
+  r_datetime: DateTime
+  r_owner: string
+  r_group: string
+  r_questions: number
+  r_qid: number[]
+  r_ans: number[]
+  r_uid: number
+  r_points: number[]
+  r_maxpoints: number
+  r_totalpoints: number
+  r_correctpercent: number
+  r_gid: number
 }
+
+export type NewUsershistoryTable = Omit<UsershistoryTable, 'r_hid'>
+
+export type Userssessions = {
+  usid: number
+  usdatetime: DateTime
+  usuid: number
+  ususer: string
+}
+
+export type NewUserssessionsTable = Omit<Userssessions, 'usid'>

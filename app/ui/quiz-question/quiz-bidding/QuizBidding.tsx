@@ -1,9 +1,22 @@
 import QuizBiddingTableHeader from './QuizBiddingTableHeader'
 import QuizBiddingTableLine from './QuizBiddingTableLine'
-//...................................................................................
-//.  Main Line
-//...................................................................................
-export default function QuizBidding({ question }) {
+import { QuestionsTable } from '@/app/lib/definitions'
+
+interface BidObj {
+  bqid: string | null
+  suit: string | null
+}
+
+interface RoundObj {
+  roundCount: string
+  innerArray: BidObj[]
+}
+
+interface QuizBiddingProps {
+  question: QuestionsTable
+}
+
+export default function QuizBidding({ question }: QuizBiddingProps): JSX.Element | null {
   //
   //  No Bidding, return
   //
@@ -13,17 +26,17 @@ export default function QuizBidding({ question }) {
   //
   const Rounds = question.qrounds
   let RoundCount = 0
-  let roundsbidObjArray = []
+  let roundsbidObjArray: RoundObj[] = []
   Rounds.forEach(round => {
     //
     //  Process each bqid for a round - Create roundBidsArray
     //
-    let bidObjArray = []
+    let bidObjArray: BidObj[] = []
     round.forEach(bqid => {
       //
       //  Fill bidObj (bqid/suit)
       //
-      const bidObj = {
+      const bidObj: BidObj = {
         bqid: '',
         suit: ''
       }
@@ -46,15 +59,7 @@ export default function QuizBidding({ question }) {
           break
         //  Nothing
         case ' ':
-          bidObj.bqid = null
-          bidObj.suit = null
-          break
-        //  Nothing
         case 'n':
-          bidObj.bqid = null
-          bidObj.suit = null
-          break
-        //  Nothing
         case 'N':
           bidObj.bqid = null
           bidObj.suit = null
@@ -80,7 +85,7 @@ export default function QuizBidding({ question }) {
     //
     //  Prefix bidObj with round number
     //
-    const objTemp = {
+    const objTemp: RoundObj = {
       roundCount: '',
       innerArray: []
     }
@@ -96,15 +101,14 @@ export default function QuizBidding({ question }) {
   //.  Render the form
   //...................................................................................
   return (
-    <>
-      <QuizBiddingTableHeader />
-      {roundsbidObjArray.map(objTemp => (
-        <QuizBiddingTableLine
-          key={objTemp.roundCount}
-          roundCount={objTemp.roundCount}
-          round={objTemp.innerArray}
-        />
-      ))}
-    </>
+    <div className='rounded-md bg-gray-50 p-4 md:p-6'>
+      <p className='text-lg font-semibold text-left'>Bidding</p>
+      <table>
+        <QuizBiddingTableHeader />
+        {roundsbidObjArray.map(objTemp => (
+          <QuizBiddingTableLine key={objTemp.roundCount} round={objTemp} />
+        ))}
+      </table>
+    </div>
   )
 }

@@ -11,13 +11,12 @@ interface RadioOption {
 
 interface QuizChoiceProps {
   question: QuestionsTable
-  setValue: (value: number) => void
-  setId: (value: string) => void
+  setAnswer: React.Dispatch<React.SetStateAction<number[]>>
   setShowSubmit: (value: boolean) => void
 }
 
 export default function QuizChoice(props: QuizChoiceProps): JSX.Element {
-  const { question, setValue, setId, setShowSubmit } = props
+  const { question, setAnswer, setShowSubmit } = props
   const [answers, setAnswers] = useState<RadioOption[]>([])
   const [selectedOption, setSelectedOption] = useState<number>(99)
   const [questionText, setQuestionText] = useState<string>('')
@@ -25,15 +24,14 @@ export default function QuizChoice(props: QuizChoiceProps): JSX.Element {
   //  Recreate on change of question
   //
   useEffect(() => {
-    newRow()
+    loadChoices()
     // eslint-disable-next-line
   }, [question])
   //...................................................................................
   //  Load Answers array with answer element
   //...................................................................................
-  function newRow(): void {
-    setValue(99)
-    setId('')
+  function loadChoices(): void {
+    // setValue(99)
     setShowSubmit(false)
     //
     //  Determine questionText
@@ -48,11 +46,15 @@ export default function QuizChoice(props: QuizChoiceProps): JSX.Element {
     const shuffledOptions = shuffleArray(question.qans)
     const newOptions = shuffledOptions.map((option, index) => ({
       id: index.toString(),
-      label: option.toString(),
+      label: question.qans.indexOf(option) + ' ' + option.toString(),
       value: question.qans.indexOf(option)
     }))
 
     setAnswers(newOptions)
+    //
+    //  Reset selected option
+    //
+    setSelectedOption(99)
   }
   //...................................................................................
   // Shuffle array function
@@ -70,18 +72,17 @@ export default function QuizChoice(props: QuizChoiceProps): JSX.Element {
   //...................................................................................
   function handleSelect(value: number): void {
     setSelectedOption(value)
-    setValue(value)
-    const id = answers[value].id
-    setId(id)
+    // setValue(value)
+    setAnswer((prevAnswers: number[]) => [...prevAnswers, value])
     setShowSubmit(true)
-    console.log('setShowSubmit', true)
   }
   //...................................................................................
   //  Format Panel
   //...................................................................................
   return (
-    <div>
-      <div>{questionText}</div>
+    <div className='rounded-md bg-gray-50 p-4 md:p-6'>
+      <p className='text-lg font-semibold text-left'>Question</p>
+      <p className='text-left italic font-bold text-green-500'>{questionText}</p>
       <RadioGroup options={answers} selectedOption={selectedOption} onChange={handleSelect} />
     </div>
   )

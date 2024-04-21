@@ -7,7 +7,7 @@ import { redirect } from 'next/navigation'
 import { signIn } from '@/auth'
 import { AuthError } from 'next-auth'
 import bcrypt from 'bcrypt'
-import type { Userrecord } from '@/app/lib/definitions'
+import type { Userrecord, NewUsershistoryTable, NewUserssessionsTable } from '@/app/lib/definitions'
 //
 //  Invoice
 //
@@ -233,4 +233,65 @@ export async function deleteInvoice(id: string) {
   }
   revalidatePath('/dashboard/invoices')
   redirect('/dashboard/invoices')
+}
+//---------------------------------------------------------------------
+//  Write User History
+//---------------------------------------------------------------------
+export async function writeUsershistory(history: NewUsershistoryTable) {
+  try {
+    const {
+      r_datetime,
+      r_owner,
+      r_group,
+      r_questions,
+      r_qid,
+      r_ans,
+      r_uid,
+      r_points,
+      r_maxpoints,
+      r_totalpoints,
+      r_correctpercent,
+      r_gid
+    } = history
+
+    const r_qid_string = `{${r_qid.join(',')}}`
+    const r_ans_string = `{${r_ans.join(',')}}`
+    const r_points_string = `{${r_points.join(',')}}`
+
+    const { rows } = await sql`INSERT INTO Usershistory
+    (r_datetime, r_owner, r_group, r_questions, r_qid, r_ans, r_uid, r_points,
+       r_maxpoints, r_totalpoints, r_correctpercent, r_gid)
+    VALUES (${r_datetime}, ${r_owner},${r_group},${r_questions},${r_qid_string},${r_ans_string},${r_uid},${r_points_string},
+      ${r_maxpoints},${r_totalpoints},${r_correctpercent},${r_gid})
+    RETURNING *`
+
+    console.log('rows:', rows)
+    return rows[0]
+  } catch (error) {
+    console.error('Database Error:', error)
+    throw new Error('Failed to write user history.')
+  }
+}
+//---------------------------------------------------------------------
+//  Write User Sessions
+//---------------------------------------------------------------------
+export async function writeUserssessions(usersessions: NewUserssessionsTable) {
+  try {
+    const { rows } = await sql`
+    INSERT INTO Userssessions (
+      usdatetime,
+      usuid,
+      ususer,
+    ) VALUES (
+
+      ${usersessions.usdatetime},
+      ${usersessions.usuid},
+      ${usersessions.ususer},
+    ) RETURNING *
+  `
+    return rows[0]
+  } catch (error) {
+    console.error('Database Error:', error)
+    throw new Error('Failed to write user sessions.')
+  }
 }
