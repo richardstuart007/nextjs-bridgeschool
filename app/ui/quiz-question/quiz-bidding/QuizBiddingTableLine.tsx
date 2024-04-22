@@ -18,10 +18,8 @@ interface QuizBiddingTableLineProps {
 //...................................................................................
 //.  Main Line
 //...................................................................................
-export default function QuizBiddingTableLine({
-  round,
-  key
-}: QuizBiddingTableLineProps): JSX.Element {
+export default function QuizBiddingTableLine(props: QuizBiddingTableLineProps): JSX.Element {
+  const { round, key } = props
   //
   //  round into Object
   //

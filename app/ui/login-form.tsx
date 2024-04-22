@@ -11,17 +11,6 @@ import { useRouter } from 'next/navigation'
 
 export default function LoginForm() {
   const [errorMessage, dispatch] = useFormState(authenticate, undefined)
-  // //
-  // //  Set a session cookie
-  // //
-  // useEffect(() => {
-  //   const obj = { sessionId: Date.now(), signedIn: false, userid: null }
-  //   const cookieValue = encodeURIComponent(JSON.stringify(obj))
-  //   const expires = 'Fri, 31 Dec 9999 23:59:59 GMT'
-  //   const path = '/'
-  //   document.cookie = `sessionId=${cookieValue}; expires=${expires}; path=${path}`
-  //   console.log('Cookie set:', document.cookie)
-  // }, [])
   //
   //  Register User
   //

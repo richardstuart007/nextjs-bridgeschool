@@ -40,7 +40,7 @@ export default function QuizBidding({ question }: QuizBiddingProps): JSX.Element
         bqid: '',
         suit: ''
       }
-      const level = bqid.substr(0, 1)
+      const level = bqid.substring(0, 1)
       switch (level) {
         // Pass
         case 'P':
@@ -66,14 +66,14 @@ export default function QuizBidding({ question }: QuizBiddingProps): JSX.Element
           break
         default:
           //  No Trump
-          if (bqid.substr(1, 1) === 'N') {
+          if (bqid.substring(1, 1) === 'N') {
             bidObj.bqid = bqid
             bidObj.suit = null
           }
           //  Suit
           else {
             bidObj.bqid = level
-            bidObj.suit = bqid.substr(1, 1)
+            bidObj.suit = bqid.substring(1, 1)
           }
           break
       }

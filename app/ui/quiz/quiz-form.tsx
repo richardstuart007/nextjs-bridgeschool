@@ -51,7 +51,7 @@ export default function QuestionsForm(props: QuestionsFormProps): JSX.Element {
   //...................................................................................
   //.  Quiz Completed
   //...................................................................................
-  function handleQuizCompleted() {
+  async function handleQuizCompleted() {
     //
     //  Initialise the results
     //
@@ -86,16 +86,10 @@ export default function QuestionsForm(props: QuestionsFormProps): JSX.Element {
       r_correctpercent = Math.ceil((r_totalpoints * 100) / r_maxpoints)
     }
     //
-    //  Get the user from cookie
+    //  Get cookie
     //
-    let r_uid = 0
-    const BridgeSchool_Session = getCookie('BridgeSchool_Session')
-    if (BridgeSchool_Session) {
-      const JSON_BridgeSchool_Session = JSON.parse(BridgeSchool_Session)
-      if (JSON_BridgeSchool_Session && JSON_BridgeSchool_Session.u_uid) {
-        r_uid = JSON_BridgeSchool_Session.u_uid
-      }
-    }
+    const cookie = getCookie('BridgeSchool_Session')
+    console.log('QUIZ-FORM: cookie:', cookie)
     //
     // Create a NewUsersHistoryTable object
     //
@@ -106,17 +100,17 @@ export default function QuestionsForm(props: QuestionsFormProps): JSX.Element {
       r_questions: answer.length,
       r_qid: r_qid,
       r_ans: answer,
-      r_uid: r_uid,
+      r_uid: 0,
       r_points: r_points,
       r_maxpoints: r_maxpoints,
       r_totalpoints: r_totalpoints,
       r_correctpercent: r_correctpercent,
       r_gid: question.qgid
     }
-    console.log('history:', history)
+    console.log('QUIZ-FORM: history:', history)
 
-    const historyRecord = writeUsershistory(history)
-    console.log('historyRecord:', historyRecord)
+    const historyRecord = await writeUsershistory(history)
+    console.log('QUIZ-FORM: historyRecord:', historyRecord)
     router.push(`/dashboard/quiz-review/${question.qgid}/quiz-review`)
   }
   //...................................................................................
@@ -136,6 +130,7 @@ export default function QuestionsForm(props: QuestionsFormProps): JSX.Element {
         }
       }
     }
+    console.log('QUIZ-FORM: No cookie found')
     return undefined
   }
   //...................................................................................

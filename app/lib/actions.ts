@@ -8,29 +8,7 @@ import { signIn } from '@/auth'
 import { AuthError } from 'next-auth'
 import bcrypt from 'bcrypt'
 import type { Userrecord, NewUsershistoryTable, NewUserssessionsTable } from '@/app/lib/definitions'
-//
-//  Invoice
-//
-const FormSchemaInvoice = z.object({
-  id: z.string(),
-  customerId: z.string({
-    invalid_type_error: 'Please select a customer.'
-  }),
-  amount: z.coerce.number().gt(0, { message: 'Please enter an amount greater than $0.' }),
-  status: z.enum(['pending', 'paid'], {
-    invalid_type_error: 'Please select an invoice status.'
-  }),
-  date: z.string()
-})
-
-export type StateInvoice = {
-  errors?: {
-    customerId?: string[]
-    amount?: string[]
-    status?: string[]
-  }
-  message?: string | null
-}
+import { cookies } from 'next/headers'
 //
 //  Register
 //
@@ -140,105 +118,30 @@ export async function registerUser(prevState: StateRegister, formData: FormData)
   revalidatePath('/login')
   redirect('/login')
 }
-// ----------------------------------------------------------------------
-//  CREATE Invoice
-// ----------------------------------------------------------------------
-const CreateInvoice = FormSchemaInvoice.omit({ id: true, date: true })
-
-export async function createInvoice(prevState: StateInvoice, formData: FormData) {
-  const validatedFields = CreateInvoice.safeParse({
-    customerId: formData.get('customerId'),
-    amount: formData.get('amount'),
-    status: formData.get('status')
-  })
-  // If form validation fails, return errors early. Otherwise, continue.
-  if (!validatedFields.success) {
-    return {
-      errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Missing Fields. Failed to Create Invoice.'
-    }
-  }
-
-  // Prepare data for insertion into the database
-  const { customerId, amount, status } = validatedFields.data
-  const amountInCents = amount * 100
-  const date = new Date().toISOString().split('T')[0]
-
-  // Insert data into the database
-  try {
-    await sql`
-    INSERT INTO invoices (customer_id, amount, status, date)
-    VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
-  `
-  } catch (error) {
-    return {
-      message: 'Database Error: Failed to Create Invoice.'
-    }
-  }
-
-  // Revalidate the cache for the invoices page and redirect the user.
-  revalidatePath('/dashboard/invoices')
-  redirect('/dashboard/invoices')
-}
-// ----------------------------------------------------------------------
-//  UPDATE Invoice
-// ----------------------------------------------------------------------
-// Use Zod to update the expected types
-const UpdateInvoice = FormSchemaInvoice.omit({ id: true, date: true })
-
-export async function updateInvoice(id: string, prevState: StateInvoice, formData: FormData) {
-  const validatedFields = UpdateInvoice.safeParse({
-    customerId: formData.get('customerId'),
-    amount: formData.get('amount'),
-    status: formData.get('status')
-  })
-
-  // If form validation fails, return errors early. Otherwise, continue.
-  if (!validatedFields.success) {
-    return {
-      errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Missing Fields. Failed to Update Invoice.'
-    }
-  }
-
-  // Prepare data for update into the database
-  const { customerId, amount, status } = validatedFields.data
-  const amountInCents = amount * 100
-
-  try {
-    await sql`
-    UPDATE invoices
-    SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
-    WHERE id = ${id}
-  `
-  } catch (error) {
-    return {
-      message: 'Database Error: Failed to Update Invoice.'
-    }
-  }
-
-  revalidatePath('/dashboard/invoices')
-  redirect('/dashboard/invoices')
-}
-// ----------------------------------------------------------------------
-//  DELETE Invoice
-// ----------------------------------------------------------------------
-export async function deleteInvoice(id: string) {
-  try {
-    await sql`DELETE FROM invoices WHERE id = ${id}`
-  } catch (error) {
-    return {
-      message: 'Database Error: Failed to Delete Invoice.'
-    }
-  }
-  revalidatePath('/dashboard/invoices')
-  redirect('/dashboard/invoices')
-}
 //---------------------------------------------------------------------
 //  Write User History
 //---------------------------------------------------------------------
 export async function writeUsershistory(history: NewUsershistoryTable) {
   try {
+    //
+    //  Get the user from cookie
+    //
+    let r_uid = 0
+    const BridgeSchool_Session = cookies().get('BridgeSchool_Session')
+    if (BridgeSchool_Session) {
+      const decodedCookie = decodeURIComponent(BridgeSchool_Session.value)
+      const JSON_BridgeSchool_Session = JSON.parse(decodedCookie)
+      if (JSON_BridgeSchool_Session && JSON_BridgeSchool_Session.u_uid) {
+        r_uid = JSON_BridgeSchool_Session.u_uid
+      }
+    } else {
+      console.log('ACTIONS: No cookie found')
+    }
+
+    console.log('ACTIONS: r_uid:', r_uid)
+    //
+    //  Deconstruct history
+    //
     const {
       r_datetime,
       r_owner,
@@ -246,7 +149,6 @@ export async function writeUsershistory(history: NewUsershistoryTable) {
       r_questions,
       r_qid,
       r_ans,
-      r_uid,
       r_points,
       r_maxpoints,
       r_totalpoints,
@@ -265,7 +167,7 @@ export async function writeUsershistory(history: NewUsershistoryTable) {
       ${r_maxpoints},${r_totalpoints},${r_correctpercent},${r_gid})
     RETURNING *`
 
-    console.log('rows:', rows)
+    console.log('ACTIONS: rows:', rows)
     return rows[0]
   } catch (error) {
     console.error('Database Error:', error)
@@ -281,12 +183,11 @@ export async function writeUserssessions(usersessions: NewUserssessionsTable) {
     INSERT INTO Userssessions (
       usdatetime,
       usuid,
-      ususer,
+      ususer
     ) VALUES (
-
       ${usersessions.usdatetime},
       ${usersessions.usuid},
-      ${usersessions.ususer},
+      ${usersessions.ususer}
     ) RETURNING *
   `
     return rows[0]

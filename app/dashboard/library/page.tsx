@@ -2,7 +2,7 @@ import Pagination from '@/app/ui/library/pagination'
 import Search from '@/app/ui/search'
 import Table from '@/app/ui/library/table'
 import { lusitana } from '@/app/ui/fonts'
-import { InvoicesTableSkeleton } from '@/app/ui/skeletons'
+import { LibraryTableSkeleton } from '@/app/ui/skeletons'
 import { Suspense } from 'react'
 import { fetchLibraryPages } from '@/app/lib/data'
 import { Metadata } from 'next'
@@ -30,7 +30,7 @@ export default async function Page({
       <div className='mt-4 flex items-center justify-between gap-2 md:mt-8'>
         <Search placeholder='Search library...' />
       </div>
-      <Suspense key={query + currentPage} fallback={<InvoicesTableSkeleton />}>
+      <Suspense key={query + currentPage} fallback={<LibraryTableSkeleton />}>
         <Table query={query} currentPage={currentPage} />
       </Suspense>
       <div className='mt-5 flex w-full justify-center'>
