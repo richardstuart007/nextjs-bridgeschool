@@ -20,12 +20,18 @@ export default function NavLinks() {
   //  Get Pathname
   //
   const pathname = usePathname()
-  console.log('Pathname:', pathname)
   //
   //  One time only
   //
   useEffect(() => {
     firstTime()
+    // eslint-disable-next-line
+  }, [])
+  //
+  //  Every Time
+  //
+  useEffect(() => {
+    everyTime()
     // eslint-disable-next-line
   }, [])
   //--------------------------------------------------------------------------------
@@ -36,15 +42,19 @@ export default function NavLinks() {
     //  Write Session BSuser
     //
     writeSession_BSuser()
+  }
+  //--------------------------------------------------------------------------------
+  //  Every Time
+  //--------------------------------------------------------------------------------
+  function everyTime() {
     //
     //  Auth redirect error - fix ???
     //
     if (!pathname.includes('/dashboard')) {
-      console.log("The URL does NOT contain '/dashboard'.")
+      console.log('NavLinks: The URL does NOT contain /dashboard.')
       router.push('/dashboard')
     }
   }
-
   return (
     <>
       {links.map(link => {

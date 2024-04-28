@@ -3,7 +3,7 @@
 import { lusitana } from '@/app/ui/fonts'
 import { AtSymbolIcon, KeyIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline'
 import { ArrowRightIcon, ArrowLeftIcon } from '@heroicons/react/20/solid'
-import { Button } from './button'
+import { Button } from '../button'
 import { useFormState, useFormStatus } from 'react-dom'
 import { registerUser } from '@/app/lib/actions'
 import { useRouter } from 'next/navigation'
@@ -12,9 +12,39 @@ export default function RegisterForm() {
   const initialState = { message: null, errors: {} }
   const [stateRegister, dispatch] = useFormState(registerUser, initialState)
   //
-  //  Go back
+  //  Get Router
   //
   const router = useRouter()
+  //-------------------------------------------------------------------------
+  //  Register
+  //-------------------------------------------------------------------------
+  function RegisterButton() {
+    const { pending } = useFormStatus()
+    return (
+      <Button className='mt-4 w-full' aria-disabled={pending}>
+        Register <ArrowRightIcon className='ml-auto h-5 w-5 text-gray-50' />
+      </Button>
+    )
+  }
+  //-------------------------------------------------------------------------
+  //  Go to Login
+  //-------------------------------------------------------------------------
+  interface LoginButtonProps {
+    onClick: () => void
+  }
+  function LoginButton({ onClick }: LoginButtonProps) {
+    return (
+      <Button
+        className='mt-4 w-full flex items-center justify-between bg-gray-400 hover:bg-gray-300'
+        onClick={onClick}
+      >
+        <ArrowLeftIcon className=' h-5 w-5 text-gray-50' /> Login
+      </Button>
+    )
+  }
+  //-------------------------------------------------------------------------
+  //  Handle Login Click
+  //-------------------------------------------------------------------------
   const handleLoginClick = () => {
     router.push('/login')
   }
@@ -34,6 +64,7 @@ export default function RegisterForm() {
                 type='email'
                 name='email'
                 placeholder='Enter your email address'
+                autoComplete='email'
                 required
               />
               <AtSymbolIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900' />
@@ -59,6 +90,7 @@ export default function RegisterForm() {
                 type='password'
                 name='password'
                 placeholder='Enter password'
+                autoComplete='new-password'
                 required
               />
               <KeyIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900' />
@@ -86,32 +118,5 @@ export default function RegisterForm() {
         </div>
       </div>
     </form>
-  )
-}
-//
-//  Register
-//
-function RegisterButton() {
-  const { pending } = useFormStatus()
-  return (
-    <Button className='mt-4 w-full' aria-disabled={pending}>
-      Register <ArrowRightIcon className='ml-auto h-5 w-5 text-gray-50' />
-    </Button>
-  )
-}
-//
-//  Go to Login
-//
-interface LoginButtonProps {
-  onClick: () => void
-}
-function LoginButton({ onClick }: LoginButtonProps) {
-  return (
-    <Button
-      className='mt-4 w-full flex items-center justify-between bg-orange-500 hover:bg-orange-400'
-      onClick={onClick}
-    >
-      <ArrowLeftIcon className=' h-5 w-5 text-gray-50' /> Login
-    </Button>
   )
 }

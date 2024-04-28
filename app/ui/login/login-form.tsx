@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { lusitana } from '@/app/ui/fonts'
 import { AtSymbolIcon, KeyIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline'
 import { ArrowRightIcon, ArrowLeftIcon } from '@heroicons/react/20/solid'
-import { Button } from './button'
+import { Button } from '../button'
 import { useFormState, useFormStatus } from 'react-dom'
 import { authenticate } from '@/app/lib/actions'
 import { usePathname, useRouter } from 'next/navigation'
@@ -29,6 +29,13 @@ export default function LoginForm() {
     firstTime()
     // eslint-disable-next-line
   }, [])
+  //
+  //  Every Time
+  //
+  useEffect(() => {
+    everyTime()
+    // eslint-disable-next-line
+  }, [])
   //--------------------------------------------------------------------------------
   //  First Time
   //--------------------------------------------------------------------------------
@@ -47,13 +54,45 @@ export default function LoginForm() {
     //
     document.cookie = `${storeName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
     console.log('Cookie deleted')
+  }
+  //--------------------------------------------------------------------------------
+  //  Every Time
+  //--------------------------------------------------------------------------------
+  function everyTime() {
     //
     //  Auth redirect error - fix ???
     //
     if (!pathname.includes('/login')) {
-      console.log("The URL does NOT contain '/login'.")
+      console.log('LoginForm: The URL does NOT contain /login.')
       router.push('/login')
     }
+  }
+  //-------------------------------------------------------------------------
+  //  Login Button
+  //-------------------------------------------------------------------------
+  function LoginButton() {
+    const { pending } = useFormStatus()
+    return (
+      <Button className='mt-4 w-full' aria-disabled={pending}>
+        Login <ArrowRightIcon className='ml-auto h-5 w-5 text-gray-50' />
+      </Button>
+    )
+  }
+  //-------------------------------------------------------------------------
+  //  Go to Register
+  //-------------------------------------------------------------------------
+  interface RegisterButtonProps {
+    onClick: () => void
+  }
+  function RegisterButton({ onClick }: RegisterButtonProps) {
+    return (
+      <Button
+        className='mt-4 w-full flex items-center justify-between bg-gray-400 hover:bg-gray-300'
+        onClick={onClick}
+      >
+        <ArrowLeftIcon className=' h-5 w-5 text-gray-50' /> Register
+      </Button>
+    )
   }
   //--------------------------------------------------------------------------------
   //  Register User
@@ -77,6 +116,7 @@ export default function LoginForm() {
                 type='email'
                 name='email'
                 placeholder='Enter your email address'
+                autoComplete='email'
                 required
               />
               <AtSymbolIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900' />
@@ -93,6 +133,7 @@ export default function LoginForm() {
                 type='password'
                 name='password'
                 placeholder='Enter password'
+                autoComplete='current-password'
                 required
               />
               <KeyIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900' />
@@ -112,31 +153,5 @@ export default function LoginForm() {
         </div>
       </div>
     </form>
-  )
-}
-
-function LoginButton() {
-  const { pending } = useFormStatus()
-  return (
-    <Button className='mt-4 w-full' aria-disabled={pending}>
-      Login <ArrowRightIcon className='ml-auto h-5 w-5 text-gray-50' />
-    </Button>
-  )
-}
-
-//
-//  Go to Register
-//
-interface RegisterButtonProps {
-  onClick: () => void
-}
-function RegisterButton({ onClick }: RegisterButtonProps) {
-  return (
-    <Button
-      className='mt-4 w-full flex items-center justify-between bg-orange-500 hover:bg-orange-400'
-      onClick={onClick}
-    >
-      <ArrowLeftIcon className=' h-5 w-5 text-gray-50' /> Register
-    </Button>
   )
 }
