@@ -1,6 +1,6 @@
 import { sql } from '@vercel/postgres'
 import { unstable_noStore as noStore } from 'next/cache'
-import { LibraryTable, QuestionsTable, Userrecord } from './definitions'
+import { LibraryTable, QuestionsTable, UsersTable } from './definitions'
 const LIBRARY_ITEMS_PER_PAGE = 10
 //---------------------------------------------------------------------
 //  Library totals
@@ -164,10 +164,10 @@ export async function fetchQuestionsByGid(qgid: number) {
 //---------------------------------------------------------------------
 //  Fetch User by email
 //---------------------------------------------------------------------
-export async function fetchUserByEmail(email: string): Promise<Userrecord | undefined> {
+export async function fetchUserByEmail(email: string): Promise<UsersTable | undefined> {
   noStore()
   try {
-    const userrecord = await sql<Userrecord>`SELECT * FROM users WHERE u_email=${email}`
+    const userrecord = await sql<UsersTable>`SELECT * FROM users WHERE u_email=${email}`
     //
     //  Not found
     //

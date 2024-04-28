@@ -45,12 +45,6 @@ export default function QuestionsForm(props: QuestionsFormProps): JSX.Element {
   //...................................................................................
   return (
     <>
-      <div className='rounded-md bg-gray-50 p-4 md:p-6'>
-        <p>id: {question.qqid}</p>
-        <p>owner: {question.qowner}</p>
-        <p>group: {question.qgroup}</p>
-        <p>owner/group-ID: {question.qgid}</p>
-      </div>
       <QuizQuestion question={question} quizQuestion={1} quizTotal={2} />
       <QuizBidding question={question} />
       <QuizHands question={question} />

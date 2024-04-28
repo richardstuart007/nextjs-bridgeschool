@@ -2,10 +2,10 @@ import NextAuth from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import { authConfig } from './auth.config'
 import { z } from 'zod'
-import type { UserAuth, Userrecord, NewUserssessionsTable } from '@/app/lib/definitions'
+import type { UserAuth, UsersTable, NewUserssessionsTable } from '@/app/lib/definitions'
 import bcrypt from 'bcrypt'
-import { cookies } from 'next/headers'
 import { writeUserssessions } from '@/app/lib/actions'
+import { writeCookieBSuser } from '@/app/lib/actions'
 import { fetchUserByEmail } from '@/app/lib/data'
 // ----------------------------------------------------------------------
 //  Check User/Password
@@ -47,8 +47,7 @@ export const { auth, signIn, signOut } = NextAuth({
         //
         // Write cookie
         //
-        const { u_uid, u_user, u_name, u_email } = userRecord
-        writeCookie(u_uid, u_user, u_name, u_email, usid)
+        await writeCookieBSuser(userRecord, usid)
         //
         //  Return in correct format
         //
@@ -65,7 +64,7 @@ export const { auth, signIn, signOut } = NextAuth({
 // ----------------------------------------------------------------------
 //  Write session information
 // ----------------------------------------------------------------------
-async function writeSession(userRecord: Userrecord) {
+async function writeSession(userRecord: UsersTable) {
   try {
     //
     //  Destructure user record
@@ -80,57 +79,11 @@ async function writeSession(userRecord: Userrecord) {
       ususer: u_user
     }
     const usersessionsRecord = await writeUserssessions(userssession)
-    console.log('AUTH: usersessionsRecord:', usersessionsRecord)
     //
     //  Return uer record
     //
     return usersessionsRecord
   } catch (error) {
     throw new Error('Failed to write session info.')
-  }
-}
-// ----------------------------------------------------------------------
-//  Write Cookie information
-// ----------------------------------------------------------------------
-function writeCookie(
-  u_uid: number,
-  u_user: string,
-  u_name: string,
-  u_email: string,
-  usid: number
-): void {
-  try {
-    //
-    //  Create session cookie
-    //
-    const newUserRecord = { usid, u_uid, u_user, u_name, u_email }
-    const JSONnewUserRecord = JSON.stringify(newUserRecord)
-    console.log('AUTH: JSONnewUserRecord:', JSONnewUserRecord)
-    const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-    cookies().set('BridgeSchool_Session', JSONnewUserRecord, {
-      httpOnly: false,
-      secure: false,
-      expires: expires,
-      sameSite: 'lax',
-      path: '/'
-    })
-    //
-    //  Check cookie
-    //
-    const checkCookie = cookies().get('BridgeSchool_Session')
-    console.log('AUTH: checkCookie:', checkCookie)
-    let r_uid = 0
-    const BridgeSchool_Session = cookies().get('BridgeSchool_Session')
-    if (BridgeSchool_Session) {
-      const decodedCookie = decodeURIComponent(BridgeSchool_Session.value)
-      const JSON_BridgeSchool_Session = JSON.parse(decodedCookie)
-      if (JSON_BridgeSchool_Session && JSON_BridgeSchool_Session.u_uid) {
-        console.log('AUTH: JSON_BridgeSchool_Session:', JSON_BridgeSchool_Session)
-        r_uid = JSON_BridgeSchool_Session.u_uid
-      }
-    }
-    console.log('AUTH: r_uid:', r_uid)
-  } catch (error) {
-    throw new Error('Failed to write cookie info.')
   }
 }

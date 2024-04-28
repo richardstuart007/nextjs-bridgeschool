@@ -44,18 +44,19 @@ export type UsershistoryTable = {
   r_totalpoints: number
   r_correctpercent: number
   r_gid: number
+  r_sid: number
 }
 
 export type NewUsershistoryTable = Omit<UsershistoryTable, 'r_hid'>
 
-export type Userssessions = {
+export type UserssessionsTable = {
   usid: number
   usdatetime: DateTime
   usuid: number
   ususer: string
 }
 
-export type NewUserssessionsTable = Omit<Userssessions, 'usid'>
+export type NewUserssessionsTable = Omit<UserssessionsTable, 'usid'>
 
 export type UserAuth = {
   id: string
@@ -64,7 +65,7 @@ export type UserAuth = {
   password: string
 }
 
-export type Userrecord = {
+export type UsersTable = {
   u_uid: number
   u_hash: string
   u_user: string
@@ -81,3 +82,21 @@ export type Userrecord = {
   u_fedcountry: string
   u_dev: boolean
 }
+
+export type BSuserTable = {
+  u_uid: number
+  u_user: string
+  u_name: string
+  u_email: string
+  u_joined: DateTime
+  u_fedid: string
+  u_admin: boolean
+  u_showprogress: boolean
+  u_showscore: boolean
+  u_sortquestions: boolean
+  u_skipcorrect: boolean
+  u_dftmaxquestions: number
+  u_fedcountry: string
+  u_dev: boolean
+  usid: number
+} | null

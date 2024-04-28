@@ -1,22 +1,65 @@
 'use client'
 
-// import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { lusitana } from '@/app/ui/fonts'
 import { AtSymbolIcon, KeyIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline'
 import { ArrowRightIcon, ArrowLeftIcon } from '@heroicons/react/20/solid'
 import { Button } from './button'
 import { useFormState, useFormStatus } from 'react-dom'
 import { authenticate } from '@/app/lib/actions'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 
 export default function LoginForm() {
-  const [errorMessage, dispatch] = useFormState(authenticate, undefined)
   //
-  //  Register User
+  //  Router
   //
   const router = useRouter()
+  //
+  //  Get Pathname
+  //
+  const pathname = usePathname()
+  //
+  //  State
+  //
+  const [errorMessage, dispatch] = useFormState(authenticate, undefined)
+  //
+  //  One time only
+  //
+  useEffect(() => {
+    firstTime()
+    // eslint-disable-next-line
+  }, [])
+  //--------------------------------------------------------------------------------
+  //  First Time
+  //--------------------------------------------------------------------------------
+  function firstTime() {
+    //
+    //  Remove session storage
+    //
+    const storeName = 'BSuser'
+    const data = sessionStorage.getItem(storeName)
+    if (data) {
+      sessionStorage.removeItem(storeName)
+      console.log('Session storage deleted')
+    }
+    //
+    //  Remove cookies
+    //
+    document.cookie = `${storeName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
+    console.log('Cookie deleted')
+    //
+    //  Auth redirect error - fix ???
+    //
+    if (!pathname.includes('/login')) {
+      console.log("The URL does NOT contain '/login'.")
+      router.push('/login')
+    }
+  }
+  //--------------------------------------------------------------------------------
+  //  Register User
+  //--------------------------------------------------------------------------------
   function handleRegisterClick() {
-    router.push('/login/register')
+    router.push('/register')
   }
   return (
     <form action={dispatch} className='space-y-3'>

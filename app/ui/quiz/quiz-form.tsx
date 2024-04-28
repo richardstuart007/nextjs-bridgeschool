@@ -9,7 +9,8 @@ import QuizChoice from './quiz-choice'
 import { QuizSubmit } from '@/app/ui/quiz/buttons'
 import { useRouter } from 'next/navigation'
 import { writeUsershistory } from '@/app/lib/actions'
-import type { NewUsershistoryTable } from '@/app/lib/definitions'
+import type { NewUsershistoryTable, BSuserTable } from '@/app/lib/definitions'
+import { getSession_BSuser } from '@/app/lib/utilsClient'
 
 interface QuestionsFormProps {
   questions: QuestionsTable[]
@@ -70,7 +71,7 @@ export default function QuestionsForm(props: QuestionsFormProps): JSX.Element {
     answeredQuestions.forEach((question, i) => {
       r_qid.push(question.qqid)
 
-      const p = answer[i] - 1
+      const p = answer[i]
       const points = question.qpoints[p]
       if (points !== undefined) {
         r_points.push(points)
@@ -86,10 +87,10 @@ export default function QuestionsForm(props: QuestionsFormProps): JSX.Element {
       r_correctpercent = Math.ceil((r_totalpoints * 100) / r_maxpoints)
     }
     //
-    //  Get cookie
+    //  Get session info
     //
-    const cookie = getCookie('BridgeSchool_Session')
-    console.log('QUIZ-FORM: cookie:', cookie)
+    const userSession: BSuserTable | null = getSession_BSuser()
+    if (!userSession) throw new Error('No user session found')
     //
     // Create a NewUsersHistoryTable object
     //
@@ -100,50 +101,22 @@ export default function QuestionsForm(props: QuestionsFormProps): JSX.Element {
       r_questions: answer.length,
       r_qid: r_qid,
       r_ans: answer,
-      r_uid: 0,
+      r_uid: userSession.usid,
       r_points: r_points,
       r_maxpoints: r_maxpoints,
       r_totalpoints: r_totalpoints,
       r_correctpercent: r_correctpercent,
-      r_gid: question.qgid
+      r_gid: question.qgid,
+      r_sid: userSession.usid
     }
-    console.log('QUIZ-FORM: history:', history)
-
     const historyRecord = await writeUsershistory(history)
-    console.log('QUIZ-FORM: historyRecord:', historyRecord)
     router.push(`/dashboard/quiz-review/${question.qgid}/quiz-review`)
-  }
-  //...................................................................................
-  //.  Get a cookie
-  //...................................................................................
-  function getCookie(name: string): string | undefined {
-    const value = `; ${document.cookie}`
-    const parts = value.split(`; ${name}=`)
-    if (parts.length === 2) {
-      const lastPart = parts.pop()
-      if (lastPart) {
-        const splitParts = lastPart.split(';')
-        const firstPart = splitParts.shift()
-        if (firstPart) {
-          const decodedCookie = decodeURIComponent(firstPart)
-          return decodedCookie
-        }
-      }
-    }
-    console.log('QUIZ-FORM: No cookie found')
-    return undefined
   }
   //...................................................................................
   //.  Render the form
   //...................................................................................
   return (
     <>
-      <div className='rounded-md bg-gray-50 p-4 md:p-6'>
-        <p>id: {question.qqid}</p>
-        <p>owner: {question.qowner}</p>
-        <p>group: {question.qgroup}</p>
-        <p>owner/group-ID: {question.qgid}</p>
-      </div>
       <QuizQuestion question={question} quizQuestion={1} quizTotal={2} />
       <QuizBidding question={question} />
       <QuizHands question={question} />

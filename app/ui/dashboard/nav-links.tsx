@@ -1,8 +1,10 @@
 'use client'
-import { UserGroupIcon, HomeIcon, DocumentDuplicateIcon } from '@heroicons/react/24/outline'
+import { useEffect } from 'react'
+import { UserGroupIcon, HomeIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import clsx from 'clsx'
+import { writeSession_BSuser } from '@/app/lib/utilsClient'
 
 const links = [
   { name: 'Home', href: '/', icon: HomeIcon },
@@ -10,7 +12,39 @@ const links = [
 ]
 
 export default function NavLinks() {
+  //
+  //  Router
+  //
+  const router = useRouter()
+  //
+  //  Get Pathname
+  //
   const pathname = usePathname()
+  console.log('Pathname:', pathname)
+  //
+  //  One time only
+  //
+  useEffect(() => {
+    firstTime()
+    // eslint-disable-next-line
+  }, [])
+  //--------------------------------------------------------------------------------
+  //  First Time
+  //--------------------------------------------------------------------------------
+  function firstTime() {
+    //
+    //  Write Session BSuser
+    //
+    writeSession_BSuser()
+    //
+    //  Auth redirect error - fix ???
+    //
+    if (!pathname.includes('/dashboard')) {
+      console.log("The URL does NOT contain '/dashboard'.")
+      router.push('/dashboard')
+    }
+  }
+
   return (
     <>
       {links.map(link => {
