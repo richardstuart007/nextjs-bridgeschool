@@ -1,4 +1,5 @@
 import type { NextAuthConfig } from 'next-auth'
+import { cookies } from 'next/headers'
 
 export const authConfig = {
   pages: {
@@ -9,14 +10,18 @@ export const authConfig = {
       //
       //  Get status
       //
-      const isLoggedIn = !!auth?.user
       const isOnDashboard = nextUrl.pathname.startsWith('/dashboard')
-      // const isOnLogin = nextUrl.pathname.startsWith('/login')
-      // console.log('auth:', auth)
-      // console.log('nextUrl:', nextUrl)
-      // console.log('isLoggedIn:', isLoggedIn)
-      // console.log('isOnDashboard:', isOnDashboard)
-      // console.log('isOnLogin:', isOnLogin)
+      const isOnLogin = nextUrl.pathname.startsWith('/login')
+      //
+      //  Login status (Auth not working yet)
+      //
+      let isLoggedIn
+      const cookie = cookies().get('BS_session')
+      cookie ? (isLoggedIn = true) : (isLoggedIn = false)
+      //
+      //  If not on login and not on dashboard then OK
+      //
+      if (!isOnLogin && !isOnDashboard) return true
       //
       //  Dashboard and Logged in - true
       //
@@ -25,13 +30,11 @@ export const authConfig = {
         //
         //  Dashboard and NOT Logged in - redirect to login
         //
-        console.log('REDIRECTING to login')
         return Response.redirect(new URL('/login', nextUrl.origin).href)
         //
         //  NOT Dashboard and Logged in - redirect to dashboard
         //
       } else if (isLoggedIn) {
-        console.log('REDIRECTING to dashboard')
         return Response.redirect(new URL('/dashboard', nextUrl.origin).href)
       }
       //

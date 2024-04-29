@@ -1,9 +1,19 @@
+'use client'
+import { useEffect } from 'react'
 import SchoolLogo from '@/app/ui/school-logo'
 import { ArrowRightIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import { lusitana } from '@/app/ui/fonts'
+import { resetSession } from '@/app/lib/actionsClient'
 
 export default function Page() {
+  //
+  //  Reset the session
+  //
+  useEffect(() => {
+    resetSession()
+    // eslint-disable-next-line
+  })
   return (
     <main className='flex min-h-screen flex-col p-6'>
       <div className='flex h-20 shrink-0 items-end rounded-lg bg-blue-500 p-4 md:h-52'>
@@ -14,7 +24,8 @@ export default function Page() {
           <p
             className={`${lusitana.className} text-xl text-gray-800 md:text-3xl md:leading-normal`}
           >
-            <strong>Welcome to Bridge School</strong> brought to you by Richard Stuart.
+            Welcome to <strong>Bridge School</strong> brought to you by{' '}
+            <strong>Richard Stuart</strong>
           </p>
           <Link
             href='/login'

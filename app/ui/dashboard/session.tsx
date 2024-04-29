@@ -29,7 +29,7 @@ export default function Session() {
     //  Auth redirect error - fix ???
     //
     if (!pathname.includes('/dashboard')) {
-      console.log('Session: The URL does NOT contain /dashboard.')
+      // console.log('Session: The URL does NOT contain /dashboard.')
       router.push('/dashboard')
       return
     }

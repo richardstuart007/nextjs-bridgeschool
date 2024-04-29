@@ -28,7 +28,7 @@ export const { auth, signIn, signOut } = NextAuth({
         const { email, password } = parsedCredentials.data
         const userRecord = await fetchUserByEmail(email)
         if (!userRecord) {
-          console.log('Invalid credentials - User')
+          // console.log('Invalid credentials - User')
           return null
         }
         //
@@ -36,7 +36,7 @@ export const { auth, signIn, signOut } = NextAuth({
         //
         const passwordsMatch = await bcrypt.compare(password, userRecord.u_hash)
         if (!passwordsMatch) {
-          console.log('Invalid credentials - password')
+          // console.log('Invalid credentials - password')
           return null
         }
         //
@@ -44,10 +44,12 @@ export const { auth, signIn, signOut } = NextAuth({
         //
         const usersessionsRecord = await writeSession(userRecord)
         const usid = usersessionsRecord.usid
+        // console.log('auth: usid', usid)
         //
         // Write cookie
         //
         await writeCookieBSsession(userRecord, usid)
+        // console.log('auth: cookie written')
         //
         //  Return in correct format
         //

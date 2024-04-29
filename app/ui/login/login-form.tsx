@@ -8,6 +8,7 @@ import { Button } from '../button'
 import { useFormState, useFormStatus } from 'react-dom'
 import { authenticate } from '@/app/lib/actions'
 import { usePathname, useRouter } from 'next/navigation'
+import { resetSession } from '@/app/lib/actionsClient'
 
 export default function LoginForm() {
   //
@@ -26,7 +27,7 @@ export default function LoginForm() {
   //  One time only
   //
   useEffect(() => {
-    firstTime()
+    resetSession()
     // eslint-disable-next-line
   }, [])
   //
@@ -36,25 +37,7 @@ export default function LoginForm() {
     pathChange()
     // eslint-disable-next-line
   }, [pathname])
-  //--------------------------------------------------------------------------------
-  //  First Time
-  //--------------------------------------------------------------------------------
-  function firstTime() {
-    //
-    //  Remove session storage
-    //
-    const storeName = 'BS_session'
-    const data = sessionStorage.getItem(storeName)
-    if (data) {
-      sessionStorage.removeItem(storeName)
-      console.log('Session storage deleted')
-    }
-    //
-    //  Remove cookies
-    //
-    document.cookie = `${storeName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
-    console.log('Cookie deleted')
-  }
+
   //--------------------------------------------------------------------------------
   //  Every Time
   //--------------------------------------------------------------------------------
@@ -63,7 +46,7 @@ export default function LoginForm() {
     //  Auth redirect error - fix ???
     //
     if (!pathname.includes('/login')) {
-      console.log('LoginForm: The URL does NOT contain /login.')
+      // console.log('LoginForm: The URL does NOT contain /login.')
       router.push('/login')
     }
   }

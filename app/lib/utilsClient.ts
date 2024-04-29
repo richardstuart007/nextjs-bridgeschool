@@ -1,3 +1,4 @@
+'use client'
 import { BSsessionTable } from './definitions'
 // ----------------------------------------------------------------------
 //  Write User Session to Session Storage from the cookie

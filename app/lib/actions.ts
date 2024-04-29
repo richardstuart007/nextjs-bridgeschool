@@ -191,37 +191,51 @@ export async function writeCookieBSsession(userRecord: UsersTable, usid: number)
     //
     const newUserRecord = { ...userRecord, u_hash: undefined, usid: usid }
     const JSONnewUserRecord = JSON.stringify(newUserRecord)
+    // const expires = new Date(Date.now() + 10000)
     cookies().set('BS_session', JSONnewUserRecord, {
       httpOnly: false,
       secure: false,
+      // expires: expires,
       sameSite: 'lax',
       path: '/'
     })
+    // console.log('actions: BS_session Cookie written')
   } catch (error) {
     throw new Error('Failed to write cookie info.')
   }
 }
 // ----------------------------------------------------------------------
+//  Delete Cookie
+// ----------------------------------------------------------------------
+export async function deleteCookie(cookieName: string) {
+  try {
+    cookies().delete(cookieName)
+    // console.log(`actions: ${cookieName} Cookie deleted`)
+  } catch (error) {
+    throw new Error('Failed to delete cookie.')
+  }
+}
+// ----------------------------------------------------------------------
 //  Get Cookie information
 // ----------------------------------------------------------------------
-export async function getCookieBSsession() {
+export async function getCookieInfo(cookieName: string) {
   try {
-    const BS_session = cookies().get('BS_session')
-    if (!BS_session) throw new Error('No cookie found.')
+    const cookie = cookies().get(cookieName)
+    if (!cookie) throw new Error('No cookie found.')
     //
     //  Get value
     //
-    const decodedCookie = decodeURIComponent(BS_session.value)
+    const decodedCookie = decodeURIComponent(cookie.value)
     if (!decodedCookie) throw new Error('No cookie value.')
     //
     //  Convert to JSON
     //
-    const JSON_BSsession = JSON.parse(decodedCookie)
-    if (!JSON_BSsession) throw new Error('No cookie JSON error.')
+    const JSON_cookie = JSON.parse(decodedCookie)
+    if (!JSON_cookie) throw new Error('No cookie JSON error.')
     //
     //  Return JSON
     //
-    return JSON_BSsession
+    return JSON_cookie
   } catch (error) {
     throw new Error('Failed to get cookie info.')
   }

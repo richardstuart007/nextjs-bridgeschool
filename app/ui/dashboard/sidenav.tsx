@@ -4,6 +4,7 @@ import Session from '@/app/ui/dashboard/session'
 import SchoolLogo from '@/app/ui/school-logo'
 import { PowerIcon } from '@heroicons/react/24/outline'
 import { signOut } from '@/auth'
+import { deleteCookie } from '@/app/lib/actions'
 export default function SideNav() {
   return (
     <div className='flex h-full flex-col px-3 py-4 md:px-2'>
@@ -22,6 +23,7 @@ export default function SideNav() {
         <form
           action={async () => {
             'use server'
+            await deleteCookie('BS_session')
             await signOut()
           }}
         >

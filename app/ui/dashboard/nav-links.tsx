@@ -7,7 +7,7 @@ import clsx from 'clsx'
 import { writeSession_BS_session } from '@/app/lib/utilsClient'
 
 const links = [
-  { name: 'Home', href: '/', icon: HomeIcon },
+  { name: 'Home', href: '/dashboard', icon: HomeIcon },
   { name: 'Library', href: '/dashboard/library', icon: UserGroupIcon }
 ]
 
