@@ -1,4 +1,4 @@
-import { BSuserTable } from './definitions'
+import { BSsessionTable } from './definitions'
 // ----------------------------------------------------------------------
 //  Write User Session to Session Storage from the cookie
 // ----------------------------------------------------------------------
@@ -11,7 +11,7 @@ export function writeSession_BS_session() {
   //
   //  Get cookie
   //
-  const data: BSuserTable | null | undefined = getCookieClient('BS_session')
+  const data: BSsessionTable | null | undefined = getCookieClient('BS_session')
   if (!data) return null
   //
   //  Write info to storage
@@ -22,7 +22,7 @@ export function writeSession_BS_session() {
 // ----------------------------------------------------------------------
 //  Get cookie information from the client
 // ----------------------------------------------------------------------
-export function getCookieClient(cookieName: string): BSuserTable | undefined {
+export function getCookieClient(cookieName: string): BSsessionTable | undefined {
   const value = `; ${document.cookie}`
   const parts = value.split(`; ${cookieName}=`)
   if (parts.length === 2) {
@@ -37,7 +37,7 @@ export function getCookieClient(cookieName: string): BSuserTable | undefined {
         //
         try {
           const parsedCookie = JSON.parse(decodedCookie)
-          return parsedCookie as BSuserTable
+          return parsedCookie as BSsessionTable
         } catch (error) {
           console.error('Error parsing cookie:', error)
           return null
@@ -50,7 +50,7 @@ export function getCookieClient(cookieName: string): BSuserTable | undefined {
 // ----------------------------------------------------------------------
 //  GET User Session to Session Storage
 // ----------------------------------------------------------------------
-export function getSession_BS_session(): BSuserTable | null {
+export function getSession_BS_session(): BSsessionTable | null {
   //
   //  Get the session info
   //
@@ -63,7 +63,7 @@ export function getSession_BS_session(): BSuserTable | null {
   //  Parse the data & return
   //
   try {
-    const data: BSuserTable = JSON.parse(dataString)
+    const data: BSsessionTable = JSON.parse(dataString)
     return data
   } catch (error) {
     console.error('Error parsing session data:', error)

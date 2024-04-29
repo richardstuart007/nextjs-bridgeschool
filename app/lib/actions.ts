@@ -184,7 +184,7 @@ export async function writeUserssessions(usersessions: NewUserssessionsTable) {
 // ----------------------------------------------------------------------
 //  Write Cookie information
 // ----------------------------------------------------------------------
-export async function writeCookieBSuser(userRecord: UsersTable, usid: number) {
+export async function writeCookieBSsession(userRecord: UsersTable, usid: number) {
   try {
     //
     //  Create session cookie (dropping u_hash)
@@ -204,7 +204,7 @@ export async function writeCookieBSuser(userRecord: UsersTable, usid: number) {
 // ----------------------------------------------------------------------
 //  Get Cookie information
 // ----------------------------------------------------------------------
-export async function getCookieBSuser() {
+export async function getCookieBSsession() {
   try {
     const BS_session = cookies().get('BS_session')
     if (!BS_session) throw new Error('No cookie found.')
@@ -216,12 +216,12 @@ export async function getCookieBSuser() {
     //
     //  Convert to JSON
     //
-    const JSON_BSuser = JSON.parse(decodedCookie)
-    if (!JSON_BSuser) throw new Error('No cookie JSON error.')
+    const JSON_BSsession = JSON.parse(decodedCookie)
+    if (!JSON_BSsession) throw new Error('No cookie JSON error.')
     //
     //  Return JSON
     //
-    return JSON_BSuser
+    return JSON_BSsession
   } catch (error) {
     throw new Error('Failed to get cookie info.')
   }

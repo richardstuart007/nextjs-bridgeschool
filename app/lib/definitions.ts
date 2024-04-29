@@ -83,7 +83,7 @@ export type UsersTable = {
   u_dev: boolean
 }
 
-export type BSuserTable = {
+export type BSsessionTable = {
   u_uid: number
   u_user: string
   u_name: string

@@ -1,11 +1,11 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { getSession_BS_session } from '@/app/lib/utilsClient'
-import { BSuserTable } from '@/app/lib/definitions'
+import { BSsessionTable } from '@/app/lib/definitions'
 import { usePathname, useRouter } from 'next/navigation'
 
 export default function Session() {
-  const [userSession, setUserSessionTable] = useState<BSuserTable>(null)
+  const [userSession, setUserSessionTable] = useState<BSsessionTable>(null)
   //
   //  Router
   //
@@ -36,7 +36,7 @@ export default function Session() {
     //
     //  Get session info
     //
-    const data: BSuserTable | null = getSession_BS_session()
+    const data: BSsessionTable | null = getSession_BS_session()
     if (!data) return
     setUserSessionTable(data)
   }
