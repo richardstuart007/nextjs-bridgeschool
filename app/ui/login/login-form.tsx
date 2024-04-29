@@ -30,12 +30,12 @@ export default function LoginForm() {
     // eslint-disable-next-line
   }, [])
   //
-  //  Every Time
+  //  Change of pathname
   //
   useEffect(() => {
-    everyTime()
+    pathChange()
     // eslint-disable-next-line
-  }, [])
+  }, [pathname])
   //--------------------------------------------------------------------------------
   //  First Time
   //--------------------------------------------------------------------------------
@@ -43,7 +43,7 @@ export default function LoginForm() {
     //
     //  Remove session storage
     //
-    const storeName = 'BSuser'
+    const storeName = 'BS_session'
     const data = sessionStorage.getItem(storeName)
     if (data) {
       sessionStorage.removeItem(storeName)
@@ -58,7 +58,7 @@ export default function LoginForm() {
   //--------------------------------------------------------------------------------
   //  Every Time
   //--------------------------------------------------------------------------------
-  function everyTime() {
+  function pathChange() {
     //
     //  Auth redirect error - fix ???
     //

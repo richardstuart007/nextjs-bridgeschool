@@ -191,7 +191,7 @@ export async function writeCookieBSuser(userRecord: UsersTable, usid: number) {
     //
     const newUserRecord = { ...userRecord, u_hash: undefined, usid: usid }
     const JSONnewUserRecord = JSON.stringify(newUserRecord)
-    cookies().set('BSuser', JSONnewUserRecord, {
+    cookies().set('BS_session', JSONnewUserRecord, {
       httpOnly: false,
       secure: false,
       sameSite: 'lax',
@@ -206,12 +206,12 @@ export async function writeCookieBSuser(userRecord: UsersTable, usid: number) {
 // ----------------------------------------------------------------------
 export async function getCookieBSuser() {
   try {
-    const BSuser = cookies().get('BSuser')
-    if (!BSuser) throw new Error('No cookie found.')
+    const BS_session = cookies().get('BS_session')
+    if (!BS_session) throw new Error('No cookie found.')
     //
     //  Get value
     //
-    const decodedCookie = decodeURIComponent(BSuser.value)
+    const decodedCookie = decodeURIComponent(BS_session.value)
     if (!decodedCookie) throw new Error('No cookie value.')
     //
     //  Convert to JSON

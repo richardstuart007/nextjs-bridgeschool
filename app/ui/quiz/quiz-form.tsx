@@ -10,7 +10,7 @@ import { QuizSubmit } from '@/app/ui/quiz/buttons'
 import { useRouter } from 'next/navigation'
 import { writeUsershistory } from '@/app/lib/actions'
 import type { NewUsershistoryTable, BSuserTable } from '@/app/lib/definitions'
-import { getSession_BSuser } from '@/app/lib/utilsClient'
+import { getSession_BS_session } from '@/app/lib/utilsClient'
 
 interface QuestionsFormProps {
   questions: QuestionsTable[]
@@ -89,7 +89,7 @@ export default function QuestionsForm(props: QuestionsFormProps): JSX.Element {
     //
     //  Get session info
     //
-    const userSession: BSuserTable | null = getSession_BSuser()
+    const userSession: BSuserTable | null = getSession_BS_session()
     if (!userSession) throw new Error('No user session found')
     //
     // Create a NewUsersHistoryTable object

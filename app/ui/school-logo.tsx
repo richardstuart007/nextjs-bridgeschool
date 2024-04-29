@@ -5,7 +5,7 @@ export default function SchoolLogo() {
   return (
     <div className={`${lusitana.className} flex flex-row items-center leading-none text-white`}>
       <AcademicCapIcon className='h-12 w-12' />
-      <p className='text-[44px]'>Bridge School</p>
+      <p className='text-[44px]'>Bridge</p>
     </div>
   )
 }

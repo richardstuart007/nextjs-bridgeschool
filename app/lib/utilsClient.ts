@@ -2,22 +2,22 @@ import { BSuserTable } from './definitions'
 // ----------------------------------------------------------------------
 //  Write User Session to Session Storage from the cookie
 // ----------------------------------------------------------------------
-export function writeSession_BSuser() {
+export function writeSession_BS_session() {
   //
   //  If already written return
   //
-  const BSuser = sessionStorage.getItem('BSuser')
-  if (BSuser) return null
+  const BS_session = sessionStorage.getItem('BS_session')
+  if (BS_session) return null
   //
   //  Get cookie
   //
-  const data: BSuserTable | null | undefined = getCookieClient('BSuser')
+  const data: BSuserTable | null | undefined = getCookieClient('BS_session')
   if (!data) return null
   //
   //  Write info to storage
   //
   const JSONdata = JSON.stringify(data)
-  sessionStorage.setItem('BSuser', JSONdata)
+  sessionStorage.setItem('BS_session', JSONdata)
 }
 // ----------------------------------------------------------------------
 //  Get cookie information from the client
@@ -50,11 +50,11 @@ export function getCookieClient(cookieName: string): BSuserTable | undefined {
 // ----------------------------------------------------------------------
 //  GET User Session to Session Storage
 // ----------------------------------------------------------------------
-export function getSession_BSuser(): BSuserTable | null {
+export function getSession_BS_session(): BSuserTable | null {
   //
   //  Get the session info
   //
-  const dataString = sessionStorage.getItem('BSuser')
+  const dataString = sessionStorage.getItem('BS_session')
   //
   //  No data
   //
