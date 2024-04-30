@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import NavLinks from '@/app/ui/dashboard/nav-links'
 import Session from '@/app/ui/dashboard/session'
 import SchoolLogo from '@/app/ui/school-logo'
