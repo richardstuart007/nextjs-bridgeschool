@@ -240,10 +240,3 @@ export async function getCookieInfo(cookieName: string) {
     throw new Error('Failed to get cookie info.')
   }
 }
-// ----------------------------------------------------------------------
-//  Signout and Login
-// ----------------------------------------------------------------------
-export async function signOutLogin() {
-  'use server'
-  await signOut()
-}

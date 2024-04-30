@@ -1,6 +1,6 @@
-import { sql } from '@vercel/postgres'
+import { sql, db } from '@vercel/postgres'
 import { unstable_noStore as noStore } from 'next/cache'
-import { LibraryTable, QuestionsTable, UsersTable } from './definitions'
+import { LibraryTable, LibraryFormTable, QuestionsTable, UsersTable } from './definitions'
 const LIBRARY_ITEMS_PER_PAGE = 10
 //---------------------------------------------------------------------
 //  Library totals
@@ -8,33 +8,33 @@ const LIBRARY_ITEMS_PER_PAGE = 10
 export async function fetchLibraryPages(query: string) {
   noStore()
   try {
-    const count = await sql`SELECT COUNT(*)
-    FROM library
-    WHERE
-      lrlid::text ILIKE ${`%${query}%`} OR
-      lrref ILIKE ${`%${query}%`} OR
-      lrdesc ILIKE ${`%${query}%`} OR
-      lrwho ILIKE ${`%${query}%`} OR
-      lrowner ILIKE ${`%${query}%`} OR
-      lrgroup ILIKE ${`%${query}%`}
-  `
-    const totalPages = Math.ceil(Number(count.rows[0].count) / LIBRARY_ITEMS_PER_PAGE)
+    let sqlWhere = buildWhere(query)
+    const sqlQuery = `SELECT COUNT(*) FROM library
+    LEFT JOIN ownergroup ON lrowner = ogowner and lrgroup = oggroup
+    ${sqlWhere}`
+
+    const client = await db.connect()
+    const result = await client.query(sqlQuery)
+    const count = result.rows[0].count
+    client.release()
+
+    const totalPages = Math.ceil(count / LIBRARY_ITEMS_PER_PAGE)
     return totalPages
   } catch (error) {
     console.error('Database Error:', error)
-    throw new Error('Failed to fetch total number of library items.')
+    throw new Error('Failed to fetch library items.')
   }
 }
+
 //---------------------------------------------------------------------
 //  Library data
 //---------------------------------------------------------------------
 export async function fetchFilteredLibrary(query: string, currentPage: number) {
   noStore()
   const offset = (currentPage - 1) * LIBRARY_ITEMS_PER_PAGE
-
   try {
-    const library = await sql<LibraryTable>`
-      SELECT
+    let sqlWhere = buildWhere(query)
+    const sqlQuery = `SELECT
       lrlid,
       lrref,
       lrdesc,
@@ -48,21 +48,111 @@ export async function fetchFilteredLibrary(query: string, currentPage: number) {
       lrgid
     FROM library
     LEFT JOIN ownergroup ON lrowner = ogowner and lrgroup = oggroup
-    WHERE
-      lrlid::text ILIKE ${`%${query}%`} OR
-      lrref ILIKE ${`%${query}%`} OR
-      lrdesc ILIKE ${`%${query}%`} OR
-      lrwho ILIKE ${`%${query}%`} OR
-      lrowner ILIKE ${`%${query}%`} OR
-      lrgroup ILIKE ${`%${query}%`}
+     ${sqlWhere}
       ORDER BY lrref
       LIMIT ${LIBRARY_ITEMS_PER_PAGE} OFFSET ${offset}
-    `
+     `
+    const client = await db.connect()
+    const library = await client.query<LibraryFormTable>(sqlQuery)
+    client.release()
     return library.rows
   } catch (error) {
     console.error('Database Error:', error)
     throw new Error('Failed to fetch library.')
   }
+}
+//---------------------------------------------------------------------
+//  Library data
+//---------------------------------------------------------------------
+export function buildWhere(query: string) {
+  //
+  //  Empty search
+  //
+  let whereClause = ''
+  if (!query) return whereClause
+  //
+  // Initialize variables
+  //
+  let lid = 0
+  let ref = ''
+  let desc = ''
+  let who = ''
+  let link = ''
+  let type = ''
+  let owner = ''
+  let group = ''
+  let gid = 0
+  let cnt = 0
+  //
+  // Split the search query into parts based on spaces
+  //
+  const parts = query.split(/\s+/).filter(part => part.trim() !== '')
+  //
+  // Loop through each part to extract values using switch statement
+  //
+  parts.forEach(part => {
+    if (part.includes(':')) {
+      const [key, value] = part.split(':')
+      switch (key) {
+        case 'lid':
+          lid = parseInt(value, 10)
+          break
+        case 'ref':
+          ref = value
+          break
+        case 'desc':
+          desc = value
+          break
+        case 'who':
+          who = value
+          break
+        case 'link':
+          link = value
+          break
+        case 'type':
+          type = value
+          break
+        case 'owner':
+          owner = value
+          break
+        case 'group':
+          group = value
+          break
+        case 'gid':
+          gid = parseInt(value, 10)
+          break
+        case 'cnt':
+          cnt = parseInt(value, 10)
+          cnt = isNaN(cnt) ? 0 : cnt
+          break
+        default:
+          desc = value
+          break
+      }
+    } else {
+      // Default to 'desc' if no key is provided
+      desc = part
+    }
+  })
+  //
+  // Add conditions for each variable if not empty or zero
+  //
+  if (lid !== 0) whereClause += `lrlid::text ILIKE '%${lid}%' AND `
+  if (ref !== '') whereClause += `lrref ILIKE '%${ref}%' AND `
+  if (desc !== '') whereClause += `lrdesc ILIKE '%${desc}%' AND `
+  if (who !== '') whereClause += `lrwho ILIKE '%${who}%' AND `
+  if (type !== '') whereClause += `lrtype ILIKE '%${type}%' AND `
+  if (owner !== '') whereClause += `lrowner ILIKE '%${owner}%' AND `
+  if (group !== '') whereClause += `lrgroup ILIKE '%${group}%' AND `
+  if (gid !== 0) whereClause += `lrgid::text ILIKE '%${gid}%' AND `
+  if (cnt !== 0) whereClause += `ogcntquestions >= ${cnt} AND `
+  //
+  // Remove the trailing 'AND' if there are conditions
+  //
+  if (whereClause !== '') {
+    whereClause = `WHERE ${whereClause.slice(0, -5)}`
+  }
+  return whereClause
 }
 //---------------------------------------------------------------------
 //  Library data by ID

@@ -9,6 +9,18 @@ export type LibraryTable = {
   lrtype: string
   lrowner: string
   lrgroup: string
+  lrgid: number
+}
+
+export type LibraryFormTable = {
+  lrlid: number
+  lrref: string
+  lrdesc: string
+  lrlink: string
+  lrwho: string
+  lrtype: string
+  lrowner: string
+  lrgroup: string
   ogcntquestions: number
   ogcntlibrary: number
   lrgid: number

@@ -23,6 +23,9 @@ export default async function LibraryTable({
                 <th scope='col' className='px-2 py-2 font-medium text-centre'>
                   View
                 </th>
+                <th scope='col' className='px-2 py-2 font-medium text-centre hidden md:block'>
+                  Questions
+                </th>
                 <th scope='col' className='px-2 py-2 font-medium text-centre'>
                   Quiz
                 </th>
@@ -37,6 +40,9 @@ export default async function LibraryTable({
                   <td className='px-2 py-1 text-xs md:text-sm'>{library.lrdesc}</td>
                   <td className='px-2 h-5 text-centre'>
                     <BookView lrtype={library.lrtype} lrlink={library.lrlink} />
+                  </td>
+                  <td className='px-2 py-1 text-xs md:text-sm hidden md:table-cell'>
+                    {library.ogcntquestions}
                   </td>
                   <td className='px-2 text-centre'>
                     {library.ogcntquestions > 0 ? <BookQuiz lrgid={library.lrgid} /> : null}
