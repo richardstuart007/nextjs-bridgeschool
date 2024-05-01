@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { QuestionsTable } from '@/app/lib/definitions'
+import { QuestionsTable, UsershistoryTable } from '@/app/lib/definitions'
 import QuizQuestion from '@/app/ui/quiz-question/quiz-question'
 import QuizBidding from '@/app/ui/quiz-question/quiz-bidding/QuizBidding'
 import QuizHands from '@/app/ui/quiz-question/quiz-hands/QuizHands'
@@ -94,7 +94,7 @@ export default function QuestionsForm(props: QuestionsFormProps): JSX.Element {
     //
     // Create a NewUsersHistoryTable object
     //
-    const history: NewUsershistoryTable = {
+    const NewUsershistoryTable: NewUsershistoryTable = {
       r_datetime: new Date().toISOString().replace('T', ' ').replace('Z', '').substring(0, 23),
       r_owner: question.qowner,
       r_group: question.qgroup,
@@ -109,8 +109,12 @@ export default function QuestionsForm(props: QuestionsFormProps): JSX.Element {
       r_gid: question.qgid,
       r_sid: userSession.usid
     }
-    const historyRecord = await writeUsershistory(history)
-    router.push(`/dashboard/quiz-review/${question.qgid}/quiz-review`)
+    const historyRecord = await writeUsershistory(NewUsershistoryTable)
+    //
+    //  Go to the quiz review page
+    //
+    const { r_hid } = historyRecord
+    router.push(`/dashboard/quiz-review/${r_hid}/quiz-review`)
   }
   //...................................................................................
   //.  Render the form

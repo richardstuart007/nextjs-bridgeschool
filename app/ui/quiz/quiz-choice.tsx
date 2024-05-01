@@ -28,7 +28,7 @@ export default function QuizChoice(props: QuizChoiceProps): JSX.Element {
     // eslint-disable-next-line
   }, [question])
   //...................................................................................
-  //  Load Answers array with answer element
+  //  Load the Choices
   //...................................................................................
   function loadChoices(): void {
     // setValue(99)
@@ -46,7 +46,7 @@ export default function QuizChoice(props: QuizChoiceProps): JSX.Element {
     const shuffledOptions = shuffleArray(question.qans)
     const newOptions = shuffledOptions.map((option, index) => ({
       id: index.toString(),
-      label: question.qans.indexOf(option) + ' ' + option.toString(),
+      label: option.toString(),
       value: question.qans.indexOf(option)
     }))
 
@@ -80,9 +80,9 @@ export default function QuizChoice(props: QuizChoiceProps): JSX.Element {
   //  Format Panel
   //...................................................................................
   return (
-    <div className='rounded-md bg-gray-50 p-4 md:p-6'>
+    <div className='rounded-md bg-gray-50 p-1 md:p-2'>
       <p className='text-lg font-semibold text-left'>Question</p>
-      <p className='text-left italic font-bold text-green-500'>{questionText}</p>
+      <p className='text-left italic font-bold text-yellow-500'>{questionText}</p>
       <RadioGroup options={answers} selectedOption={selectedOption} onChange={handleSelect} />
     </div>
   )

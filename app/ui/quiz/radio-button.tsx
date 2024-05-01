@@ -42,7 +42,7 @@ export default function RadioGroup(props: RadioGroupProps): JSX.Element {
   }
   //---------------------------------------------------------------------------
   return (
-    <div>
+    <>
       {options.map(option => (
         <div key={option.id} className='flex items-center ml-2'>
           <label htmlFor={option.id} className='flex items-center cursor-pointer'>
@@ -78,6 +78,6 @@ export default function RadioGroup(props: RadioGroupProps): JSX.Element {
           </label>
         </div>
       ))}
-    </div>
+    </>
   )
 }

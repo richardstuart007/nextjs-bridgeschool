@@ -3,7 +3,6 @@ import QuizHandsTableLine from './QuizHandsTableLine'
 import { QuestionsTable } from '@/app/lib/definitions'
 
 interface handObj {
-  rowCount: string
   position: string
   hand: string[]
 }
@@ -28,7 +27,6 @@ export default function QuizHands({ question }: QuizHandsProps): JSX.Element | n
   if (question.qnorth) {
     RowCount++
     const handObj: handObj = {
-      rowCount: 'RowCount' + RowCount.toString(),
       position: 'North',
       hand: []
     }
@@ -41,7 +39,6 @@ export default function QuizHands({ question }: QuizHandsProps): JSX.Element | n
   if (question.qeast) {
     RowCount++
     const handObj: handObj = {
-      rowCount: 'RowCount' + RowCount.toString(),
       position: 'East',
       hand: []
     }
@@ -54,7 +51,6 @@ export default function QuizHands({ question }: QuizHandsProps): JSX.Element | n
   if (question.qsouth) {
     RowCount++
     const handObj: handObj = {
-      rowCount: 'RowCount' + RowCount.toString(),
       position: 'South',
       hand: []
     }
@@ -67,7 +63,6 @@ export default function QuizHands({ question }: QuizHandsProps): JSX.Element | n
   if (question.qwest) {
     RowCount++
     const handObj: handObj = {
-      rowCount: 'RowCount' + RowCount.toString(),
       position: 'West',
       hand: []
     }
@@ -78,13 +73,15 @@ export default function QuizHands({ question }: QuizHandsProps): JSX.Element | n
   //.  Render the form
   //...................................................................................
   return (
-    <div className='rounded-md bg-gray-50 p-4 md:p-6'>
+    <div className='rounded-md bg-gray-50 p-1 md:p-2'>
       <p className='text-lg font-semibold text-left'>Hands</p>
       <table>
         <QuizHandsTableHeader />
-        {HandObjArray.map(handObj => (
-          <QuizHandsTableLine key={handObj.rowCount} handObj={handObj} />
-        ))}
+        <tbody>
+          {HandObjArray.map((handObj, idx) => (
+            <QuizHandsTableLine key={idx} idx={idx} handObj={handObj} />
+          ))}
+        </tbody>
       </table>
     </div>
   )

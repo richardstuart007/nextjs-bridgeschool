@@ -1,11 +1,11 @@
 import Image from 'next/image'
 interface QuizBiddingTableLineCellProps {
-  bqid: string | null
+  bid: string | null
   suit: string | null
 }
 
 export default function QuizBiddingTableLineCell({
-  bqid,
+  bid,
   suit
 }: QuizBiddingTableLineCellProps): JSX.Element {
   //...................................................................................
@@ -15,7 +15,7 @@ export default function QuizBiddingTableLineCell({
     <td className='whitespace-nowrap'>
       <div className='flex items-center justify-center'>
         {/*  Bid                */}
-        {bqid}
+        {bid}
 
         {/*  Suit Symbol            */}
         {suit !== null && (

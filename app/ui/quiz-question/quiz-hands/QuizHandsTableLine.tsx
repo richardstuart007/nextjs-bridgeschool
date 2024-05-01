@@ -1,18 +1,17 @@
 import QuizHandsTableLineCell from './QuizHandsTableLineCell'
 interface handObj {
-  rowCount: string
   position: string
   hand: string[]
 }
 
 interface QuizHandsTableLineProps {
   handObj: handObj
-  key: string | number
+  idx: number
 }
 //...................................................................................
 //.  Main Line
 //...................................................................................
-export default function QuizHandsTableLine({ handObj, key }: QuizHandsTableLineProps): JSX.Element {
+export default function QuizHandsTableLine({ handObj, idx }: QuizHandsTableLineProps): JSX.Element {
   //
   //  Destructure props
   //
@@ -27,7 +26,7 @@ export default function QuizHandsTableLine({ handObj, key }: QuizHandsTableLineP
   //.  Render the form
   //...................................................................................
   return (
-    <tr key={key}>
+    <tr key={idx}>
       <QuizHandsTableLineCell cellValue={position} />
       <QuizHandsTableLineCell cellValue={hand[0]} />
       <QuizHandsTableLineCell cellValue={hand[1]} />

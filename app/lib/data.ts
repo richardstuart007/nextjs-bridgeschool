@@ -1,6 +1,12 @@
 import { sql, db } from '@vercel/postgres'
 import { unstable_noStore as noStore } from 'next/cache'
-import { LibraryTable, LibraryFormTable, QuestionsTable, UsersTable } from './definitions'
+import {
+  LibraryTable,
+  LibraryFormTable,
+  QuestionsTable,
+  UsersTable,
+  UsershistoryTable
+} from './definitions'
 const LIBRARY_ITEMS_PER_PAGE = 10
 //---------------------------------------------------------------------
 //  Library totals
@@ -77,7 +83,6 @@ export function buildWhere(query: string) {
   let ref = ''
   let desc = ''
   let who = ''
-  let link = ''
   let type = ''
   let owner = ''
   let group = ''
@@ -105,9 +110,6 @@ export function buildWhere(query: string) {
           break
         case 'who':
           who = value
-          break
-        case 'link':
-          link = value
           break
         case 'type':
           type = value
@@ -161,15 +163,7 @@ export async function fetchLibraryById(lrlid: number) {
   noStore()
   try {
     const data = await sql<LibraryTable>`
-      SELECT
-      lrlid,
-      lrref,
-      lrdesc,
-      lrwho,
-      lrtype,
-      lrowner,
-      lrgroup,
-      lrgid,
+      SELECT *
       FROM library
       WHERE lrlid = ${lrlid};
     `
@@ -188,20 +182,7 @@ export async function fetchQuestionsByOwnerGroup(qowner: string, qgroup: string)
   noStore()
   try {
     const data = await sql<QuestionsTable>`
-      SELECT
-        qqid,
-        qowner,
-        qdetail,
-        qgroup,
-        qpoints,
-        qans,
-        qseq,
-        qrounds,
-        qnorth,
-        qeast,
-        qsouth,
-        qwest,
-        qgid
+      SELECT *
       FROM questions
       WHERE qowner = ${qowner} and qgroup = ${qgroup}
       ORDER BY qowner, qgroup, qseq;
@@ -217,26 +198,13 @@ export async function fetchQuestionsByOwnerGroup(qowner: string, qgroup: string)
   }
 }
 //---------------------------------------------------------------------
-//  Questions data by Owner/Group - ID
+//  Questions data by ID
 //---------------------------------------------------------------------
 export async function fetchQuestionsByGid(qgid: number) {
   noStore()
   try {
     const data = await sql<QuestionsTable>`
-      SELECT
-        qqid,
-        qowner,
-        qdetail,
-        qgroup,
-        qpoints,
-        qans,
-        qseq,
-        qrounds,
-        qnorth,
-        qeast,
-        qsouth,
-        qwest,
-        qgid
+      SELECT *
       FROM questions
       WHERE qgid = ${qgid}
       ORDER BY qgid, qseq;
@@ -244,8 +212,29 @@ export async function fetchQuestionsByGid(qgid: number) {
     //
     //  Return rows
     //
-    const questions = data.rows
-    return questions
+    const rows = data.rows
+    return rows
+  } catch (error) {
+    console.error('Database Error:', error)
+    throw new Error('Failed to fetch questions.')
+  }
+}
+//---------------------------------------------------------------------
+//  Users History data by ID
+//---------------------------------------------------------------------
+export async function fetchHistoryById(r_hid: number) {
+  noStore()
+  try {
+    const data = await sql<UsershistoryTable>`
+      SELECT *
+      FROM usershistory
+      WHERE r_hid = ${r_hid};
+    `
+    //
+    //  Return rows
+    //
+    const rows = data.rows
+    return rows[0]
   } catch (error) {
     console.error('Database Error:', error)
     throw new Error('Failed to fetch questions.')

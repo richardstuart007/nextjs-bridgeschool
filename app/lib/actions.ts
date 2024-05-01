@@ -7,7 +7,12 @@ import { redirect } from 'next/navigation'
 import { signIn, signOut } from '@/auth'
 import { AuthError } from 'next-auth'
 import bcrypt from 'bcrypt'
-import type { UsersTable, NewUsershistoryTable, NewUserssessionsTable } from '@/app/lib/definitions'
+import type {
+  UsersTable,
+  NewUsershistoryTable,
+  UsershistoryTable,
+  NewUserssessionsTable
+} from '@/app/lib/definitions'
 import { cookies } from 'next/headers'
 //---------------------------------------------------------------------
 //  Validate Register
@@ -121,7 +126,7 @@ export async function registerUser(prevState: StateRegister, formData: FormData)
 //---------------------------------------------------------------------
 //  Write User History
 //---------------------------------------------------------------------
-export async function writeUsershistory(history: NewUsershistoryTable) {
+export async function writeUsershistory(NewUsershistoryTable: NewUsershistoryTable) {
   try {
     //
     //  Deconstruct history
@@ -140,7 +145,7 @@ export async function writeUsershistory(history: NewUsershistoryTable) {
       r_correctpercent,
       r_gid,
       r_sid
-    } = history
+    } = NewUsershistoryTable
 
     const r_qid_string = `{${r_qid.join(',')}}`
     const r_ans_string = `{${r_ans.join(',')}}`
@@ -152,8 +157,8 @@ export async function writeUsershistory(history: NewUsershistoryTable) {
     VALUES (${r_datetime}, ${r_owner},${r_group},${r_questions},${r_qid_string},${r_ans_string},${r_uid},${r_points_string},
       ${r_maxpoints},${r_totalpoints},${r_correctpercent},${r_gid},${r_sid})
     RETURNING *`
-
-    return rows[0]
+    const UsershistoryTable = rows[0]
+    return UsershistoryTable
   } catch (error) {
     console.error('Database Error:', error)
     throw new Error('Failed to write user history.')

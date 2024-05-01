@@ -1,43 +1,46 @@
 'use client'
 
 import { useState } from 'react'
-import { QuestionsTable } from '@/app/lib/definitions'
+import { QuestionsTable, UsershistoryTable } from '@/app/lib/definitions'
 import QuizQuestion from '@/app/ui/quiz-question/quiz-question'
 import QuizBidding from '@/app/ui/quiz-question/quiz-bidding/QuizBidding'
 import QuizHands from '@/app/ui/quiz-question/quiz-hands/QuizHands'
 import { QuizReviewNext, QuizReviewPrevious } from '@/app/ui/quiz-review/buttons'
-import { useRouter } from 'next/navigation'
+import QuizReviewChoice from './quiz-review-choice'
 
 interface QuestionsFormProps {
+  history: UsershistoryTable
   questions: QuestionsTable[]
 }
 //...................................................................................
 //.  Main Line
 //...................................................................................
 export default function QuestionsForm(props: QuestionsFormProps): JSX.Element {
-  //
-  //  Go back
-  //
-  const router = useRouter()
+  const { questions, history } = props
+  const r_ans = history.r_ans
+  const quizTotal = r_ans.length
   //
   //  Define the State variables
   //
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
-  const [question, setQuestion] = useState(props.questions[currentQuestionIndex])
+  const [index, setIndex] = useState(0)
+  const [question, setQuestion] = useState(questions[index])
+  const [ans, setAns] = useState(r_ans[index])
 
-  const handleNextQuestion = () => {
-    const nextQuestionIndex = currentQuestionIndex + 1
-    if (nextQuestionIndex < props.questions.length) {
-      setCurrentQuestionIndex(nextQuestionIndex)
-      setQuestion(props.questions[nextQuestionIndex])
+  const handleNext = () => {
+    const next = index + 1
+    if (next < questions.length) {
+      setIndex(next)
+      setQuestion(questions[next])
+      setAns(r_ans[next])
     }
   }
 
-  const handlePreviousQuestion = () => {
-    if (currentQuestionIndex > 0) {
-      const nextQuestionIndex = currentQuestionIndex - 1
-      setCurrentQuestionIndex(nextQuestionIndex)
-      setQuestion(props.questions[nextQuestionIndex])
+  const handlePrevious = () => {
+    if (index > 0) {
+      const next = index - 1
+      setIndex(next)
+      setQuestion(questions[next])
+      setAns(r_ans[next])
     }
   }
   //...................................................................................
@@ -45,18 +48,14 @@ export default function QuestionsForm(props: QuestionsFormProps): JSX.Element {
   //...................................................................................
   return (
     <>
-      <QuizQuestion question={question} quizQuestion={1} quizTotal={2} />
+      <QuizQuestion question={question} quizQuestion={index + 1} quizTotal={quizTotal} />
       <QuizBidding question={question} />
       <QuizHands question={question} />
+      <QuizReviewChoice question={question} correctAnswer={0} selectedAnswer={ans} />
 
       <div className='flex bg-gray-50 px-3 h-5'>
-        {currentQuestionIndex > 0 ? (
-          <QuizReviewPrevious onPreviousQuestion={handlePreviousQuestion} />
-        ) : null}
-
-        {currentQuestionIndex + 1 < props.questions.length ? (
-          <QuizReviewNext onNextQuestion={handleNextQuestion} />
-        ) : null}
+        {index > 0 ? <QuizReviewPrevious onPreviousQuestion={handlePrevious} /> : null}
+        {index + 1 < questions.length ? <QuizReviewNext onNextQuestion={handleNext} /> : null}
       </div>
     </>
   )
