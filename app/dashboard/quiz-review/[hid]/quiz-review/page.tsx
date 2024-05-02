@@ -9,17 +9,16 @@ export const metadata: Metadata = {
   title: 'Quiz Review'
 }
 
-export default async function Page({ params }: { params: { r_hid: number } }) {
+export default async function Page({ params }: { params: { hid: number } }) {
   //
   //  Variables used in the return statement
   //
-  const r_hid: number = params.r_hid
-
+  const hid: number = params.hid
   try {
     //
     //  Get History
     //
-    const history: UsershistoryTable = await fetchHistoryById(r_hid)
+    const history: UsershistoryTable = await fetchHistoryById(hid)
     if (!history) {
       notFound()
     }
@@ -39,7 +38,7 @@ export default async function Page({ params }: { params: { r_hid: number } }) {
             { label: 'Library', href: '/dashboard/library' },
             {
               label: 'Quiz-Review',
-              href: `/dashboard/quiz-review/${r_hid}/quiz-review`,
+              href: `/dashboard/quiz-review/${hid}/quiz-review`,
               active: true
             }
           ]}
@@ -48,7 +47,7 @@ export default async function Page({ params }: { params: { r_hid: number } }) {
       </>
     )
   } catch (error) {
-    console.error('An error occurred while fetching data:', error)
-    return <div>An error occurred while fetching data.</div>
+    console.error('An error occurred while fetching history data:', error)
+    return <div>An error occurred while fetching history data.</div>
   }
 }

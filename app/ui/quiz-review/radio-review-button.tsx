@@ -24,7 +24,7 @@ export default function RadioGroup(props: RadioGroupProps): JSX.Element {
               <div className='absolute inset-0 flex items-center justify-center'>
                 {selectedOption === option.value && selectedOption !== correctOption ? (
                   <FaceFrownIcon className='w-5 md:w-6 text-red-500' />
-                ) : correctOption === option.value ? (
+                ) : correctOption === option.value && selectedOption === correctOption ? (
                   <FaceSmileIcon className='w-5 md:w-6 text-green-500' />
                 ) : null}
               </div>

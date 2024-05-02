@@ -1,14 +1,14 @@
 import Pagination from '@/app/ui/general/pagination'
 import Search from '@/app/ui/search'
-import Table from '@/app/ui/library/table'
+import Table from '@/app/ui/history/table'
 import { lusitana } from '@/app/ui/fonts'
 import { LibraryTableSkeleton } from '@/app/ui/skeletons'
 import { Suspense } from 'react'
-import { fetchLibraryPages } from '@/app/lib/data'
+import { fetchHistoryPages } from '@/app/lib/data'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Library'
+  title: 'History'
 }
 
 export default async function Page({
@@ -21,14 +21,14 @@ export default async function Page({
 }) {
   const query = searchParams?.query || ''
   const currentPage = Number(searchParams?.page) || 1
-  const totalPages = await fetchLibraryPages(query)
+  const totalPages = await fetchHistoryPages(query)
   return (
     <div className='w-full'>
       <div className='flex w-full items-center justify-between'>
-        <h1 className={`${lusitana.className} text-2xl`}>Library</h1>
+        <h1 className={`${lusitana.className} text-2xl`}>History</h1>
       </div>
       <div className='mt-4 flex items-center justify-between gap-2 md:mt-8'>
-        <Search placeholder='Search library...' />
+        <Search placeholder='Search history...' />
       </div>
       <Suspense key={query + currentPage} fallback={<LibraryTableSkeleton />}>
         <Table query={query} currentPage={currentPage} />

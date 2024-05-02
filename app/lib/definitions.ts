@@ -61,6 +61,17 @@ export type UsershistoryTable = {
 
 export type NewUsershistoryTable = Omit<UsershistoryTable, 'r_hid'>
 
+export type HistoryFormTable = {
+  r_hid: number
+  r_group: string
+  r_totalpoints: number
+  r_maxpoints: number
+  r_correctpercent: number
+  r_questions: number
+  r_gid: number
+  ogtitle: string
+}
+
 export type UserssessionsTable = {
   usid: number
   usdatetime: DateTime

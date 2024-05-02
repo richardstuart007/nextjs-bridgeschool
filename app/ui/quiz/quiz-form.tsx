@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { QuestionsTable, UsershistoryTable } from '@/app/lib/definitions'
+import { QuestionsTable } from '@/app/lib/definitions'
 import QuizQuestion from '@/app/ui/quiz-question/quiz-question'
 import QuizBidding from '@/app/ui/quiz-question/quiz-bidding/QuizBidding'
 import QuizHands from '@/app/ui/quiz-question/quiz-hands/QuizHands'
@@ -23,6 +23,7 @@ export default function QuestionsForm(props: QuestionsFormProps): JSX.Element {
   //  Deconstruct props
   //
   const questions = props.questions
+  const quizTotal = questions.length
   //
   //  Go back
   //
@@ -121,7 +122,7 @@ export default function QuestionsForm(props: QuestionsFormProps): JSX.Element {
   //...................................................................................
   return (
     <>
-      <QuizQuestion question={question} quizQuestion={1} quizTotal={2} />
+      <QuizQuestion question={question} quizQuestion={1} quizTotal={quizTotal} />
       <QuizBidding question={question} />
       <QuizHands question={question} />
       <QuizChoice question={question} setAnswer={setAnswer} setShowSubmit={setShowSubmit} />
