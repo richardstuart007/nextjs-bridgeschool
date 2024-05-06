@@ -2,11 +2,11 @@ import { sql, db } from '@vercel/postgres'
 import { unstable_noStore as noStore } from 'next/cache'
 import {
   LibraryTable,
-  LibraryFormTable,
+  LibraryGroupTable,
   QuestionsTable,
   UsersTable,
   UsershistoryTable,
-  HistoryFormTable
+  HistoryGroupTable
 } from './definitions'
 const LIBRARY_ITEMS_PER_PAGE = 10
 const HISTORY_ITEMS_PER_PAGE = 10
@@ -42,18 +42,7 @@ export async function fetchFilteredLibrary(query: string, currentPage: number) {
   const offset = (currentPage - 1) * LIBRARY_ITEMS_PER_PAGE
   try {
     let sqlWhere = buildWhere_Library(query)
-    const sqlQuery = `SELECT
-      lrlid,
-      lrref,
-      lrdesc,
-      lrwho,
-      lrtype,
-      lrowner,
-      lrgroup,
-      lrlink,
-      ogcntquestions,
-      ogcntlibrary,
-      lrgid
+    const sqlQuery = `SELECT *
     FROM library
     LEFT JOIN ownergroup ON lrgid = oggid
      ${sqlWhere}
@@ -61,7 +50,7 @@ export async function fetchFilteredLibrary(query: string, currentPage: number) {
       LIMIT ${LIBRARY_ITEMS_PER_PAGE} OFFSET ${offset}
      `
     const client = await db.connect()
-    const data = await client.query<LibraryFormTable>(sqlQuery)
+    const data = await client.query<LibraryGroupTable>(sqlQuery)
     client.release()
     const rows = data.rows
     return rows
@@ -255,15 +244,7 @@ export async function fetchFilteredHistory(query: string, currentPage: number) {
   try {
     let sqlWhere = buildWhere_History(query)
     const sqlQuery = `
-    SELECT
-      r_hid,
-      r_group,
-      r_totalpoints,
-      r_maxpoints,
-      r_correctpercent,
-      r_questions,
-      r_gid,
-      ogtitle
+    SELECT *
     FROM usershistory
     LEFT JOIN ownergroup ON r_gid = oggid
      ${sqlWhere}
@@ -271,7 +252,7 @@ export async function fetchFilteredHistory(query: string, currentPage: number) {
       LIMIT ${HISTORY_ITEMS_PER_PAGE} OFFSET ${offset}
      `
     const client = await db.connect()
-    const data = await client.query<HistoryFormTable>(sqlQuery)
+    const data = await client.query<HistoryGroupTable>(sqlQuery)
     client.release()
     const rows = data.rows
     return rows
@@ -345,11 +326,11 @@ export function buildWhere_History(query: string) {
   //
   if (hid !== 0) whereClause += `r_hid = ${hid} AND `
   if (uid !== 0) whereClause += `r_uid = ${uid} AND `
-  if (owner !== '') whereClause += `lrowner ILIKE '%${owner}%' AND `
-  if (group !== '') whereClause += `lrgroup ILIKE '%${group}%' AND `
+  if (owner !== '') whereClause += `r_owner ILIKE '%${owner}%' AND `
+  if (group !== '') whereClause += `r_group ILIKE '%${group}%' AND `
   if (cnt !== 0) whereClause += `ogcntquestions >= ${cnt} AND `
   if (correct !== 0) whereClause += `r_correctpercent >= ${correct} AND `
-  if (gid !== 0) whereClause += `lrgid::text ILIKE '%${gid}%' AND `
+  if (gid !== 0) whereClause += `r_gid::text ILIKE '%${gid}%' AND `
   //
   // Remove the trailing 'AND' if there are conditions
   //

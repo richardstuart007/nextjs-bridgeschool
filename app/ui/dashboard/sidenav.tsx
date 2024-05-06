@@ -6,8 +6,8 @@ import { signOut } from '@/auth'
 import { deleteCookie } from '@/app/lib/actions'
 export default function SideNav() {
   return (
-    <div className='flex h-full flex-col px-3 py-4 md:px-2'>
-      <div className='mb-2 flex h-20 items-end justify-start rounded-md bg-blue-600 p-4 md:h-40'>
+    <div className='flex h-full flex-col px-3 py-2 md:px-2'>
+      <div className='mb-2 flex h-20 items-end justify-start rounded-md bg-blue-600 p-2 md:h-40'>
         <div className='w-32 text-white md:w-48'>
           <SchoolLogo />
         </div>

@@ -7,12 +7,7 @@ import { redirect } from 'next/navigation'
 import { signIn, signOut } from '@/auth'
 import { AuthError } from 'next-auth'
 import bcrypt from 'bcrypt'
-import type {
-  UsersTable,
-  NewUsershistoryTable,
-  UsershistoryTable,
-  NewUserssessionsTable
-} from '@/app/lib/definitions'
+import type { UsersTable, NewUsershistoryTable, NewUserssessionsTable } from '@/app/lib/definitions'
 import { cookies } from 'next/headers'
 //---------------------------------------------------------------------
 //  Validate Register
@@ -93,7 +88,7 @@ export async function registerUser(prevState: StateRegister, formData: FormData)
   const u_email = email
   const u_hash = await bcrypt.hash(password, 10)
   const u_user = email
-  const u_name = email
+  const u_name = email.split('@')[0]
   const u_joined = new Date().toISOString().slice(0, 19).replace('T', ' ')
   const u_fedid = 'dummy'
   const u_admin = false

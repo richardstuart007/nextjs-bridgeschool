@@ -12,7 +12,7 @@ export type LibraryTable = {
   lrgid: number
 }
 
-export type LibraryFormTable = {
+export type LibraryGroupTable = {
   lrlid: number
   lrref: string
   lrdesc: string
@@ -21,9 +21,13 @@ export type LibraryFormTable = {
   lrtype: string
   lrowner: string
   lrgroup: string
+  lrgid: number
+  ogowner: string
+  oggroup: string
+  ogtitle: string
   ogcntquestions: number
   ogcntlibrary: number
-  lrgid: number
+  oggid: number
 }
 
 export type QuestionsTable = {
@@ -61,15 +65,36 @@ export type UsershistoryTable = {
 
 export type NewUsershistoryTable = Omit<UsershistoryTable, 'r_hid'>
 
-export type HistoryFormTable = {
+export type HistoryGroupTable = {
   r_hid: number
+  r_datetime: DateTime
+  r_owner: string
   r_group: string
-  r_totalpoints: number
-  r_maxpoints: number
-  r_correctpercent: number
   r_questions: number
+  r_qid: number[]
+  r_ans: number[]
+  r_uid: number
+  r_points: number[]
+  r_maxpoints: number
+  r_totalpoints: number
+  r_correctpercent: number
   r_gid: number
+  r_sid: number
+  ogowner: string
+  oggroup: string
   ogtitle: string
+  ogcntquestions: number
+  ogcntlibrary: number
+  oggid: number
+}
+
+export type OwnergroupTable = {
+  ogowner: string
+  oggroup: string
+  ogtitle: string
+  ogcntquestions: number
+  ogcntlibrary: number
+  oggid: number
 }
 
 export type UserssessionsTable = {

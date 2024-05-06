@@ -83,7 +83,9 @@ export default function QuestionsForm(props: QuestionsFormProps): JSX.Element {
       //
       r_maxpoints += Math.max(...question.qpoints)
     })
-
+    //
+    //  Calculate the correct percentage
+    //
     if (r_maxpoints !== 0) {
       r_correctpercent = Math.ceil((r_totalpoints * 100) / r_maxpoints)
     }
@@ -102,7 +104,7 @@ export default function QuestionsForm(props: QuestionsFormProps): JSX.Element {
       r_questions: answer.length,
       r_qid: r_qid,
       r_ans: answer,
-      r_uid: userSession.usid,
+      r_uid: userSession.u_uid,
       r_points: r_points,
       r_maxpoints: r_maxpoints,
       r_totalpoints: r_totalpoints,

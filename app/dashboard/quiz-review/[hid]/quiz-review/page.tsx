@@ -35,7 +35,7 @@ export default async function Page({ params }: { params: { hid: number } }) {
       <>
         <Breadcrumbs
           breadcrumbs={[
-            { label: 'Library', href: '/dashboard/library' },
+            { label: 'History', href: '/dashboard/history' },
             {
               label: 'Quiz-Review',
               href: `/dashboard/quiz-review/${hid}/quiz-review`,
