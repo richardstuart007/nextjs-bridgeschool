@@ -148,3 +148,21 @@ export type BSsessionTable = {
   u_dev: boolean
   usid: number
 } | null
+
+export interface UsershistoryTopResults {
+  r_uid: number
+  u_name: string
+  record_count: number
+  total_points: number
+  total_maxpoints: number
+  percentage: number
+}
+
+export interface UsershistoryRecentResults {
+  r_hid: number
+  r_uid: number
+  u_name: string
+  r_totalpoints: number
+  r_maxpoints: number
+  r_correctpercent: number
+}
