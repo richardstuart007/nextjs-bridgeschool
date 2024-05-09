@@ -425,9 +425,9 @@ export async function fetchTopResultsData() {
   }
 }
 //---------------------------------------------------------------------
-//  Top results data
+//  Recent result data last
 //---------------------------------------------------------------------
-export async function fetchRecentResultsData() {
+export async function fetchRecentResultsData1() {
   noStore()
   try {
     const data = await sql<UsershistoryRecentResults>`
@@ -442,6 +442,37 @@ FROM (
 WHERE rn = 1
 ORDER BY r_hid DESC
 LIMIT 5;
+    `
+    //
+    //  Return rows
+    //
+    const rows = data.rows
+    return rows
+  } catch (error) {
+    console.error('Database Error:', error)
+    throw new Error('Failed to fetch recent results.')
+  }
+}
+//---------------------------------------------------------------------
+//  Recent results data
+//---------------------------------------------------------------------
+export async function fetchRecentResultsData5(userIds: number[]) {
+  noStore()
+  try {
+    const [id1, id2, id3, id4, id5] = userIds
+
+    const data = await sql<UsershistoryRecentResults>`
+SELECT r_hid, r_uid, u_name, r_totalpoints, r_maxpoints, r_correctpercent
+FROM (
+    SELECT
+        r_hid, r_uid, u_name, r_totalpoints, r_maxpoints, r_correctpercent,
+        ROW_NUMBER() OVER (PARTITION BY r_uid ORDER BY r_hid DESC) AS rn
+    FROM usershistory
+    JOIN users ON r_uid = u_uid
+       WHERE r_uid IN (${id1}, ${id2}, ${id3}, ${id4}, ${id5})
+) AS ranked
+WHERE rn <= 5
+ORDER BY r_uid;
     `
     //
     //  Return rows
