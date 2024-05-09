@@ -28,7 +28,7 @@ export default async function Page({
         <h1 className={`${lusitana.className} text-2xl`}>History</h1>
       </div>
       <div className='mt-4 flex items-center justify-between gap-2 md:mt-8'>
-        <Search placeholder='Search history...' />
+        <Search placeholder='hid:123 uid:45 owner:richard  group:leb  gid:123 correct: cnt:' />
       </div>
       <Suspense key={query + currentPage} fallback={<LibraryTableSkeleton />}>
         <Table query={query} currentPage={currentPage} />

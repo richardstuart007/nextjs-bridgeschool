@@ -35,7 +35,7 @@ export default function QuizReviewChoice(props: QuizReviewChoiceProps): JSX.Elem
     const newOptions = question.qans.map((option, index) => ({
       id: index.toString(),
       label: option.toString(),
-      value: question.qans.indexOf(option)
+      value: question.qans.indexOf(option) + 1
     }))
 
     setAnswers(newOptions)

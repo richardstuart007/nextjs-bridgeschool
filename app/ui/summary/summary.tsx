@@ -11,7 +11,7 @@ import { UsershistoryTopResults, UsershistoryRecentResults } from '@/app/lib/def
 interface Datasets {
   label: string
   data: number[]
-  backgroundColor: string
+  backgroundColor?: string
 }
 interface GraphStructure {
   labels: string[]
@@ -54,8 +54,7 @@ export default async function SummaryGraphs() {
       datasets: [
         {
           label: 'Percentage',
-          data: percentages,
-          backgroundColor: 'rgba(75, 192, 192, 0.6)'
+          data: percentages
         }
       ]
     }
@@ -85,14 +84,12 @@ export default async function SummaryGraphs() {
       labels: names,
       datasets: [
         {
-          label: 'Latest Percentage',
-          data: individualPercentages,
-          backgroundColor: 'rgba(75, 192, 192, 0.6)'
+          label: 'Latest %',
+          data: individualPercentages
         },
         {
-          label: 'Average Percentage',
-          data: averagePercentages,
-          backgroundColor: 'rgba(192, 75, 192, 0.6)'
+          label: '5-Average %',
+          data: averagePercentages
         }
       ]
     }
@@ -165,11 +162,11 @@ export default async function SummaryGraphs() {
     <div className='flex flex-col gap-10'>
       <div className='max-w-full bg-gray-100 md:max-w-2xl   '>
         <h2>Top Results</h2>
-        <StackedBarChart StackedGraphData={TopGraphData} Stacked={false} />
+        <StackedBarChart StackedGraphData={TopGraphData} />
       </div>
       <div className='max-w-full bg-gray-100 md:max-w-2xl '>
         <h2>Recent Results</h2>
-        <StackedBarChart StackedGraphData={RecentGraphData} Stacked={false} />
+        <StackedBarChart StackedGraphData={RecentGraphData} />
       </div>
     </div>
   )

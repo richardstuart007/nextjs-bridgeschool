@@ -14,25 +14,13 @@ import {
 //
 ChartJS.register(BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend)
 //
-//  Simple Graph Interfaces
-//
-interface SimpleGraphData_INT {
-  label: string
-  data: number
-}
-interface SimpleGraphOptions_INT {
-  graphLabel?: string
-  backgroundColor?: string
-}
-//
-//  Stacked Graph Interfaces
+//  Graph Interfaces
 //
 interface Datasets {
   label: string
   data: number[]
-  backgroundColor: string
+  backgroundColor?: string
 }
-
 interface StackDataStructure {
   labels: string[]
   datasets: Datasets[]
@@ -42,23 +30,54 @@ interface StackDataStructure {
 //-------------------------------------------------------------------------------
 export function StackedBarChart({
   StackedGraphData,
-  Stacked
+  Stacked = false,
+  GridDisplayX = false,
+  GridDisplayY = false
 }: {
   StackedGraphData: StackDataStructure
-  Stacked: boolean
+  Stacked?: boolean
+  GridDisplayX?: boolean
+  GridDisplayY?: boolean
 }) {
+  //
+  // Default background colors for each dataset
+  //
+  const defaultBackgroundColors = [
+    'rgba(75, 192, 192, 0.6)',
+    'rgba(192, 75, 192, 0.6)',
+    'rgba(255, 159, 64, 0.6)',
+    'rgba(54, 162, 235, 0.6)',
+    'rgba(153, 102, 255, 0.6)'
+  ]
+  //
+  // Set the background color to default if not provided in the dataset
+  //
+  const datasetsWithDefaultColors = StackedGraphData.datasets.map((dataset, index) => ({
+    ...dataset,
+    backgroundColor: dataset.backgroundColor || defaultBackgroundColors[index]
+  }))
+  //
+  //  Modify the graph data with the default colors
+  //
+  const modifiedGraphData = {
+    ...StackedGraphData,
+    datasets: datasetsWithDefaultColors
+  }
+  //
+  //  Options
+  //
   const options = {
     scales: {
       x: {
         stacked: Stacked,
         grid: {
-          display: false // Remove x-axis gridlines
+          display: GridDisplayX // Remove x-axis gridlines
         }
       },
       y: {
         stacked: Stacked,
         grid: {
-          display: false // Remove y-axis gridlines
+          display: GridDisplayY // Remove y-axis gridlines
         }
       }
     }
@@ -66,5 +85,5 @@ export function StackedBarChart({
   //
   //  Return the Bar component
   //
-  return <Bar data={StackedGraphData} options={options} />
+  return <Bar data={modifiedGraphData} options={options} />
 }

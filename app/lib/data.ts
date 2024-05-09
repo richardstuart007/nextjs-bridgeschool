@@ -92,9 +92,18 @@ export function buildWhere_Library(query: string) {
   parts.forEach(part => {
     if (part.includes(':')) {
       const [key, value] = part.split(':')
+      //
+      //  Check for empty values
+      //
+      if (value === '') return
+      //
+      // Process each part
+      //
       switch (key) {
         case 'lid':
-          lid = parseInt(value, 10)
+          if (!isNaN(Number(value))) {
+            lid = parseInt(value, 10)
+          }
           break
         case 'ref':
           ref = value
@@ -115,11 +124,14 @@ export function buildWhere_Library(query: string) {
           group = value
           break
         case 'gid':
-          gid = parseInt(value, 10)
+          if (!isNaN(Number(value))) {
+            gid = parseInt(value, 10)
+          }
           break
         case 'cnt':
-          cnt = parseInt(value, 10)
-          cnt = isNaN(cnt) ? 0 : cnt
+          if (!isNaN(Number(value))) {
+            cnt = parseInt(value, 10)
+          }
           break
         default:
           desc = value
@@ -127,7 +139,9 @@ export function buildWhere_Library(query: string) {
       }
     } else {
       // Default to 'desc' if no key is provided
-      desc = part
+      if (desc === '') {
+        desc = part
+      }
     }
   })
   //
@@ -249,6 +263,7 @@ export async function fetchFilteredHistory(query: string, currentPage: number) {
     SELECT *
     FROM usershistory
     LEFT JOIN ownergroup ON r_gid = oggid
+    LEFT JOIN users ON r_uid = u_uid
      ${sqlWhere}
       ORDER BY r_hid DESC
       LIMIT ${HISTORY_ITEMS_PER_PAGE} OFFSET ${offset}
@@ -292,15 +307,28 @@ export function buildWhere_History(query: string) {
   parts.forEach(part => {
     if (part.includes(':')) {
       const [key, value] = part.split(':')
+      //
+      //  Check for empty values
+      //
+      if (value === '') return
+      //
+      // Process each part
+      //
       switch (key) {
         case 'hid':
-          hid = parseInt(value, 10)
+          if (!isNaN(Number(value))) {
+            hid = parseInt(value, 10)
+          }
           break
         case 'uid':
-          uid = parseInt(value, 10)
+          if (!isNaN(Number(value))) {
+            uid = parseInt(value, 10)
+          }
           break
         case 'correct':
-          correct = parseInt(value, 10)
+          if (!isNaN(Number(value))) {
+            correct = parseInt(value, 10)
+          }
           break
         case 'owner':
           owner = value
@@ -309,18 +337,24 @@ export function buildWhere_History(query: string) {
           group = value
           break
         case 'gid':
-          gid = parseInt(value, 10)
+          if (!isNaN(Number(value))) {
+            gid = parseInt(value, 10)
+          }
           break
         case 'cnt':
-          cnt = parseInt(value, 10)
-          cnt = isNaN(cnt) ? 0 : cnt
+          if (!isNaN(Number(value))) {
+            cnt = parseInt(value, 10)
+          }
           break
         default:
           group = value
           break
       }
     } else {
-      group = part
+      // Default to 'group' if no key is provided
+      if (group === '') {
+        group = part
+      }
     }
   })
   //
@@ -332,7 +366,7 @@ export function buildWhere_History(query: string) {
   if (group !== '') whereClause += `r_group ILIKE '%${group}%' AND `
   if (cnt !== 0) whereClause += `ogcntquestions >= ${cnt} AND `
   if (correct !== 0) whereClause += `r_correctpercent >= ${correct} AND `
-  if (gid !== 0) whereClause += `r_gid::text ILIKE '%${gid}%' AND `
+  if (gid !== 0) whereClause += `r_gid = ${gid} AND `
   //
   // Remove the trailing 'AND' if there are conditions
   //

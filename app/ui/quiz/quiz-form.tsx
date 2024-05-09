@@ -31,17 +31,17 @@ export default function QuestionsForm(props: QuestionsFormProps): JSX.Element {
   //
   //  Define the State variables
   //
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
-  const [question, setQuestion] = useState(questions[currentQuestionIndex])
+  const [index, setIndex] = useState(0)
+  const [question, setQuestion] = useState(questions[index])
   const [answer, setAnswer] = useState<number[]>([])
   const [showSubmit, setShowSubmit] = useState(false)
   //...................................................................................
   //.  Next Question
   //...................................................................................
   function handleNextQuestion() {
-    const nextQuestionIndex = currentQuestionIndex + 1
+    const nextQuestionIndex = index + 1
     if (nextQuestionIndex < questions.length) {
-      setCurrentQuestionIndex(nextQuestionIndex)
+      setIndex(nextQuestionIndex)
       setQuestion(questions[nextQuestionIndex])
       return
     }
@@ -124,7 +124,7 @@ export default function QuestionsForm(props: QuestionsFormProps): JSX.Element {
   //...................................................................................
   return (
     <>
-      <QuizQuestion question={question} quizQuestion={1} quizTotal={quizTotal} />
+      <QuizQuestion question={question} quizQuestion={index + 1} quizTotal={quizTotal} />
       <QuizBidding question={question} />
       <QuizHands question={question} />
       <QuizChoice question={question} setAnswer={setAnswer} setShowSubmit={setShowSubmit} />

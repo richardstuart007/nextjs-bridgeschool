@@ -85,7 +85,7 @@ export type HistoryGroupTable = {
   ogtitle: string
   ogcntquestions: number
   ogcntlibrary: number
-  oggid: number
+  u_name: string
 }
 
 export type OwnergroupTable = {
