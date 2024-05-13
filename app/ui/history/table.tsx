@@ -8,6 +8,7 @@ export default async function HistoryTable({
   query: string
   currentPage: number
 }) {
+  // await new Promise(resolve => setTimeout(resolve, 23000))
   const history = await fetchFilteredHistory(query, currentPage)
 
   return (
@@ -50,7 +51,6 @@ export default async function HistoryTable({
                 <th scope='col' className='px-2 py-2 font-medium text-centre'>
                   Review
                 </th>
-
                 <th scope='col' className='px-2 py-2 font-medium text-centre'>
                   Quiz
                 </th>

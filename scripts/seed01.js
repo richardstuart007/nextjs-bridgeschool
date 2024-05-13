@@ -260,8 +260,6 @@ async function create_users(client) {
     u_joined timestamp without time zone NOT NULL,
     u_fedid character varying(30) ,
     u_admin boolean,
-    u_showprogress boolean,
-    u_showscore boolean,
     u_sortquestions boolean,
     u_skipcorrect boolean,
     u_dftmaxquestions integer,

@@ -1,10 +1,15 @@
+//------------------------------------------------------
+//  Format currency
+//------------------------------------------------------
 export const formatCurrency = (amount: number) => {
   return (amount / 100).toLocaleString('en-US', {
     style: 'currency',
     currency: 'USD'
   })
 }
-
+//------------------------------------------------------
+//  Format date to local
+//------------------------------------------------------
 export const formatDateToLocal = (dateStr: string, locale: string = 'en-US') => {
   const date = new Date(dateStr)
   const options: Intl.DateTimeFormatOptions = {
@@ -15,7 +20,9 @@ export const formatDateToLocal = (dateStr: string, locale: string = 'en-US') => 
   const formatter = new Intl.DateTimeFormat(locale, options)
   return formatter.format(date)
 }
-
+//------------------------------------------------------
+//  pagination
+//------------------------------------------------------
 export const generatePagination = (currentPage: number, totalPages: number) => {
   // If the total number of pages is 7 or less,
   // display all pages without any ellipsis.

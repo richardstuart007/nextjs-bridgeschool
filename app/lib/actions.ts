@@ -92,8 +92,6 @@ export async function registerUser(prevState: StateRegister, formData: FormData)
   const u_joined = new Date().toISOString().slice(0, 19).replace('T', ' ')
   const u_fedid = 'dummy'
   const u_admin = false
-  const u_showprogress = true
-  const u_showscore = true
   const u_sortquestions = true
   const u_skipcorrect = true
   const u_dftmaxquestions = 20
@@ -104,8 +102,8 @@ export async function registerUser(prevState: StateRegister, formData: FormData)
   //
   try {
     await sql`
-    INSERT INTO users (u_email, u_hash, u_user, u_name, u_joined, u_fedid, u_admin, u_showprogress, u_showscore, u_sortquestions, u_skipcorrect, u_dftmaxquestions, u_fedcountry, u_dev)
-    VALUES (${u_email}, ${u_hash}, ${u_user}, ${u_name}, ${u_joined}, ${u_fedid}, ${u_admin}, ${u_showprogress}, ${u_showscore}, ${u_sortquestions}, ${u_skipcorrect}, ${u_dftmaxquestions}, ${u_fedcountry}, ${u_dev})
+    INSERT INTO users (u_email, u_hash, u_user, u_name, u_joined, u_fedid, u_admin, u_sortquestions, u_skipcorrect, u_dftmaxquestions, u_fedcountry, u_dev)
+    VALUES (${u_email}, ${u_hash}, ${u_user}, ${u_name}, ${u_joined}, ${u_fedid}, ${u_admin}, ${u_sortquestions}, ${u_skipcorrect}, ${u_dftmaxquestions}, ${u_fedcountry}, ${u_dev})
   `
   } catch (error) {
     return {

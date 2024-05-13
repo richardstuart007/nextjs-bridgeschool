@@ -122,8 +122,6 @@ export type UsersTable = {
   u_joined: DateTime
   u_fedid: string
   u_admin: boolean
-  u_showprogress: boolean
-  u_showscore: boolean
   u_sortquestions: boolean
   u_skipcorrect: boolean
   u_dftmaxquestions: number
@@ -139,8 +137,6 @@ export type BSsessionTable = {
   u_joined: DateTime
   u_fedid: string
   u_admin: boolean
-  u_showprogress: boolean
-  u_showscore: boolean
   u_sortquestions: boolean
   u_skipcorrect: boolean
   u_dftmaxquestions: number

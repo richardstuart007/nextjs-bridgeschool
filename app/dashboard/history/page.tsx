@@ -2,7 +2,7 @@ import Pagination from '@/app/ui/general/pagination'
 import Search from '@/app/ui/search'
 import Table from '@/app/ui/history/table'
 import { lusitana } from '@/app/ui/fonts'
-import { LibraryTableSkeleton } from '@/app/ui/skeletons'
+import { TableSkeleton } from '@/app/ui/history/skeleton'
 import { Suspense } from 'react'
 import { fetchHistoryPages } from '@/app/lib/data'
 import { Metadata } from 'next'
@@ -30,7 +30,7 @@ export default async function Page({
       <div className='mt-4 flex items-center justify-between gap-2 md:mt-8'>
         <Search placeholder='hid:123 uid:45 owner:richard  group:leb  gid:123 correct: cnt:' />
       </div>
-      <Suspense key={query + currentPage} fallback={<LibraryTableSkeleton />}>
+      <Suspense key={query + currentPage} fallback={<TableSkeleton />}>
         <Table query={query} currentPage={currentPage} />
       </Suspense>
       <div className='mt-5 flex w-full justify-center'>
