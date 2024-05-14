@@ -9,21 +9,6 @@ import { AuthError } from 'next-auth'
 import bcrypt from 'bcrypt'
 import type { UsersTable, NewUsershistoryTable, NewUserssessionsTable } from '@/app/lib/definitions'
 import { cookies } from 'next/headers'
-//---------------------------------------------------------------------
-//  Validate Register
-//---------------------------------------------------------------------
-const FormSchemaRegister = z.object({
-  email: z.string().email().toLowerCase(),
-  password: z.string()
-})
-
-export type StateRegister = {
-  errors?: {
-    email?: string[]
-    password?: string[]
-  }
-  message?: string | null
-}
 // ----------------------------------------------------------------------
 //  Authenticate Login
 // ----------------------------------------------------------------------
@@ -47,6 +32,19 @@ export async function authenticate(prevState: string | undefined, formData: Form
 // ----------------------------------------------------------------------
 //  Register
 // ----------------------------------------------------------------------
+const FormSchemaRegister = z.object({
+  email: z.string().email().toLowerCase(),
+  password: z.string()
+})
+
+export type StateRegister = {
+  errors?: {
+    email?: string[]
+    password?: string[]
+  }
+  message?: string | null
+}
+
 const Register = FormSchemaRegister
 
 export async function registerUser(prevState: StateRegister, formData: FormData) {
@@ -82,13 +80,13 @@ export async function registerUser(prevState: StateRegister, formData: FormData)
       message: 'Database Error: Failed to check User.'
     }
   }
-  //---------------------------------------------------------------------
+  //
   //  Write Users
-  //---------------------------------------------------------------------
+  //
   const u_email = email
   const u_hash = await bcrypt.hash(password, 10)
   const u_user = email
-  const u_name = email.split('@')[0]
+  const fedid = email.split('@')[0]
   const u_joined = new Date().toISOString().slice(0, 19).replace('T', ' ')
   const u_fedid = 'dummy'
   const u_admin = false
@@ -102,8 +100,8 @@ export async function registerUser(prevState: StateRegister, formData: FormData)
   //
   try {
     await sql`
-    INSERT INTO users (u_email, u_hash, u_user, u_name, u_joined, u_fedid, u_admin, u_sortquestions, u_skipcorrect, u_dftmaxquestions, u_fedcountry, u_dev)
-    VALUES (${u_email}, ${u_hash}, ${u_user}, ${u_name}, ${u_joined}, ${u_fedid}, ${u_admin}, ${u_sortquestions}, ${u_skipcorrect}, ${u_dftmaxquestions}, ${u_fedcountry}, ${u_dev})
+    INSERT INTO users (u_email, u_hash, u_user, fedid, u_joined, u_fedid, u_admin, u_sortquestions, u_skipcorrect, u_dftmaxquestions, u_fedcountry, u_dev)
+    VALUES (${u_email}, ${u_hash}, ${u_user}, ${fedid}, ${u_joined}, ${u_fedid}, ${u_admin}, ${u_sortquestions}, ${u_skipcorrect}, ${u_dftmaxquestions}, ${u_fedcountry}, ${u_dev})
   `
   } catch (error) {
     return {
@@ -157,9 +155,11 @@ export async function writeUsershistory(NewUsershistoryTable: NewUsershistoryTab
     throw new Error('Failed to write user history.')
   }
 }
+
 //---------------------------------------------------------------------
 //  Write User Sessions
 //---------------------------------------------------------------------
+
 export async function writeUserssessions(usersessions: NewUserssessionsTable) {
   try {
     const { rows } = await sql`
@@ -237,4 +237,73 @@ export async function getCookieInfo(cookieName: string) {
   } catch (error) {
     throw new Error('Failed to get cookie info.')
   }
+}
+// ----------------------------------------------------------------------
+//  Update User Preferences
+// ----------------------------------------------------------------------
+const FormSchemaPreferences = z.object({
+  u_uid: z.string(),
+  u_name: z.string(),
+  u_fedid: z.string(),
+  u_fedcountry: z.string(),
+  u_dftmaxquestions: z.number().min(5).max(100)
+})
+
+export type StatePreferences = {
+  errors?: {
+    u_uid?: string[]
+    u_name?: string[]
+    u_fedid?: string[]
+    u_fedcountry?: string[]
+    u_dftmaxquestions?: string[]
+  }
+  message?: string | null
+}
+
+const Preferences = FormSchemaPreferences
+
+export async function preferencesUser(prevState: StatePreferences, formData: FormData) {
+  const validatedFields = Preferences.safeParse({
+    u_uid: formData.get('u_uid'),
+    u_name: formData.get('u_name'),
+    u_fedid: formData.get('u_fedid'),
+    u_fedcountry: formData.get('u_fedcountry'),
+    u_dftmaxquestions: Number(formData.get('u_dftmaxquestions'))
+  })
+  //
+  // If form validation fails, return errors early. Otherwise, continue.
+  //
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Update User.'
+    }
+  }
+  //
+  // Unpack form data
+  //
+  const { u_uid, u_name, u_fedid, u_fedcountry, u_dftmaxquestions } = validatedFields.data
+  //
+  // Update data into the database
+  //
+  try {
+    await sql`
+    UPDATE users
+    SET
+      u_name = ${u_name},
+      u_fedid = ${u_fedid},
+       u_fedcountry = ${u_fedcountry},
+      u_dftmaxquestions = ${u_dftmaxquestions}
+    WHERE u_uid = ${u_uid}
+    `
+  } catch (error) {
+    return {
+      message: 'Database Error: Failed to Update User.'
+    }
+  }
+  //
+  // Revalidate the cache and redirect the user.
+  //
+  revalidatePath('/login')
+  redirect('/login')
 }

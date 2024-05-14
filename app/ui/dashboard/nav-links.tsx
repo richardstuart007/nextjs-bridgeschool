@@ -1,6 +1,11 @@
 'use client'
 import { useEffect } from 'react'
-import { BuildingLibraryIcon, HomeIcon, ArchiveBoxIcon } from '@heroicons/react/24/outline'
+import {
+  BuildingLibraryIcon,
+  HomeIcon,
+  ArchiveBoxIcon,
+  UserIcon
+} from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import clsx from 'clsx'
@@ -9,7 +14,8 @@ import { writeSession_BS_session } from '@/app/lib/utilsClient'
 const links = [
   { name: 'Home', href: '/dashboard', icon: HomeIcon },
   { name: 'Library', href: '/dashboard/library', icon: BuildingLibraryIcon },
-  { name: 'History', href: '/dashboard/history', icon: ArchiveBoxIcon }
+  { name: 'History', href: '/dashboard/history', icon: ArchiveBoxIcon },
+  { name: 'Preferences', href: '/dashboard/preferences', icon: UserIcon }
 ]
 
 export default function NavLinks() {

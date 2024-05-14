@@ -1,57 +1,92 @@
 'use client'
 
+import { useEffect } from 'react'
 import { lusitana } from '@/app/ui/fonts'
 import { AtSymbolIcon, KeyIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline'
 import { ArrowRightIcon, ArrowLeftIcon } from '@heroicons/react/20/solid'
 import { Button } from '../button'
 import { useFormState, useFormStatus } from 'react-dom'
-import { registerUser } from '@/app/lib/actions'
-import { useRouter } from 'next/navigation'
+import { authenticate } from '@/app/lib/actions'
+import { usePathname, useRouter } from 'next/navigation'
+import { resetSession } from '@/app/lib/actionsClient'
 
-export default function RegisterForm() {
-  const initialState = { message: null, errors: {} }
-  const [stateRegister, dispatch] = useFormState(registerUser, initialState)
+export default function LoginForm() {
   //
-  //  Get Router
+  //  Router
   //
   const router = useRouter()
+  //
+  //  Get Pathname
+  //
+  const pathname = usePathname()
+  //
+  //  State
+  //
+  const [errorMessage, dispatch] = useFormState(authenticate, undefined)
+  //
+  //  One time only
+  //
+  useEffect(() => {
+    resetSession()
+    // eslint-disable-next-line
+  }, [])
+  //
+  //  Change of pathname
+  //
+  useEffect(() => {
+    pathChange()
+    // eslint-disable-next-line
+  }, [pathname])
+
+  //--------------------------------------------------------------------------------
+  //  Every Time
+  //--------------------------------------------------------------------------------
+  function pathChange() {
+    //
+    //  Auth redirect error - fix ???
+    //
+    if (!pathname.includes('/login')) {
+      // console.log('Form: The URL does NOT contain /login.')
+      router.push('/login')
+    }
+  }
   //-------------------------------------------------------------------------
-  //  Register
+  //  Login Button
   //-------------------------------------------------------------------------
-  function RegisterButton() {
+  function LoginButton() {
     const { pending } = useFormStatus()
     return (
       <Button className='mt-4 w-full' aria-disabled={pending}>
-        Register <ArrowRightIcon className='ml-auto h-5 w-5 text-gray-50' />
+        Login <ArrowRightIcon className='ml-auto h-5 w-5 text-gray-50' />
       </Button>
     )
   }
   //-------------------------------------------------------------------------
-  //  Go to Login
+  //  Go to Register
   //-------------------------------------------------------------------------
-  interface LoginButtonProps {
+  interface RegisterButtonProps {
     onClick: () => void
   }
-  function LoginButton({ onClick }: LoginButtonProps) {
+  function RegisterButton({ onClick }: RegisterButtonProps) {
     return (
       <Button
         className='mt-4 w-full flex items-center justify-between bg-gray-400 hover:bg-gray-300'
         onClick={onClick}
       >
-        <ArrowLeftIcon className=' h-5 w-5 text-gray-50' /> Login
+        <ArrowLeftIcon className=' h-5 w-5 text-gray-50' /> Register
       </Button>
     )
   }
-  //-------------------------------------------------------------------------
-  //  Handle Login Click
-  //-------------------------------------------------------------------------
-  const handleLoginClick = () => {
-    router.push('/login')
+  //--------------------------------------------------------------------------------
+  //  Register User
+  //--------------------------------------------------------------------------------
+  function handleRegisterClick() {
+    router.push('/register')
   }
   return (
     <form action={dispatch} className='space-y-3'>
       <div className='flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8'>
-        <h1 className={`${lusitana.className} mb-3 text-2xl`}>Register to continue.</h1>
+        <h1 className={`${lusitana.className} mb-3 text-2xl`}>Login to continue.</h1>
         <div className='w-full'>
           <div>
             <label className='mb-3 mt-5 block text-xs font-medium text-gray-900' htmlFor='email'>
@@ -70,15 +105,6 @@ export default function RegisterForm() {
               <AtSymbolIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900' />
             </div>
           </div>
-          <div id='email-error' aria-live='polite' aria-atomic='true'>
-            {stateRegister.errors?.email &&
-              stateRegister.errors.email.map((error: string) => (
-                <p className='mt-2 text-sm text-red-500' key={error}>
-                  {error}
-                </p>
-              ))}
-          </div>
-
           <div className='mt-4'>
             <label className='mb-3 mt-5 block text-xs font-medium text-gray-900' htmlFor='password'>
               Password
@@ -90,29 +116,21 @@ export default function RegisterForm() {
                 type='password'
                 name='password'
                 placeholder='Enter password'
-                autoComplete='new-password'
+                autoComplete='current-password'
                 required
               />
               <KeyIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900' />
             </div>
           </div>
-          <div id='password-error' aria-live='polite' aria-atomic='true'>
-            {stateRegister.errors?.password &&
-              stateRegister.errors.password.map((error: string) => (
-                <p className='mt-2 text-sm text-red-500' key={error}>
-                  {error}
-                </p>
-              ))}
-          </div>
         </div>
-        <RegisterButton />
-        <LoginButton onClick={handleLoginClick} />
+        <LoginButton />
+        <RegisterButton onClick={handleRegisterClick} />
 
         <div className='flex h-8 items-end space-x-1' aria-live='polite' aria-atomic='true'>
-          {stateRegister.message && (
+          {errorMessage && (
             <>
               <ExclamationCircleIcon className='h-5 w-5 text-red-500' />
-              <p className='text-sm text-red-500'>{stateRegister.message}</p>
+              <p className='text-sm text-red-500'>{errorMessage}</p>
             </>
           )}
         </div>

@@ -1,4 +1,4 @@
-import Form from '@/app/ui/quiz-review/quiz-review-form'
+import ReviewForm from '@/app/ui/quiz-review/form'
 import Breadcrumbs from '@/app/ui/breadcrumbs'
 import { fetchQuestionsByGid, fetchHistoryById } from '@/app/lib/data'
 import { notFound } from 'next/navigation'
@@ -43,7 +43,7 @@ export default async function Page({ params }: { params: { hid: number } }) {
             }
           ]}
         />
-        <Form history={history} questions={questions} />
+        <ReviewForm history={history} questions={questions} />
       </>
     )
   } catch (error) {

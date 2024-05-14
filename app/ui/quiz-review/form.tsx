@@ -15,13 +15,11 @@ interface QuestionsFormProps {
 //...................................................................................
 //.  Main Line
 //...................................................................................
-export default function QuestionsForm(props: QuestionsFormProps): JSX.Element {
+export default function ReviewForm(props: QuestionsFormProps): JSX.Element {
   const { questions, history } = props
   const r_ans = history.r_ans
   const r_qid = history.r_qid
   const quizTotal = r_ans.length
-  console.log('questions', questions)
-  console.log('history', history)
   const questionIndex = questions.findIndex(q => q.qqid === r_qid[0])
   //
   //  Define the State variables

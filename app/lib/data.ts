@@ -416,7 +416,30 @@ export async function fetchUserByEmail(email: string): Promise<UsersTable | unde
     return row
   } catch (error) {
     console.error('Database Error:', error)
-    throw new Error('Failed to fetch user.')
+    throw new Error('Failed to fetch user by email.')
+  }
+}
+//---------------------------------------------------------------------
+//  Fetch User by ID
+//---------------------------------------------------------------------
+export async function fetchUserById(uid: number): Promise<UsersTable | undefined> {
+  noStore()
+  try {
+    const userrecord = await sql<UsersTable>`SELECT * FROM users WHERE u_uid=${uid}`
+    //
+    //  Not found
+    //
+    if (userrecord.rowCount === 0) {
+      return undefined
+    }
+    //
+    //  Return data
+    //
+    const row = userrecord.rows[0]
+    return row
+  } catch (error) {
+    console.error('Database Error:', error)
+    throw new Error('Failed to fetch user by Id.')
   }
 }
 //---------------------------------------------------------------------
