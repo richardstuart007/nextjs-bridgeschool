@@ -4,8 +4,8 @@ import { ExclamationCircleIcon } from '@heroicons/react/24/outline'
 import { Button } from '../button'
 import { useFormState, useFormStatus } from 'react-dom'
 import { preferencesUser } from '@/app/lib/actions'
-import { useRouter } from 'next/navigation'
 import type { UsersTable } from '@/app/lib/definitions'
+import SelectCountry from './select-country'
 
 export default function PreferencesForm({ UserRecord }: { UserRecord: UsersTable }) {
   const initialState = { message: null, errors: {} }
@@ -15,10 +15,6 @@ export default function PreferencesForm({ UserRecord }: { UserRecord: UsersTable
   const [u_fedid, setU_fedid] = useState(UserRecord.u_fedid)
   const [u_fedcountry, setU_fedcountry] = useState(UserRecord.u_fedcountry)
   const [u_dftmaxquestions, setU_dftmaxquestions] = useState(UserRecord.u_dftmaxquestions)
-  //
-  //  Get Router
-  //
-  const router = useRouter()
   //-------------------------------------------------------------------------
   //  Preferences
   //-------------------------------------------------------------------------
@@ -29,6 +25,15 @@ export default function PreferencesForm({ UserRecord }: { UserRecord: UsersTable
         Update
       </Button>
     )
+  }
+  //...................................................................................
+  //.  Select Country
+  //...................................................................................
+  function handleSelectCountry(CountryCode: string) {
+    //
+    //  Update values
+    //
+    setU_fedcountry(CountryCode)
   }
   //-------------------------------------------------------------------------
   return (
@@ -107,28 +112,17 @@ export default function PreferencesForm({ UserRecord }: { UserRecord: UsersTable
               className='mb-3 mt-5 block text-xs font-medium text-gray-900'
               htmlFor='u_fedcountry'
             >
-              Bridge Federation Country
+              Bridge Federation Country ({u_fedcountry})
             </label>
-            <div className='relative'>
-              <input
-                className='w-full rounded-md border border-gray-200 py-[9px] text-sm outline-2'
-                id='u_fedcountry'
-                type='u_fedcountry'
-                name='u_fedcountry'
-                autoComplete='u_fedcountry'
-                required
-                value={u_fedcountry}
-                onChange={e => setU_fedcountry(e.target.value)}
-              />
-            </div>
-          </div>
-          <div id='fedcountry-error' aria-live='polite' aria-atomic='true'>
-            {statePreferences.errors?.u_fedcountry &&
-              statePreferences.errors.u_fedcountry.map((error: string) => (
-                <p className='mt-2 text-sm text-red-500' key={error}>
-                  {error}
-                </p>
-              ))}
+            <input
+              className='w-full rounded-md border border-gray-200 py-[9px] text-sm outline-2'
+              id='u_fedcountry'
+              type='hidden'
+              name='u_fedcountry'
+              value={u_fedcountry}
+            />
+
+            <SelectCountry onChange={handleSelectCountry} countryCode={u_fedcountry} />
           </div>
 
           <div className='mt-4'>
@@ -160,6 +154,7 @@ export default function PreferencesForm({ UserRecord }: { UserRecord: UsersTable
               ))}
           </div>
         </div>
+
         <PreferencesButton />
 
         <div className='flex h-8 items-end space-x-1' aria-live='polite' aria-atomic='true'>
