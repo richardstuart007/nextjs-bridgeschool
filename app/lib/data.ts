@@ -16,7 +16,7 @@ const HISTORY_ITEMS_PER_PAGE = 10
 //  Library totals
 //---------------------------------------------------------------------
 export async function fetchLibraryPages(query: string) {
-  noStore()
+  // noStore()
   try {
     let sqlWhere = buildWhere_Library(query)
     const sqlQuery = `SELECT COUNT(*) FROM library
@@ -40,7 +40,7 @@ export async function fetchLibraryPages(query: string) {
 //  Library data
 //---------------------------------------------------------------------
 export async function fetchFilteredLibrary(query: string, currentPage: number) {
-  noStore()
+  // noStore()
   const offset = (currentPage - 1) * LIBRARY_ITEMS_PER_PAGE
   try {
     let sqlWhere = buildWhere_Library(query)
@@ -168,7 +168,7 @@ export function buildWhere_Library(query: string) {
 //  Library data by ID
 //---------------------------------------------------------------------
 export async function fetchLibraryById(lrlid: number) {
-  noStore()
+  // noStore()
   try {
     const data = await sql<LibraryTable>`
       SELECT *
@@ -186,7 +186,7 @@ export async function fetchLibraryById(lrlid: number) {
 //  Questions data by Owner/Group
 //---------------------------------------------------------------------
 export async function fetchQuestionsByOwnerGroup(qowner: string, qgroup: string) {
-  noStore()
+  // noStore()
   try {
     const data = await sql<QuestionsTable>`
       SELECT *
@@ -208,7 +208,7 @@ export async function fetchQuestionsByOwnerGroup(qowner: string, qgroup: string)
 //  Questions data by ID
 //---------------------------------------------------------------------
 export async function fetchQuestionsByGid(qgid: number) {
-  noStore()
+  // noStore()
   try {
     const data = await sql<QuestionsTable>`
       SELECT *
@@ -231,7 +231,7 @@ export async function fetchQuestionsByGid(qgid: number) {
 //  History totals
 //---------------------------------------------------------------------
 export async function fetchHistoryPages(query: string) {
-  noStore()
+  // noStore()
   try {
     let sqlWhere = buildWhere_History(query)
     const sqlQuery = `
@@ -255,7 +255,7 @@ export async function fetchHistoryPages(query: string) {
 //  History data
 //---------------------------------------------------------------------
 export async function fetchFilteredHistory(query: string, currentPage: number) {
-  noStore()
+  // noStore()
   const offset = (currentPage - 1) * HISTORY_ITEMS_PER_PAGE
   try {
     let sqlWhere = buildWhere_History(query)
@@ -379,7 +379,7 @@ export function buildWhere_History(query: string) {
 //  History data by ID
 //---------------------------------------------------------------------
 export async function fetchHistoryById(r_hid: number) {
-  noStore()
+  // noStore()
   try {
     const data = await sql<UsershistoryTable>`
       SELECT *
@@ -446,7 +446,7 @@ export async function fetchUserById(uid: number): Promise<UsersTable | undefined
 //  Top results data
 //---------------------------------------------------------------------
 export async function fetchTopResultsData() {
-  noStore()
+  // noStore()
   try {
     const data = await sql<UsershistoryTopResults>`
       SELECT
@@ -485,7 +485,7 @@ export async function fetchTopResultsData() {
 //  Recent result data last
 //---------------------------------------------------------------------
 export async function fetchRecentResultsData1() {
-  noStore()
+  // noStore()
   try {
     const data = await sql<UsershistoryRecentResults>`
 SELECT r_hid, r_uid, u_name, r_totalpoints, r_maxpoints, r_correctpercent
@@ -514,7 +514,7 @@ LIMIT 5;
 //  Recent results data
 //---------------------------------------------------------------------
 export async function fetchRecentResultsData5(userIds: number[]) {
-  noStore()
+  // noStore()
   try {
     const [id1, id2, id3, id4, id5] = userIds
 

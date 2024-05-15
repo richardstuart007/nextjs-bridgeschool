@@ -42,7 +42,7 @@ async function create_bidding(client) {
 )
 `
 
-    console.log(`Created "bidding" table`)
+    // console.log(`Created "bidding" table`)
 
     return create_Table
   } catch (error) {
@@ -67,7 +67,7 @@ async function create_dbstats(client) {
 )
 `
 
-    console.log(`Created "dbstats" table`)
+    // console.log(`Created "dbstats" table`)
 
     return create_Table
   } catch (error) {
@@ -93,7 +93,7 @@ async function create_hands(client) {
 )
 `
 
-    console.log(`Created "hands" table`)
+    // console.log(`Created "hands" table`)
 
     return create_Table
   } catch (error) {
@@ -121,7 +121,7 @@ async function create_library(client) {
 )
 `
 
-    console.log(`Created "library" table`)
+    // console.log(`Created "library" table`)
 
     return create_Table
   } catch (error) {
@@ -143,7 +143,7 @@ async function create_owner(client) {
 )
 `
 
-    console.log(`Created "owner" table`)
+    // console.log(`Created "owner" table`)
 
     return create_Table
   } catch (error) {
@@ -168,7 +168,7 @@ async function create_ownergroup(client) {
 )
 `
 
-    console.log(`Created "ownergroup" table`)
+    // console.log(`Created "ownergroup" table`)
 
     return create_Table
   } catch (error) {
@@ -195,7 +195,7 @@ async function create_questions(client) {
 )
 `
 
-    console.log(`Created "questions" table`)
+    // console.log(`Created "questions" table`)
 
     return create_Table
   } catch (error) {
@@ -217,7 +217,7 @@ async function create_reftype(client) {
 )
 `
 
-    console.log(`Created "reftype" table`)
+    // console.log(`Created "reftype" table`)
 
     return create_Table
   } catch (error) {
@@ -238,7 +238,7 @@ async function create_sessions(client) {
 )
 `
 
-    console.log(`Created "sessions" table`)
+    // console.log(`Created "sessions" table`)
 
     return create_Table
   } catch (error) {
@@ -270,7 +270,7 @@ async function create_users(client) {
 )
 `
 
-    console.log(`Created "users" table`)
+    // console.log(`Created "users" table`)
 
     return create_Table
   } catch (error) {
@@ -289,7 +289,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS users_user
     (u_user  ASC NULLS LAST)
 `
 
-    console.log(`Created "users_user" index`)
+    // console.log(`Created "users_user" index`)
 
     return create_Table
   } catch (error) {
@@ -320,7 +320,7 @@ async function create_usershistory(client) {
 )
 `
 
-    console.log(`Created "usershistory" table`)
+    // console.log(`Created "usershistory" table`)
 
     return create_Table
   } catch (error) {
@@ -343,7 +343,7 @@ async function create_usersowner(client) {
 )
 `
 
-    console.log(`Created "usersowner" table`)
+    // console.log(`Created "usersowner" table`)
 
     return create_Table
   } catch (error) {
@@ -367,7 +367,7 @@ async function create_userspwd(client) {
 
 `
 
-    console.log(`Created "userspwd" table`)
+    // console.log(`Created "userspwd" table`)
 
     return create_Table
   } catch (error) {
@@ -387,7 +387,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS userspwd_user
 
 `
 
-    console.log(`Created "userspwd_user" index`)
+    // console.log(`Created "userspwd_user" index`)
 
     return create_Table
   } catch (error) {
@@ -410,7 +410,7 @@ async function create_userssessions(client) {
 )
 `
 
-    console.log(`Created "userssessions" table`)
+    // console.log(`Created "userssessions" table`)
 
     return create_Table
   } catch (error) {
@@ -432,7 +432,7 @@ async function create_who(client) {
 )
 `
 
-    console.log(`Created "who" table`)
+    // console.log(`Created "who" table`)
 
     return create_Table
   } catch (error) {

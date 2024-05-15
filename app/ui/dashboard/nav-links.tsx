@@ -38,9 +38,7 @@ export default function NavLinks() {
     //  Write Session BS_session
     //
     const session = writeSession_BS_session()
-    console.log('session', session)
     const bsuid = session?.bsuid
-    console.log('bsuid', bsuid)
     //
     //  Update the link to this user
     //

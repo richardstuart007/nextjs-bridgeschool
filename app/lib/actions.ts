@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { sql } from '@vercel/postgres'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-import { signIn, signOut } from '@/auth'
+import { signIn } from '@/auth'
 import { AuthError } from 'next-auth'
 import bcrypt from 'bcrypt'
 import type { UsersTable, NewUsershistoryTable, NewUserssessionsTable } from '@/app/lib/definitions'
@@ -247,14 +247,21 @@ export async function getCookieInfo(cookieName: string) {
 // ----------------------------------------------------------------------
 //  Update User Preferences
 // ----------------------------------------------------------------------
+//
+//  Form Schema for validation
+//
 const FormSchemaPreferences = z.object({
   u_uid: z.string(),
   u_name: z.string(),
   u_fedid: z.string(),
   u_fedcountry: z.string(),
-  u_dftmaxquestions: z.number().min(5).max(100)
+  u_dftmaxquestions: z.number().min(5).max(100),
+  u_sortquestions: z.boolean(),
+  u_skipcorrect: z.boolean()
 })
-
+//
+//  Errors and Messages
+//
 export type StatePreferences = {
   errors?: {
     u_uid?: string[]
@@ -262,6 +269,8 @@ export type StatePreferences = {
     u_fedid?: string[]
     u_fedcountry?: string[]
     u_dftmaxquestions?: string[]
+    u_sortquestions?: string[]
+    u_skipcorrect?: string[]
   }
   message?: string | null
 }
@@ -269,12 +278,17 @@ export type StatePreferences = {
 const Preferences = FormSchemaPreferences
 
 export async function preferencesUser(prevState: StatePreferences, formData: FormData) {
+  //
+  //  Validate form data
+  //
   const validatedFields = Preferences.safeParse({
     u_uid: formData.get('u_uid'),
     u_name: formData.get('u_name'),
     u_fedid: formData.get('u_fedid'),
     u_fedcountry: formData.get('u_fedcountry'),
-    u_dftmaxquestions: Number(formData.get('u_dftmaxquestions'))
+    u_dftmaxquestions: Number(formData.get('u_dftmaxquestions')),
+    u_sortquestions: formData.get('u_sortquestions') === 'true', // Convert string to boolean
+    u_skipcorrect: formData.get('u_skipcorrect') === 'true' // Convert string to boolean
   })
   //
   // If form validation fails, return errors early. Otherwise, continue.
@@ -288,7 +302,15 @@ export async function preferencesUser(prevState: StatePreferences, formData: For
   //
   // Unpack form data
   //
-  const { u_uid, u_name, u_fedid, u_fedcountry, u_dftmaxquestions } = validatedFields.data
+  const {
+    u_uid,
+    u_name,
+    u_fedid,
+    u_fedcountry,
+    u_dftmaxquestions,
+    u_sortquestions,
+    u_skipcorrect
+  } = validatedFields.data
   //
   // Update data into the database
   //
@@ -298,8 +320,10 @@ export async function preferencesUser(prevState: StatePreferences, formData: For
     SET
       u_name = ${u_name},
       u_fedid = ${u_fedid},
-       u_fedcountry = ${u_fedcountry},
-      u_dftmaxquestions = ${u_dftmaxquestions}
+      u_fedcountry = ${u_fedcountry},
+      u_dftmaxquestions = ${u_dftmaxquestions},
+      u_sortquestions = ${u_sortquestions},
+      u_skipcorrect = ${u_skipcorrect}
     WHERE u_uid = ${u_uid}
     `
   } catch (error) {
