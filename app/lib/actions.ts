@@ -185,12 +185,18 @@ export async function writeUserssessions(usersessions: NewUserssessionsTable) {
 export async function writeCookieBSsession(userRecord: UsersTable, usid: number) {
   try {
     //
-    //  Create session cookie (dropping u_hash)
+    //  Create session cookie
     //
-    const newUserRecord = { ...userRecord, u_hash: undefined, usid: usid }
-    const JSONnewUserRecord = JSON.stringify(newUserRecord)
+    const BS_session = {
+      bsuid: userRecord.u_uid,
+      bsname: userRecord.u_name,
+      bsemail: userRecord.u_email,
+      bsid: usid
+    }
+
+    const JSON_BS_session = JSON.stringify(BS_session)
     // const expires = new Date(Date.now() + 10000)
-    cookies().set('BS_session', JSONnewUserRecord, {
+    cookies().set('BS_session', JSON_BS_session, {
       httpOnly: false,
       secure: false,
       // expires: expires,

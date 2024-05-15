@@ -104,13 +104,13 @@ export default function QuestionsForm(props: QuestionsFormProps): JSX.Element {
       r_questions: answer.length,
       r_qid: r_qid,
       r_ans: answer,
-      r_uid: userSession.u_uid,
+      r_uid: userSession.bsuid,
       r_points: r_points,
       r_maxpoints: r_maxpoints,
       r_totalpoints: r_totalpoints,
       r_correctpercent: r_correctpercent,
       r_gid: question.qgid,
-      r_sid: userSession.usid
+      r_sid: userSession.bsid
     }
     const historyRecord = await writeUsershistory(NewUsershistoryTable)
     //

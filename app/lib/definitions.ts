@@ -130,19 +130,10 @@ export type UsersTable = {
 }
 
 export type BSsessionTable = {
-  u_uid: number
-  u_user: string
-  u_name: string
-  u_email: string
-  u_joined: DateTime
-  u_fedid: string
-  u_admin: boolean
-  u_sortquestions: boolean
-  u_skipcorrect: boolean
-  u_dftmaxquestions: number
-  u_fedcountry: string
-  u_dev: boolean
-  usid: number
+  bsuid: number
+  bsname: string
+  bsemail: string
+  bsid: number
 } | null
 
 export interface UsershistoryTopResults {

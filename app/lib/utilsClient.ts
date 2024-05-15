@@ -7,8 +7,8 @@ export function writeSession_BS_session() {
   //
   //  If already written return
   //
-  const BS_session = sessionStorage.getItem('BS_session')
-  if (BS_session) return null
+  const BS_session = getSession_BS_session()
+  if (BS_session) return BS_session
   //
   //  Get cookie
   //
@@ -19,6 +19,7 @@ export function writeSession_BS_session() {
   //
   const JSONdata = JSON.stringify(data)
   sessionStorage.setItem('BS_session', JSONdata)
+  return data
 }
 // ----------------------------------------------------------------------
 //  Get cookie information from the client

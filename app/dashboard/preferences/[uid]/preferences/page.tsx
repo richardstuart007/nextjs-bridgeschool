@@ -1,28 +1,27 @@
-import Form from '@/app/ui/quiz/form'
+import PreferencesForm from '@/app/ui/preferences/form'
 import Breadcrumbs from '@/app/ui/breadcrumbs'
-import { fetchQuestionsByGid } from '@/app/lib/data'
+import { fetchUserById } from '@/app/lib/data'
 import { notFound } from 'next/navigation'
 import { Metadata } from 'next'
-import { QuestionsTable } from '@/app/lib/definitions'
+import { UsersTable } from '@/app/lib/definitions'
 
 export const metadata: Metadata = {
-  title: 'Quiz'
+  title: 'User Preferences'
 }
-
-export default async function Page({ params }: { params: { gid: number } }) {
+export default async function Page({ params }: { params: { uid: number } }) {
   //
   //  Variables used in the return statement
   //
-  let gid: number = params.gid
-  let questions: QuestionsTable[] = []
+  let uid: number = params.uid
+  let UserRecord: UsersTable
 
   try {
     //
-    //  Get Questions
+    //  Get User
     //
-    const [questionsData] = await Promise.all([fetchQuestionsByGid(gid)])
-    if (!questionsData) notFound()
-    questions = questionsData
+    const data = await fetchUserById(uid)
+    if (!data) notFound()
+    UserRecord = data
   } catch (error) {
     console.error('An error occurred while fetching data:', error)
   }
@@ -33,13 +32,13 @@ export default async function Page({ params }: { params: { gid: number } }) {
         breadcrumbs={[
           { label: 'Library', href: '/dashboard/library' },
           {
-            label: 'Quiz',
-            href: `/dashboard/quiz/${gid}/quiz`,
+            label: 'Preferences',
+            href: `/dashboard/preferences/${uid}/preferences`,
             active: true
           }
         ]}
       />
-      <Form questions={questions} />
+      <PreferencesForm UserRecord={UserRecord} />
     </>
   )
 }

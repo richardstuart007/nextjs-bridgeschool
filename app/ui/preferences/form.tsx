@@ -21,7 +21,7 @@ export default function PreferencesForm({ UserRecord }: { UserRecord: UsersTable
   function PreferencesButton() {
     const { pending } = useFormStatus()
     return (
-      <Button className='mt-4 w-full' aria-disabled={pending}>
+      <Button className='mt-4 w-72 px-4' aria-disabled={pending}>
         Update
       </Button>
     )
@@ -45,13 +45,7 @@ export default function PreferencesForm({ UserRecord }: { UserRecord: UsersTable
               ID {u_uid}
             </label>
             <div className='relative'>
-              <input
-                className='w-full rounded-md border border-gray-200 py-[9px] text-sm outline-2'
-                id='u_uid'
-                type='hidden'
-                name='u_uid'
-                value={u_uid}
-              />
+              <input id='u_uid' type='hidden' name='u_uid' value={u_uid} />
             </div>
           </div>
 
@@ -61,7 +55,7 @@ export default function PreferencesForm({ UserRecord }: { UserRecord: UsersTable
             </label>
             <div className='relative'>
               <input
-                className='w-full rounded-md border border-gray-200 py-[9px] text-sm outline-2'
+                className='w-72 px-4 rounded-md border border-gray-200 py-[9px] text-sm outline-2'
                 id='u_name'
                 type='u_name'
                 name='u_name'
@@ -87,7 +81,7 @@ export default function PreferencesForm({ UserRecord }: { UserRecord: UsersTable
             </label>
             <div className='relative'>
               <input
-                className='w-full rounded-md border border-gray-200 py-[9px] text-sm outline-2'
+                className='w-72 px-4 rounded-md border border-gray-200 py-[9px] text-sm outline-2'
                 id='u_fedid'
                 type='u_fedid'
                 name='u_fedid'
@@ -115,14 +109,14 @@ export default function PreferencesForm({ UserRecord }: { UserRecord: UsersTable
               Bridge Federation Country ({u_fedcountry})
             </label>
             <input
-              className='w-full rounded-md border border-gray-200 py-[9px] text-sm outline-2'
+              className='w-72 px-4 rounded-md border border-gray-200 py-[9px] text-sm outline-2'
               id='u_fedcountry'
               type='hidden'
               name='u_fedcountry'
               value={u_fedcountry}
             />
 
-            <SelectCountry onChange={handleSelectCountry} countryCode={u_fedcountry} />
+            <SelectCountry onChange={handleSelectCountry} countryCode={u_fedcountry ?? ''} />
           </div>
 
           <div className='mt-4'>
@@ -134,7 +128,7 @@ export default function PreferencesForm({ UserRecord }: { UserRecord: UsersTable
             </label>
             <div className='relative'>
               <input
-                className='w-full rounded-md border border-gray-200 py-[9px] text-sm outline-2'
+                className='w-72 px-4 rounded-md border border-gray-200 py-[9px] text-sm outline-2'
                 id='u_dftmaxquestions'
                 type='number'
                 name='u_dftmaxquestions'

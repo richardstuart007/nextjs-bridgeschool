@@ -1,4 +1,4 @@
-exports.COUNTRIES = [
+const COUNTRIES = [
   { code: 'AD', label: 'Andorra', phone: '376' },
   {
     code: 'AE',
@@ -424,3 +424,6 @@ exports.COUNTRIES = [
   { code: 'ZW', label: 'Zimbabwe', phone: '263' },
   { code: 'ZZ', label: 'World', phone: '999' }
 ]
+
+// Export the array of countries
+export { COUNTRIES }

@@ -45,19 +45,19 @@ export default function Session() {
       {/*  Mobile  */}
       <div className=' md:hidden mb-2 h-8 rounded-md bg-green-600 p-2 md:h-16'>
         <div className='flex flex-row justify-between text-white md:w-50'>
-          <h1>{`Session: ${userSession?.usid}`}</h1>
-          <h1>{`User: ${userSession?.u_uid}`}</h1>
-          <h1>{userSession?.u_name}</h1>
+          <h1>{`Session: ${userSession?.bsid}`}</h1>
+          <h1>{`User: ${userSession?.bsuid}`}</h1>
+          <h1>{userSession?.bsname}</h1>
         </div>
       </div>
       {/*  Desktop  */}
       <div className='hidden md:block mb-2 h-8 rounded-md bg-green-600 p-2 md:h-16'>
         <div className='flex flex-row justify-between text-white md:w-50'>
-          <h1>{`Session: ${userSession?.usid}`}</h1>
-          <h1>{`User: ${userSession?.u_uid}`}</h1>
+          <h1>{`Session: ${userSession?.bsid}`}</h1>
+          <h1>{`User: ${userSession?.bsuid}`}</h1>
         </div>
         <div className='w-48 text-white md:w-50'>
-          <h1>{userSession?.u_name}</h1>
+          <h1>{userSession?.bsname}</h1>
         </div>
       </div>
     </>

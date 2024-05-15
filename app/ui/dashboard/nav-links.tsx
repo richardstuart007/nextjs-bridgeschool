@@ -38,8 +38,17 @@ export default function NavLinks() {
     //
     //  Write Session BS_session
     //
-    writeSession_BS_session()
+    const session = writeSession_BS_session()
+    console.log('session', session)
+    const bsuid = session?.bsuid
+    console.log('bsuid', bsuid)
+    //
+    //  Update the link to this user
+    //
+    links[3].href = `/dashboard/preferences/${bsuid}/preferences`
+    console.log('links', links)
   }
+  //--------------------------------------------------------------------------------
   return (
     <>
       {links.map(link => {
