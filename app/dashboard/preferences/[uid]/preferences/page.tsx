@@ -13,7 +13,7 @@ export default async function Page({ params }: { params: { uid: number } }) {
   //  Variables used in the return statement
   //
   let uid: number = params.uid
-  let UserRecord: UsersTable
+  let UserRecord: UsersTable | null = null
 
   try {
     //
@@ -38,7 +38,7 @@ export default async function Page({ params }: { params: { uid: number } }) {
           }
         ]}
       />
-      <PreferencesForm UserRecord={UserRecord} />
+      {UserRecord ? <PreferencesForm UserRecord={UserRecord} /> : null}
     </>
   )
 }
