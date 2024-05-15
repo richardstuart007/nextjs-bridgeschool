@@ -1,5 +1,5 @@
 'use client'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import {
   BuildingLibraryIcon,
   HomeIcon,
@@ -11,14 +11,13 @@ import { usePathname } from 'next/navigation'
 import clsx from 'clsx'
 import { writeSession_BS_session } from '@/app/lib/utilsClient'
 
-const links = [
-  { name: 'Home', href: '/dashboard', icon: HomeIcon },
-  { name: 'Library', href: '/dashboard/library', icon: BuildingLibraryIcon },
-  { name: 'History', href: '/dashboard/history', icon: ArchiveBoxIcon },
-  { name: 'Preferences', href: '/dashboard/preferences', icon: UserIcon }
-]
-
 export default function NavLinks() {
+  const [links, setLinks] = useState([
+    { name: 'Home', href: '/dashboard', icon: HomeIcon },
+    { name: 'Library', href: '/dashboard/library', icon: BuildingLibraryIcon },
+    { name: 'History', href: '/dashboard/history', icon: ArchiveBoxIcon },
+    { name: 'Preferences', href: '/dashboard/preferences/uid/preferences', icon: UserIcon }
+  ])
   //
   //  Get Pathname
   //
@@ -45,8 +44,9 @@ export default function NavLinks() {
     //
     //  Update the link to this user
     //
-    links[3].href = `/dashboard/preferences/${bsuid}/preferences`
-    console.log('links', links)
+    const updatedLinks = [...links]
+    updatedLinks[3].href = `/dashboard/preferences/${bsuid}/preferences`
+    setLinks(updatedLinks)
   }
   //--------------------------------------------------------------------------------
   return (
