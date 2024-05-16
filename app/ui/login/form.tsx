@@ -46,7 +46,6 @@ export default function LoginForm() {
     //  Auth redirect error - fix ???
     //
     if (!pathname.includes('/login')) {
-      // console.log('Form: The URL does NOT contain /login.')
       router.push('/login')
     }
   }

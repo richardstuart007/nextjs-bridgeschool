@@ -182,7 +182,6 @@ export async function writeUserssessions(usersessions: NewUserssessionsTable) {
 //  Update User Sessions to signed out
 //---------------------------------------------------------------------
 export async function UserssessionsSignout(usid: number) {
-  console.log('usid', usid)
   try {
     await sql`
     UPDATE userssessions
@@ -231,7 +230,6 @@ export async function writeCookieBSsession(userRecord: UsersTable, usid: number)
 export async function deleteCookie(cookieName: string) {
   try {
     cookies().delete(cookieName)
-    // console.log(`actions: ${cookieName} Cookie deleted`)
   } catch (error) {
     throw new Error('Failed to delete cookie.')
   }

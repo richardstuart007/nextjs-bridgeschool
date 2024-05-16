@@ -488,17 +488,27 @@ export async function fetchRecentResultsData1() {
   // noStore()
   try {
     const data = await sql<UsershistoryRecentResults>`
-SELECT r_hid, r_uid, u_name, r_totalpoints, r_maxpoints, r_correctpercent
-FROM (
-    SELECT
-        r_hid, r_uid, u_name, r_totalpoints, r_maxpoints, r_correctpercent,
-        ROW_NUMBER() OVER (PARTITION BY r_uid ORDER BY r_hid DESC) AS rn
-    FROM usershistory
-    JOIN users ON r_uid = u_uid
-) AS ranked
-WHERE rn = 1
-ORDER BY r_hid DESC
-LIMIT 5;
+  SELECT
+    r_hid, r_uid, u_name, r_totalpoints, r_maxpoints, r_correctpercent
+  FROM (
+          SELECT
+            r_hid,
+            r_uid,
+            u_name,
+            r_totalpoints,
+            r_maxpoints,
+            r_correctpercent,
+            ROW_NUMBER()
+            OVER (PARTITION BY r_uid ORDER BY r_hid DESC) AS rn
+          FROM usershistory
+          JOIN users
+            ON r_uid = u_uid
+        )
+  AS ranked
+  WHERE rn = 1
+  ORDER BY
+    r_hid DESC
+  LIMIT 5;
     `
     //
     //  Return rows

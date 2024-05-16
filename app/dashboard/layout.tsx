@@ -1,4 +1,4 @@
-import NavSide from '@/app/ui/dashboard/nav-side'
+import NavSide from '@/app/ui/dashboard/nav/nav-side'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {

@@ -1,5 +1,5 @@
-import NavLinks from '@/app/ui/dashboard/nav-links'
-import NavSession from '@/app/ui/dashboard/nav-session'
+import NavLinks from '@/app/ui/dashboard/nav/nav-links'
+import NavSession from '@/app/ui/dashboard/nav/nav-session'
 import SchoolLogo from '@/app/ui/school-logo'
 import { PowerIcon } from '@heroicons/react/24/outline'
 import { navsignout } from '@/app/lib/actions'

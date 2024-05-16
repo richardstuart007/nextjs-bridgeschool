@@ -4,7 +4,6 @@ import { fetchQuestionsByGid } from '@/app/lib/data'
 import { notFound } from 'next/navigation'
 import { Metadata } from 'next'
 import { QuestionsTable } from '@/app/lib/definitions'
-import { useUserContext } from '@/UserContext'
 
 export const metadata: Metadata = {
   title: 'Quiz'
@@ -16,11 +15,6 @@ export default async function Page({ params }: { params: { gid: number } }) {
   //
   let gid: number = params.gid
   let questions: QuestionsTable[] = []
-  //
-  //  Context
-  //
-  const { session } = useUserContext()
-
   try {
     //
     //  Get Questions

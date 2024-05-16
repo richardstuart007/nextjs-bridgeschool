@@ -1,5 +1,5 @@
 import { lusitana } from '@/app/ui/fonts'
-import SummaryGraphs from '@/app/ui/summary/summary'
+import SummaryGraphs from '@/app/ui/dashboard/summary/summary'
 
 export default async function Page() {
   return (
