@@ -83,6 +83,7 @@ export default function LoginForm() {
   function handleRegisterClick() {
     router.push('/register')
   }
+  //--------------------------------------------------------------------------------
   return (
     <form action={dispatch} className='space-y-3'>
       <div className='flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8'>

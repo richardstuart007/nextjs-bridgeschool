@@ -102,9 +102,14 @@ export type UserssessionsTable = {
   usdatetime: DateTime
   usuid: number
   ususer: string
+  ussignedin: boolean
 }
 
-export type NewUserssessionsTable = Omit<UserssessionsTable, 'usid'>
+export type NewUserssessionsTable = {
+  usdatetime: DateTime
+  usuid: number
+  ususer: string
+}
 
 export type UserAuth = {
   id: string
@@ -134,7 +139,8 @@ export type BSsessionTable = {
   bsname: string
   bsemail: string
   bsid: number
-} | null
+  bssignedin: boolean
+}
 
 export interface UsershistoryTopResults {
   r_uid: number

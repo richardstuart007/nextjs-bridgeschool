@@ -1,30 +1,31 @@
 'use client'
-import { useEffect, useState } from 'react'
-import { getSession_BS_session } from '@/app/lib/utilsClient'
+import { useEffect } from 'react'
+import { getCookieClient } from '@/app/lib/utilsClient'
 import { BSsessionTable } from '@/app/lib/definitions'
 import { usePathname, useRouter } from 'next/navigation'
+import { useUserContext } from '@/UserContext'
 
-export default function Session() {
-  const [userSession, setUserSessionTable] = useState<BSsessionTable>(null)
+export default function NavSession() {
   //
   //  Router
   //
   const router = useRouter()
   //
-  //  Get Pathname
+  //  User context
+  //
+  const { session, setSession } = useUserContext()
+  //
+  //  Change of pathname - Get session info
   //
   const pathname = usePathname()
-  //
-  //  Change of pathname
-  //
   useEffect(() => {
-    pathChange()
+    getSessionInfo()
     // eslint-disable-next-line
   }, [pathname])
   //--------------------------------------------------------------------------------
   //  Every Time
   //--------------------------------------------------------------------------------
-  function pathChange() {
+  function getSessionInfo() {
     //
     //  Auth redirect error - fix ???
     //
@@ -35,29 +36,32 @@ export default function Session() {
     //
     //  Get session info
     //
-    const data: BSsessionTable | null = getSession_BS_session()
+    const data: BSsessionTable | null = getCookieClient()
+    //
+    //  Update the Context
+    //
     if (!data) return
-    setUserSessionTable(data)
+    setSession(data)
   }
-
+  //--------------------------------------------------------------------------------
   return (
     <>
       {/*  Mobile  */}
       <div className=' md:hidden mb-2 h-8 rounded-md bg-green-600 p-2 md:h-16'>
         <div className='flex flex-row justify-between text-white md:w-50'>
-          <h1>{`Session: ${userSession?.bsid}`}</h1>
-          <h1>{`User: ${userSession?.bsuid}`}</h1>
-          <h1>{userSession?.bsname}</h1>
+          <h1>{`Session: ${session?.bsid}`}</h1>
+          <h1>{`User: ${session?.bsuid}`}</h1>
+          <h1>{session?.bsname}</h1>
         </div>
       </div>
       {/*  Desktop  */}
       <div className='hidden md:block mb-2 h-8 rounded-md bg-green-600 p-2 md:h-16'>
         <div className='flex flex-row justify-between text-white md:w-50'>
-          <h1>{`Session: ${userSession?.bsid}`}</h1>
-          <h1>{`User: ${userSession?.bsuid}`}</h1>
+          <h1>{`Session: ${session?.bsid}`}</h1>
+          <h1>{`User: ${session?.bsuid}`}</h1>
         </div>
         <div className='w-48 text-white md:w-50'>
-          <h1>{userSession?.bsname}</h1>
+          <h1>{session?.bsname}</h1>
         </div>
       </div>
     </>

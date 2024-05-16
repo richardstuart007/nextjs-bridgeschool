@@ -1,12 +1,12 @@
 export function resetSession() {
+  const storeName = 'BS_session'
   //
   //  Remove session storage
   //
-  const storeName = 'BS_session'
-  const data = sessionStorage.getItem(storeName)
-  if (data) {
-    sessionStorage.removeItem(storeName)
-  }
+  // const data = sessionStorage.getItem(storeName)
+  // if (data) {
+  //   sessionStorage.removeItem(storeName)
+  // }
   //
   //  Remove cookies
   //

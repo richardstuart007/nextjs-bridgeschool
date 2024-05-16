@@ -9,8 +9,8 @@ import QuizChoice from './quiz-choice'
 import { QuizSubmit } from '@/app/ui/quiz/buttons'
 import { useRouter } from 'next/navigation'
 import { writeUsershistory } from '@/app/lib/actions'
-import type { NewUsershistoryTable, BSsessionTable } from '@/app/lib/definitions'
-import { getSession_BS_session } from '@/app/lib/utilsClient'
+import type { NewUsershistoryTable } from '@/app/lib/definitions'
+import { useUserContext } from '@/UserContext'
 
 interface QuestionsFormProps {
   questions: QuestionsTable[]
@@ -28,6 +28,10 @@ export default function QuestionsForm(props: QuestionsFormProps): JSX.Element {
   //  Go back
   //
   const router = useRouter()
+  //
+  //  User context
+  //
+  const { session } = useUserContext()
   //
   //  Define the State variables
   //
@@ -90,11 +94,6 @@ export default function QuestionsForm(props: QuestionsFormProps): JSX.Element {
       r_correctpercent = Math.ceil((r_totalpoints * 100) / r_maxpoints)
     }
     //
-    //  Get session info
-    //
-    const userSession: BSsessionTable | null = getSession_BS_session()
-    if (!userSession) throw new Error('No user session found')
-    //
     // Create a NewUsersHistoryTable object
     //
     const NewUsershistoryTable: NewUsershistoryTable = {
@@ -104,13 +103,13 @@ export default function QuestionsForm(props: QuestionsFormProps): JSX.Element {
       r_questions: answer.length,
       r_qid: r_qid,
       r_ans: answer,
-      r_uid: userSession.bsuid,
+      r_uid: session.bsuid,
       r_points: r_points,
       r_maxpoints: r_maxpoints,
       r_totalpoints: r_totalpoints,
       r_correctpercent: r_correctpercent,
       r_gid: question.qgid,
-      r_sid: userSession.bsid
+      r_sid: session.bsid
     }
     const historyRecord = await writeUsershistory(NewUsershistoryTable)
     //

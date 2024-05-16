@@ -9,9 +9,15 @@ import {
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import clsx from 'clsx'
-import { writeSession_BS_session } from '@/app/lib/utilsClient'
+import { useUserContext } from '@/UserContext'
 
 export default function NavLinks() {
+  //
+  //  User context
+  //
+  const { session } = useUserContext()
+  const { bsuid } = session
+
   const [links, setLinks] = useState([
     { name: 'Home', href: '/dashboard', icon: HomeIcon },
     { name: 'Library', href: '/dashboard/library', icon: BuildingLibraryIcon },
@@ -34,11 +40,6 @@ export default function NavLinks() {
   //  First Time
   //--------------------------------------------------------------------------------
   function firstTime() {
-    //
-    //  Write Session BS_session
-    //
-    const session = writeSession_BS_session()
-    const bsuid = session?.bsuid
     //
     //  Update the link to this user
     //

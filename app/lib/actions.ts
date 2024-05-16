@@ -111,8 +111,8 @@ export async function registerUser(prevState: StateRegister, formData: FormData)
   //
   // Revalidate the cache and redirect the user.
   //
-  revalidatePath('/login')
-  redirect('/login')
+  revalidatePath('/dashboard')
+  redirect('/dashboard')
 }
 //---------------------------------------------------------------------
 //  Write User History
@@ -159,7 +159,6 @@ export async function writeUsershistory(NewUsershistoryTable: NewUsershistoryTab
 //---------------------------------------------------------------------
 //  Write User Sessions
 //---------------------------------------------------------------------
-
 export async function writeUserssessions(usersessions: NewUserssessionsTable) {
   try {
     const { rows } = await sql`
@@ -179,6 +178,24 @@ export async function writeUserssessions(usersessions: NewUserssessionsTable) {
     throw new Error('Failed to write user sessions.')
   }
 }
+//---------------------------------------------------------------------
+//  Update User Sessions to signed out
+//---------------------------------------------------------------------
+export async function UserssessionsSignout(usid: number) {
+  console.log('usid', usid)
+  try {
+    await sql`
+    UPDATE userssessions
+    SET
+      ussignedin = false
+    WHERE usid = ${usid}
+    `
+  } catch (error) {
+    return {
+      message: 'Database Error: Failed to Update Userssession.'
+    }
+  }
+}
 // ----------------------------------------------------------------------
 //  Write Cookie information
 // ----------------------------------------------------------------------
@@ -191,7 +208,8 @@ export async function writeCookieBSsession(userRecord: UsersTable, usid: number)
       bsuid: userRecord.u_uid,
       bsname: userRecord.u_name,
       bsemail: userRecord.u_email,
-      bsid: usid
+      bsid: usid,
+      bssignedin: true
     }
 
     const JSON_BS_session = JSON.stringify(BS_session)
@@ -203,7 +221,6 @@ export async function writeCookieBSsession(userRecord: UsersTable, usid: number)
       sameSite: 'lax',
       path: '/'
     })
-    // console.log('actions: BS_session Cookie written')
   } catch (error) {
     throw new Error('Failed to write cookie info.')
   }
@@ -334,6 +351,19 @@ export async function preferencesUser(prevState: StatePreferences, formData: For
   //
   // Revalidate the cache and redirect the user.
   //
-  revalidatePath('/login')
-  redirect('/login')
+  revalidatePath('/dashboard')
+  redirect('/dashboard')
+}
+// ----------------------------------------------------------------------
+//  Nav signout
+// ----------------------------------------------------------------------
+export async function navsignout() {
+  try {
+    const bssession = await getCookieInfo('BS_session')
+    const bsid = bssession.bsid
+    await deleteCookie('BS_session')
+    await UserssessionsSignout(bsid)
+  } catch (error) {
+    throw new Error('Failed to sign out.')
+  }
 }

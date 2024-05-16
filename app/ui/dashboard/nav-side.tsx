@@ -1,10 +1,12 @@
 import NavLinks from '@/app/ui/dashboard/nav-links'
-import Session from '@/app/ui/dashboard/session'
+import NavSession from '@/app/ui/dashboard/nav-session'
 import SchoolLogo from '@/app/ui/school-logo'
 import { PowerIcon } from '@heroicons/react/24/outline'
+import { navsignout } from '@/app/lib/actions'
 import { signOut } from '@/auth'
-import { deleteCookie } from '@/app/lib/actions'
-export default function SideNav() {
+
+export default function NavSide() {
+  //---------------------------------------------------------------------------
   return (
     <div className='flex h-full flex-col px-3 py-2 md:px-2'>
       <div className='mb-2 flex h-20 items-end justify-start rounded-md bg-blue-600 p-2 md:h-40'>
@@ -12,14 +14,14 @@ export default function SideNav() {
           <SchoolLogo />
         </div>
       </div>
-      <Session />
+      <NavSession />
       <div className='flex grow flex-row justify-between space-x-2 md:flex-col md:space-x-0 md:space-y-2'>
         <NavLinks />
         <div className='hidden h-auto w-full grow rounded-md bg-gray-50 md:block'></div>
         <form
           action={async () => {
             'use server'
-            await deleteCookie('BS_session')
+            await navsignout()
             await signOut()
           }}
         >
