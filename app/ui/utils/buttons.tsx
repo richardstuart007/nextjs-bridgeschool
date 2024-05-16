@@ -7,7 +7,7 @@ import {
   DocumentMagnifyingGlassIcon
 } from '@heroicons/react/24/outline'
 import Link from 'next/link'
-import { Button } from '@/app/ui/button'
+import { Button } from '@/app/ui/utils/button'
 //-------------------------------------------------------------------------------------
 //  BookView Button
 //-------------------------------------------------------------------------------------

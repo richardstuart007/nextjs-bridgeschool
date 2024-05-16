@@ -1,6 +1,6 @@
 import NavLinks from '@/app/ui/dashboard/nav/nav-links'
 import NavSession from '@/app/ui/dashboard/nav/nav-session'
-import SchoolLogo from '@/app/ui/school-logo'
+import SchoolLogo from '@/app/ui/utils/school-logo'
 import { PowerIcon } from '@heroicons/react/24/outline'
 import { navsignout } from '@/app/lib/actions'
 import { signOut } from '@/auth'
@@ -9,10 +9,8 @@ export default function NavSide() {
   //---------------------------------------------------------------------------
   return (
     <div className='flex h-full flex-col px-3 py-2 md:px-2'>
-      <div className='mb-2 flex h-20 items-end justify-start rounded-md bg-blue-600 p-2 md:h-40'>
-        <div className='w-32 text-white md:w-48'>
-          <SchoolLogo />
-        </div>
+      <div className='mb-2 flex h-20 items-center justify-center rounded-md bg-blue-600 p-2 md:h-40'>
+        <SchoolLogo />
       </div>
       <NavSession />
       <div className='flex grow flex-row justify-between space-x-2 md:flex-col md:space-x-0 md:space-y-2'>

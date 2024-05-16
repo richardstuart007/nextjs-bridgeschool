@@ -1,5 +1,5 @@
 import PreferencesForm from '@/app/ui/preferences/form'
-import Breadcrumbs from '@/app/ui/breadcrumbs'
+import Breadcrumbs from '@/app/ui/utils/breadcrumbs'
 import { fetchUserById } from '@/app/lib/data'
 import { notFound } from 'next/navigation'
 import { Metadata } from 'next'

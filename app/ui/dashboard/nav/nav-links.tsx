@@ -12,34 +12,29 @@ import clsx from 'clsx'
 import { useUserContext } from '@/UserContext'
 
 export default function NavLinks() {
-  //
-  //  User context
-  //
-  const { session } = useUserContext()
-  const { bsuid } = session
-
   const [links, setLinks] = useState([
     { name: 'Home', href: '/dashboard', icon: HomeIcon },
     { name: 'Library', href: '/dashboard/library', icon: BuildingLibraryIcon },
     { name: 'History', href: '/dashboard/history', icon: ArchiveBoxIcon },
-    { name: 'Preferences', href: '/dashboard/preferences/uid/preferences', icon: UserIcon }
+    { name: 'Preferences', href: '/dashboard', icon: UserIcon }
   ])
   //
-  //  Get Pathname
+  //  Get path name
   //
   const pathname = usePathname()
   //
-  //  One time only
+  //  Update Links
   //
+  const { session } = useUserContext()
+  const { bsuid } = session
   useEffect(() => {
-    firstTime()
+    updateLinks()
     // eslint-disable-next-line
-  }, [])
-
+  }, [session])
   //--------------------------------------------------------------------------------
   //  First Time
   //--------------------------------------------------------------------------------
-  function firstTime() {
+  function updateLinks() {
     //
     //  Update the link to this user
     //

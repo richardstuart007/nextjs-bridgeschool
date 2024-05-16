@@ -1,6 +1,6 @@
 'use client'
 
-import { Button } from '@/app/ui/button'
+import { Button } from '@/app/ui/utils/button'
 
 interface QuizSubmitProps {
   onNextQuestion: () => void

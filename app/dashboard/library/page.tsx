@@ -1,5 +1,5 @@
-import Pagination from '@/app/ui/general/pagination'
-import Search from '@/app/ui/search'
+import Pagination from '@/app/ui/utils/pagination'
+import Search from '@/app/ui/utils/search'
 import Table from '@/app/ui/library/table'
 import { lusitana } from '@/app/ui/fonts'
 import { TableSkeleton } from '@/app/ui/library/skeleton'

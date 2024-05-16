@@ -3,7 +3,7 @@
 import { lusitana } from '@/app/ui/fonts'
 import { AtSymbolIcon, KeyIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline'
 import { ArrowRightIcon, ArrowLeftIcon } from '@heroicons/react/20/solid'
-import { Button } from '../button'
+import { Button } from '../utils/button'
 import { useFormState, useFormStatus } from 'react-dom'
 import { registerUser } from '@/app/lib/actions'
 import { useRouter } from 'next/navigation'

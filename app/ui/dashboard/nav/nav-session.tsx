@@ -37,10 +37,10 @@ export default function NavSession() {
     //  Get session info
     //
     const data: BSsessionTable | null = getCookieClient()
+    if (!data) return
     //
     //  Update the Context
     //
-    if (!data) return
     setSession(data)
   }
   //--------------------------------------------------------------------------------

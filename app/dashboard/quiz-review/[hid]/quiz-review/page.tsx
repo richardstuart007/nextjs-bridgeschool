@@ -1,5 +1,5 @@
 import ReviewForm from '@/app/ui/quiz-review/form'
-import Breadcrumbs from '@/app/ui/breadcrumbs'
+import Breadcrumbs from '@/app/ui/utils/breadcrumbs'
 import { fetchQuestionsByGid, fetchHistoryById } from '@/app/lib/data'
 import { notFound } from 'next/navigation'
 import { Metadata } from 'next'

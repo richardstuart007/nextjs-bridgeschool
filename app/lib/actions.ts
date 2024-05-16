@@ -240,17 +240,17 @@ export async function deleteCookie(cookieName: string) {
 export async function getCookieInfo(cookieName: string) {
   try {
     const cookie = cookies().get(cookieName)
-    if (!cookie) throw new Error('No cookie found.')
+    if (!cookie) return null
     //
     //  Get value
     //
     const decodedCookie = decodeURIComponent(cookie.value)
-    if (!decodedCookie) throw new Error('No cookie value.')
+    if (!decodedCookie) return null
     //
     //  Convert to JSON
     //
     const JSON_cookie = JSON.parse(decodedCookie)
-    if (!JSON_cookie) throw new Error('No cookie JSON error.')
+    if (!JSON_cookie) return null
     //
     //  Return JSON
     //
@@ -357,10 +357,23 @@ export async function preferencesUser(prevState: StatePreferences, formData: For
 // ----------------------------------------------------------------------
 export async function navsignout() {
   try {
+    //
+    //  Get the Bridge School session cookie
+    //
     const bssession = await getCookieInfo('BS_session')
-    const bsid = bssession.bsid
+    if (!bssession) return
+    //
+    //  Delete the cookie
+    //
     await deleteCookie('BS_session')
+    //
+    //  Update the session to signed out
+    //
+    const bsid = bssession.bsid
     await UserssessionsSignout(bsid)
+    //
+    //  Errors
+    //
   } catch (error) {
     throw new Error('Failed to sign out.')
   }
