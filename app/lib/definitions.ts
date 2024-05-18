@@ -105,6 +105,14 @@ export type UserssessionsTable = {
   ussignedin: boolean
 }
 
+export type BS_session = {
+  bsuid: number
+  bsname: string
+  bsemail: string
+  bsid: number
+  bssignedin: boolean
+}
+
 export type NewUserssessionsTable = {
   usdatetime: DateTime
   usuid: number

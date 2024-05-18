@@ -2,10 +2,10 @@ import NextAuth from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import { authConfig } from './auth.config'
 import { z } from 'zod'
-import type { UserAuth, UsersTable, NewUserssessionsTable } from '@/app/lib/definitions'
+import type { UserAuth, UsersTable, NewUserssessionsTable, BS_session } from '@/app/lib/definitions'
 import bcrypt from 'bcrypt'
 import { writeUserssessions } from '@/app/lib/actions'
-import { writeCookieBSsession } from '@/app/lib/actions'
+import { writeCookie } from '@/app/lib/actions'
 import { fetchUserByEmail } from '@/app/lib/data'
 // ----------------------------------------------------------------------
 //  Check User/Password
@@ -37,11 +37,17 @@ export const { auth, signIn, signOut } = NextAuth({
         // Write session information
         //
         const usersessionsRecord = await writeSession(userRecord)
-        const usid = usersessionsRecord.usid
         //
         // Write cookie
         //
-        await writeCookieBSsession(userRecord, usid)
+        const BS_session = {
+          bsuid: userRecord.u_uid,
+          bsname: userRecord.u_name,
+          bsemail: userRecord.u_email,
+          bsid: usersessionsRecord.usid,
+          bssignedin: true
+        }
+        await writeCookie(BS_session)
         //
         //  Return in correct format
         //

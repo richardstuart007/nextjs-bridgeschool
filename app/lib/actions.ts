@@ -7,7 +7,12 @@ import { redirect } from 'next/navigation'
 import { signIn } from '@/auth'
 import { AuthError } from 'next-auth'
 import bcrypt from 'bcrypt'
-import type { UsersTable, NewUsershistoryTable, NewUserssessionsTable } from '@/app/lib/definitions'
+import type {
+  UsersTable,
+  NewUsershistoryTable,
+  NewUserssessionsTable,
+  BS_session
+} from '@/app/lib/definitions'
 import { cookies } from 'next/headers'
 // ----------------------------------------------------------------------
 //  Authenticate Login
@@ -198,22 +203,11 @@ export async function UserssessionsSignout(usid: number) {
 // ----------------------------------------------------------------------
 //  Write Cookie information
 // ----------------------------------------------------------------------
-export async function writeCookieBSsession(userRecord: UsersTable, usid: number) {
+export async function writeCookie(BSsession: BS_session) {
   try {
-    //
-    //  Create session cookie
-    //
-    const BS_session = {
-      bsuid: userRecord.u_uid,
-      bsname: userRecord.u_name,
-      bsemail: userRecord.u_email,
-      bsid: usid,
-      bssignedin: true
-    }
-
-    const JSON_BS_session = JSON.stringify(BS_session)
+    const JSON_BSsession = JSON.stringify(BSsession)
     // const expires = new Date(Date.now() + 10000)
-    cookies().set('BS_session', JSON_BS_session, {
+    cookies().set('BS_session', JSON_BSsession, {
       httpOnly: false,
       secure: false,
       // expires: expires,
@@ -225,11 +219,39 @@ export async function writeCookieBSsession(userRecord: UsersTable, usid: number)
   }
 }
 // ----------------------------------------------------------------------
+//  Update Cookie information - name
+// ----------------------------------------------------------------------
+export async function updateCookieName(u_name: string) {
+  try {
+    //
+    //  Get the Bridge School session cookie
+    //
+    const BSsession = await getCookie()
+    if (!BSsession) return
+    //
+    //  Update the name
+    //
+    BSsession.bsname = u_name
+    //
+    //  Write the cookie
+    //
+    const JSON_BSsession = JSON.stringify(BSsession)
+    cookies().set('BS_session', JSON_BSsession, {
+      httpOnly: false,
+      secure: false,
+      sameSite: 'lax',
+      path: '/'
+    })
+  } catch (error) {
+    throw new Error('Failed to update cookie info.')
+  }
+}
+// ----------------------------------------------------------------------
 //  Delete Cookie
 // ----------------------------------------------------------------------
-export async function deleteCookie(cookieName: string) {
+export async function deleteCookie() {
   try {
-    cookies().delete(cookieName)
+    cookies().delete('BS_session')
   } catch (error) {
     throw new Error('Failed to delete cookie.')
   }
@@ -237,9 +259,9 @@ export async function deleteCookie(cookieName: string) {
 // ----------------------------------------------------------------------
 //  Get Cookie information
 // ----------------------------------------------------------------------
-export async function getCookieInfo(cookieName: string) {
+export async function getCookie() {
   try {
-    const cookie = cookies().get(cookieName)
+    const cookie = cookies().get('BS_session')
     if (!cookie) return null
     //
     //  Get value
@@ -347,6 +369,10 @@ export async function preferencesUser(prevState: StatePreferences, formData: For
     }
   }
   //
+  //  Update the cookie name
+  //
+  await updateCookieName(u_name)
+  //
   // Revalidate the cache and redirect the user.
   //
   revalidatePath('/dashboard')
@@ -360,12 +386,12 @@ export async function navsignout() {
     //
     //  Get the Bridge School session cookie
     //
-    const bssession = await getCookieInfo('BS_session')
+    const bssession = await getCookie()
     if (!bssession) return
     //
     //  Delete the cookie
     //
-    await deleteCookie('BS_session')
+    await deleteCookie()
     //
     //  Update the session to signed out
     //
