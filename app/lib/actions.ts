@@ -95,9 +95,6 @@ export async function registerUser(prevState: StateRegister, formData: FormData)
   const u_joined = new Date().toISOString().slice(0, 19).replace('T', ' ')
   const u_fedid = 'dummy'
   const u_admin = false
-  const u_sortquestions = true
-  const u_skipcorrect = true
-  const u_dftmaxquestions = 20
   const u_fedcountry = 'NZ'
   const u_dev = false
   //
@@ -105,8 +102,8 @@ export async function registerUser(prevState: StateRegister, formData: FormData)
   //
   try {
     await sql`
-    INSERT INTO users (u_email, u_hash, u_user, fedid, u_joined, u_fedid, u_admin, u_sortquestions, u_skipcorrect, u_dftmaxquestions, u_fedcountry, u_dev)
-    VALUES (${u_email}, ${u_hash}, ${u_user}, ${fedid}, ${u_joined}, ${u_fedid}, ${u_admin}, ${u_sortquestions}, ${u_skipcorrect}, ${u_dftmaxquestions}, ${u_fedcountry}, ${u_dev})
+    INSERT INTO users (u_email, u_hash, u_user, fedid, u_joined, u_fedid, u_admin, u_fedcountry, u_dev)
+    VALUES (${u_email}, ${u_hash}, ${u_user}, ${fedid}, ${u_joined}, ${u_fedid}, ${u_admin}, ${u_fedcountry}, ${u_dev})
   `
   } catch (error) {
     return {
@@ -201,37 +198,35 @@ export async function UserssessionsSignout(usid: number) {
   }
 }
 // ----------------------------------------------------------------------
-//  Write Cookie information
+//  Update Cookie information
 // ----------------------------------------------------------------------
-export async function writeCookie(BSsession: BS_session) {
-  try {
-    const JSON_BSsession = JSON.stringify(BSsession)
-    // const expires = new Date(Date.now() + 10000)
-    cookies().set('BS_session', JSON_BSsession, {
-      httpOnly: false,
-      secure: false,
-      // expires: expires,
-      sameSite: 'lax',
-      path: '/'
-    })
-  } catch (error) {
-    throw new Error('Failed to write cookie info.')
-  }
-}
-// ----------------------------------------------------------------------
-//  Update Cookie information - name
-// ----------------------------------------------------------------------
-export async function updateCookieName(u_name: string) {
+export async function updateCookie(Bssession_updates: Partial<BS_session>) {
   try {
     //
     //  Get the Bridge School session cookie
     //
-    const BSsession = await getCookie()
-    if (!BSsession) return
+    let BSsession = await getCookie()
+    // If the cookie does not exist, initialize it with default values
+    if (!BSsession) {
+      BSsession = {
+        bsuid: 0,
+        bsname: '',
+        bsemail: '',
+        bsid: 0,
+        bssignedin: false,
+        bssortquestions: true,
+        bsskipcorrect: true,
+        bsdftmaxquestions: 20
+      }
+    }
     //
-    //  Update the name
+    // Update the fields
     //
-    BSsession.bsname = u_name
+    for (const [key, value] of Object.entries(Bssession_updates)) {
+      if (key in BSsession) {
+        BSsession[key] = value
+      }
+    }
     //
     //  Write the cookie
     //
@@ -291,10 +286,7 @@ const FormSchemaPreferences = z.object({
   u_uid: z.string(),
   u_name: z.string(),
   u_fedid: z.string(),
-  u_fedcountry: z.string(),
-  u_dftmaxquestions: z.number().min(5).max(100),
-  u_sortquestions: z.boolean(),
-  u_skipcorrect: z.boolean()
+  u_fedcountry: z.string()
 })
 //
 //  Errors and Messages
@@ -305,9 +297,6 @@ export type StatePreferences = {
     u_name?: string[]
     u_fedid?: string[]
     u_fedcountry?: string[]
-    u_dftmaxquestions?: string[]
-    u_sortquestions?: string[]
-    u_skipcorrect?: string[]
   }
   message?: string | null
 }
@@ -322,10 +311,7 @@ export async function preferencesUser(prevState: StatePreferences, formData: For
     u_uid: formData.get('u_uid'),
     u_name: formData.get('u_name'),
     u_fedid: formData.get('u_fedid'),
-    u_fedcountry: formData.get('u_fedcountry'),
-    u_dftmaxquestions: Number(formData.get('u_dftmaxquestions')),
-    u_sortquestions: formData.get('u_sortquestions') === 'true', // Convert string to boolean
-    u_skipcorrect: formData.get('u_skipcorrect') === 'true' // Convert string to boolean
+    u_fedcountry: formData.get('u_fedcountry')
   })
   //
   // If form validation fails, return errors early. Otherwise, continue.
@@ -339,15 +325,7 @@ export async function preferencesUser(prevState: StatePreferences, formData: For
   //
   // Unpack form data
   //
-  const {
-    u_uid,
-    u_name,
-    u_fedid,
-    u_fedcountry,
-    u_dftmaxquestions,
-    u_sortquestions,
-    u_skipcorrect
-  } = validatedFields.data
+  const { u_uid, u_name, u_fedid, u_fedcountry } = validatedFields.data
   //
   // Update data into the database
   //
@@ -357,10 +335,7 @@ export async function preferencesUser(prevState: StatePreferences, formData: For
     SET
       u_name = ${u_name},
       u_fedid = ${u_fedid},
-      u_fedcountry = ${u_fedcountry},
-      u_dftmaxquestions = ${u_dftmaxquestions},
-      u_sortquestions = ${u_sortquestions},
-      u_skipcorrect = ${u_skipcorrect}
+      u_fedcountry = ${u_fedcountry}
     WHERE u_uid = ${u_uid}
     `
   } catch (error) {
@@ -371,7 +346,68 @@ export async function preferencesUser(prevState: StatePreferences, formData: For
   //
   //  Update the cookie name
   //
-  await updateCookieName(u_name)
+  await updateCookie({ bsname: u_name })
+  //
+  // Revalidate the cache and redirect the user.
+  //
+  revalidatePath('/dashboard')
+  redirect('/dashboard')
+}
+// ----------------------------------------------------------------------
+//  Update User Preferences
+// ----------------------------------------------------------------------
+//
+//  Form Schema for validation
+//
+const FormSchemaSession = z.object({
+  bsdftmaxquestions: z.number().min(5).max(100),
+  bssortquestions: z.boolean(),
+  bsskipcorrect: z.boolean()
+})
+//
+//  Errors and Messages
+//
+export type StateSession = {
+  errors?: {
+    bsdftmaxquestions?: string[]
+    bssortquestions?: string[]
+    bsskipcorrect?: string[]
+  }
+  message?: string | null
+}
+
+const Session = FormSchemaSession
+
+export async function sessionUser(prevState: StateSession, formData: FormData) {
+  //
+  //  Validate form data
+  //
+  const validatedFields = Session.safeParse({
+    bsdftmaxquestions: Number(formData.get('bsdftmaxquestions')),
+    bssortquestions: formData.get('bssortquestions') === 'true', // Convert string to boolean
+    bsskipcorrect: formData.get('bsskipcorrect') === 'true' // Convert string to boolean
+  })
+  //
+  // If form validation fails, return errors early. Otherwise, continue.
+  //
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Update User.'
+    }
+  }
+  //
+  // Unpack form data
+  //
+  const { bsdftmaxquestions, bssortquestions, bsskipcorrect } = validatedFields.data
+  //
+  //  Update the cookie name
+  //
+  await updateCookie({
+    bsdftmaxquestions: bsdftmaxquestions,
+    bssortquestions: bssortquestions,
+    bsskipcorrect: bsskipcorrect
+  })
   //
   // Revalidate the cache and redirect the user.
   //

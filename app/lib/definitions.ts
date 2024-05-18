@@ -111,6 +111,9 @@ export type BS_session = {
   bsemail: string
   bsid: number
   bssignedin: boolean
+  bssortquestions: boolean
+  bsskipcorrect: boolean
+  bsdftmaxquestions: number
 }
 
 export type NewUserssessionsTable = {
@@ -135,9 +138,6 @@ export type UsersTable = {
   u_joined: DateTime
   u_fedid: string
   u_admin: boolean
-  u_sortquestions: boolean
-  u_skipcorrect: boolean
-  u_dftmaxquestions: number
   u_fedcountry: string
   u_dev: boolean
 }

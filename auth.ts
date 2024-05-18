@@ -5,7 +5,7 @@ import { z } from 'zod'
 import type { UserAuth, UsersTable, NewUserssessionsTable, BS_session } from '@/app/lib/definitions'
 import bcrypt from 'bcrypt'
 import { writeUserssessions } from '@/app/lib/actions'
-import { writeCookie } from '@/app/lib/actions'
+import { updateCookie } from '@/app/lib/actions'
 import { fetchUserByEmail } from '@/app/lib/data'
 // ----------------------------------------------------------------------
 //  Check User/Password
@@ -45,9 +45,12 @@ export const { auth, signIn, signOut } = NextAuth({
           bsname: userRecord.u_name,
           bsemail: userRecord.u_email,
           bsid: usersessionsRecord.usid,
-          bssignedin: true
+          bssignedin: true,
+          bssortquestions: true,
+          bsskipcorrect: true,
+          bsdftmaxquestions: 20
         }
-        await writeCookie(BS_session)
+        await updateCookie(BS_session)
         //
         //  Return in correct format
         //

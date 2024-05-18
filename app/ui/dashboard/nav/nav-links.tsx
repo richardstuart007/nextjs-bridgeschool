@@ -16,7 +16,8 @@ export default function NavLinks() {
     { name: 'Home', href: '/dashboard', icon: HomeIcon },
     { name: 'Library', href: '/dashboard/library', icon: BuildingLibraryIcon },
     { name: 'History', href: '/dashboard/history', icon: ArchiveBoxIcon },
-    { name: 'Preferences', href: '/dashboard', icon: UserIcon }
+    { name: 'Preferences', href: '/dashboard', icon: UserIcon },
+    { name: 'Session', href: '/dashboard/session', icon: UserIcon }
   ])
   //
   //  Get path name
