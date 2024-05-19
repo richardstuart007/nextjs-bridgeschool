@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState, ForwardRefExoticComponent, SVGProps, RefAttributes } from 'react'
 import {
   BuildingLibraryIcon,
   HomeIcon,
@@ -18,17 +18,34 @@ export default function NavLinks() {
   //
   const { session } = useUserContext()
   const { bsuid } = session
-  const hrefUser = `/dashboard/user/${bsuid}/user`
+  //
+  // Define the Link type
+  //
+  type Link = {
+    name: string
+    href: string
+    icon: ForwardRefExoticComponent<
+      Omit<SVGProps<SVGSVGElement>, 'ref'> & {
+        title?: string
+        titleId?: string
+      } & RefAttributes<SVGSVGElement>
+    >
+  }
   //
   // Links with hrefUser
   //
-  const links = [
-    { name: 'Home', href: '/dashboard', icon: HomeIcon },
-    { name: 'Library', href: '/dashboard/library', icon: BuildingLibraryIcon },
-    { name: 'History', href: '/dashboard/history', icon: ArchiveBoxIcon },
-    { name: 'User', href: hrefUser, icon: UserIcon },
-    { name: 'Session', href: '/dashboard/session', icon: Cog6ToothIcon }
-  ]
+  const [links, setLinks] = useState<Link[]>([])
+  useEffect(() => {
+    const hrefUser = `/dashboard/user/${bsuid}/user`
+    const initialLinks = [
+      { name: 'Home', href: '/dashboard', icon: HomeIcon },
+      { name: 'Library', href: '/dashboard/library', icon: BuildingLibraryIcon },
+      { name: 'History', href: '/dashboard/history', icon: ArchiveBoxIcon },
+      { name: 'User', href: hrefUser, icon: UserIcon },
+      { name: 'Session', href: '/dashboard/session', icon: Cog6ToothIcon }
+    ]
+    setLinks(initialLinks)
+  }, [bsuid])
   //
   //  Get path name
   //
