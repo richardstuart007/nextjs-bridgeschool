@@ -1,4 +1,4 @@
-import PreferencesForm from '@/app/ui/preferences/form'
+import Form from '@/app/ui/user/form'
 import Breadcrumbs from '@/app/ui/utils/breadcrumbs'
 import { fetchUserById } from '@/app/lib/data'
 import { notFound } from 'next/navigation'
@@ -6,7 +6,7 @@ import { Metadata } from 'next'
 import { UsersTable } from '@/app/lib/definitions'
 
 export const metadata: Metadata = {
-  title: 'User Preferences'
+  title: 'User'
 }
 export default async function Page({ params }: { params: { uid: number } }) {
   //
@@ -30,15 +30,15 @@ export default async function Page({ params }: { params: { uid: number } }) {
     <>
       <Breadcrumbs
         breadcrumbs={[
-          { label: 'Library', href: '/dashboard/library' },
+          { label: 'Dashboard', href: '/dashboard' },
           {
-            label: 'Preferences',
-            href: `/dashboard/preferences/${uid}/preferences`,
+            label: 'User',
+            href: `/dashboard/user/${uid}/user`,
             active: true
           }
         ]}
       />
-      {UserRecord ? <PreferencesForm UserRecord={UserRecord} /> : null}
+      {UserRecord ? <Form UserRecord={UserRecord} /> : null}
     </>
   )
 }

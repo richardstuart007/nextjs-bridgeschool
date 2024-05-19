@@ -13,9 +13,9 @@ export default function SessionForm({ BSsession }: { BSsession: BS_session }) {
   const [bsskipcorrect, setbsskipcorrect] = useState(BSsession.bsskipcorrect)
   const [bssortquestions, setbssortquestions] = useState(BSsession.bssortquestions)
   //-------------------------------------------------------------------------
-  //  Preferences
+  //  Update Button
   //-------------------------------------------------------------------------
-  function PreferencesButton() {
+  function UpdateButton() {
     const { pending } = useFormStatus()
     return (
       <Button className='mt-4 w-72 md:max-w-md px-4' aria-disabled={pending}>
@@ -153,7 +153,7 @@ export default function SessionForm({ BSsession }: { BSsession: BS_session }) {
         {/*  ...................................................................................*/}
         {/*   Update Button */}
         {/*  ...................................................................................*/}
-        <PreferencesButton />
+        <UpdateButton />
         {/*  ...................................................................................*/}
         {/*   Error Messages */}
         {/*  ...................................................................................*/}

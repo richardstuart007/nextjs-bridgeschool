@@ -206,27 +206,16 @@ export async function updateCookie(Bssession_updates: Partial<BS_session>) {
     //  Get the Bridge School session cookie
     //
     let BSsession = await getCookie()
-    // If the cookie does not exist, initialize it with default values
+    //
+    // Initialize BSsession if it doesn't exist
+    //
     if (!BSsession) {
-      BSsession = {
-        bsuid: 0,
-        bsname: '',
-        bsemail: '',
-        bsid: 0,
-        bssignedin: false,
-        bssortquestions: true,
-        bsskipcorrect: true,
-        bsdftmaxquestions: 20
-      }
+      BSsession = {}
     }
     //
-    // Update the fields
+    // Update or add the fields from Bssession_updates
     //
-    for (const [key, value] of Object.entries(Bssession_updates)) {
-      if (key in BSsession) {
-        BSsession[key] = value
-      }
-    }
+    Object.assign(BSsession, Bssession_updates)
     //
     //  Write the cookie
     //
@@ -277,12 +266,12 @@ export async function getCookie() {
   }
 }
 // ----------------------------------------------------------------------
-//  Update User Preferences
+//  Update User Setup
 // ----------------------------------------------------------------------
 //
 //  Form Schema for validation
 //
-const FormSchemaPreferences = z.object({
+const FormSchemaSetup = z.object({
   u_uid: z.string(),
   u_name: z.string(),
   u_fedid: z.string(),
@@ -291,7 +280,7 @@ const FormSchemaPreferences = z.object({
 //
 //  Errors and Messages
 //
-export type StatePreferences = {
+export type StateSetup = {
   errors?: {
     u_uid?: string[]
     u_name?: string[]
@@ -301,13 +290,13 @@ export type StatePreferences = {
   message?: string | null
 }
 
-const Preferences = FormSchemaPreferences
+const Setup = FormSchemaSetup
 
-export async function preferencesUser(prevState: StatePreferences, formData: FormData) {
+export async function SetupUser(prevState: StateSetup, formData: FormData) {
   //
   //  Validate form data
   //
-  const validatedFields = Preferences.safeParse({
+  const validatedFields = Setup.safeParse({
     u_uid: formData.get('u_uid'),
     u_name: formData.get('u_name'),
     u_fedid: formData.get('u_fedid'),
@@ -354,7 +343,7 @@ export async function preferencesUser(prevState: StatePreferences, formData: For
   redirect('/dashboard')
 }
 // ----------------------------------------------------------------------
-//  Update User Preferences
+//  Update Session
 // ----------------------------------------------------------------------
 //
 //  Form Schema for validation

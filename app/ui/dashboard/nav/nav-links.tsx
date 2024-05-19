@@ -1,10 +1,11 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import {
   BuildingLibraryIcon,
   HomeIcon,
   ArchiveBoxIcon,
-  UserIcon
+  UserIcon,
+  Cog6ToothIcon
 } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -12,37 +13,26 @@ import clsx from 'clsx'
 import { useUserContext } from '@/UserContext'
 
 export default function NavLinks() {
-  const [links, setLinks] = useState([
+  //
+  //  Get user ID
+  //
+  const { session } = useUserContext()
+  const { bsuid } = session
+  const hrefUser = `/dashboard/user/${bsuid}/user`
+  //
+  // Links with hrefUser
+  //
+  const links = [
     { name: 'Home', href: '/dashboard', icon: HomeIcon },
     { name: 'Library', href: '/dashboard/library', icon: BuildingLibraryIcon },
     { name: 'History', href: '/dashboard/history', icon: ArchiveBoxIcon },
-    { name: 'Preferences', href: '/dashboard', icon: UserIcon },
-    { name: 'Session', href: '/dashboard/session', icon: UserIcon }
-  ])
+    { name: 'User', href: hrefUser, icon: UserIcon },
+    { name: 'Session', href: '/dashboard/session', icon: Cog6ToothIcon }
+  ]
   //
   //  Get path name
   //
   const pathname = usePathname()
-  //
-  //  Update Links
-  //
-  const { session } = useUserContext()
-  const { bsuid } = session
-  useEffect(() => {
-    updateLinks()
-    // eslint-disable-next-line
-  }, [session])
-  //--------------------------------------------------------------------------------
-  //  First Time
-  //--------------------------------------------------------------------------------
-  function updateLinks() {
-    //
-    //  Update the link to this user
-    //
-    const updatedLinks = [...links]
-    updatedLinks[3].href = `/dashboard/preferences/${bsuid}/preferences`
-    setLinks(updatedLinks)
-  }
   //--------------------------------------------------------------------------------
   return (
     <>

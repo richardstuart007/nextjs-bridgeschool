@@ -3,22 +3,22 @@ import { useState } from 'react'
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline'
 import { Button } from '../utils/button'
 import { useFormState, useFormStatus } from 'react-dom'
-import { preferencesUser } from '@/app/lib/actions'
+import { SetupUser } from '@/app/lib/actions'
 import type { UsersTable } from '@/app/lib/definitions'
 import SelectCountry from './select-country'
 
-export default function PreferencesForm({ UserRecord }: { UserRecord: UsersTable }) {
+export default function Form({ UserRecord }: { UserRecord: UsersTable }) {
   const initialState = { message: null, errors: {} }
-  const [statePreferences, dispatch] = useFormState(preferencesUser, initialState)
+  const [stateuser, dispatch] = useFormState(SetupUser, initialState)
   const [u_name, setU_name] = useState(UserRecord.u_name)
   const [u_fedid, setU_fedid] = useState(UserRecord.u_fedid)
   const [u_fedcountry, setU_fedcountry] = useState(UserRecord.u_fedcountry)
   const u_uid = UserRecord.u_uid
   const u_email = UserRecord.u_email
   //-------------------------------------------------------------------------
-  //  Preferences
+  //  Update Button
   //-------------------------------------------------------------------------
-  function PreferencesButton() {
+  function UpdateButton() {
     const { pending } = useFormStatus()
     return (
       <Button className='mt-4 w-72 md:max-w-md px-4' aria-disabled={pending}>
@@ -72,8 +72,8 @@ export default function PreferencesForm({ UserRecord }: { UserRecord: UsersTable
             </div>
           </div>
           <div id='name-error' aria-live='polite' aria-atomic='true'>
-            {statePreferences.errors?.u_name &&
-              statePreferences.errors.u_name.map((error: string) => (
+            {stateuser.errors?.u_name &&
+              stateuser.errors.u_name.map((error: string) => (
                 <p className='mt-2 text-sm text-red-500' key={error}>
                   {error}
                 </p>
@@ -100,8 +100,8 @@ export default function PreferencesForm({ UserRecord }: { UserRecord: UsersTable
             </div>
           </div>
           <div id='fedid-error' aria-live='polite' aria-atomic='true'>
-            {statePreferences.errors?.u_fedid &&
-              statePreferences.errors.u_fedid.map((error: string) => (
+            {stateuser.errors?.u_fedid &&
+              stateuser.errors.u_fedid.map((error: string) => (
                 <p className='mt-2 text-sm text-red-500' key={error}>
                   {error}
                 </p>
@@ -129,15 +129,15 @@ export default function PreferencesForm({ UserRecord }: { UserRecord: UsersTable
           {/*  ...................................................................................*/}
           {/*   Update Button */}
           {/*  ...................................................................................*/}
-          <PreferencesButton />
+          <UpdateButton />
           {/*  ...................................................................................*/}
           {/*   Error Messages */}
           {/*  ...................................................................................*/}
           <div className='flex h-8 items-end space-x-1' aria-live='polite' aria-atomic='true'>
-            {statePreferences.message && (
+            {stateuser.message && (
               <>
                 <ExclamationCircleIcon className='h-5 w-5 text-red-500' />
-                <p className='text-sm text-red-500'>{statePreferences.message}</p>
+                <p className='text-sm text-red-500'>{stateuser.message}</p>
               </>
             )}
           </div>

@@ -4,7 +4,7 @@ import { Metadata } from 'next'
 import { getCookie } from '@/app/lib/actions'
 
 export const metadata: Metadata = {
-  title: 'Session Preferences'
+  title: 'Session'
 }
 export default async function Page() {
   const BSsession = await getCookie()
@@ -13,10 +13,10 @@ export default async function Page() {
     <>
       <Breadcrumbs
         breadcrumbs={[
-          { label: 'Library', href: '/dashboard/library' },
+          { label: 'Dashboard', href: '/dashboard' },
           {
-            label: 'Preferences',
-            href: `/dashboard/sessions`,
+            label: 'Session',
+            href: `/dashboard/session`,
             active: true
           }
         ]}
