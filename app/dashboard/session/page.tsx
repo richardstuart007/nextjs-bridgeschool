@@ -1,11 +1,11 @@
 'use client'
 import SessionForm from '@/app/ui/session/form'
 import Breadcrumbs from '@/app/ui/utils/breadcrumbs'
-import { Metadata } from 'next'
+// import { Metadata } from 'next'
 
-export const metadata: Metadata = {
-  title: 'Session'
-}
+// export const metadata: Metadata = {
+//   title: 'Session'
+// }
 export default function Page() {
   //---------------------------------------------------
   return (
