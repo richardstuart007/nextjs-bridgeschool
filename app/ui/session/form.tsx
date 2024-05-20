@@ -4,19 +4,16 @@ import { ExclamationCircleIcon } from '@heroicons/react/24/outline'
 import { Button } from '../utils/button'
 import { useFormState, useFormStatus } from 'react-dom'
 import { sessionUser } from '@/app/lib/actions'
-import { getCookieClient } from '@/app/lib/utilsClient'
 import type { BS_session } from '@/app/lib/definitions'
 
-export default function SessionForm() {
-  const BSsession: Partial<BS_session> = getCookieClient() as Partial<BS_session>
-
+export default function SessionForm({ BSsession }: { BSsession: BS_session }) {
   const initialState = { message: null, errors: {} }
   const [stateSession, dispatch] = useFormState(sessionUser, initialState)
   const [bsdftmaxquestions, setbsdftmaxquestions] = useState(BSsession.bsdftmaxquestions)
   const [bsskipcorrect, setbsskipcorrect] = useState(BSsession.bsskipcorrect)
   const [bssortquestions, setbssortquestions] = useState(BSsession.bssortquestions)
   //-------------------------------------------------------------------------
-  //  Update Button
+  //  Update
   //-------------------------------------------------------------------------
   function UpdateButton() {
     const { pending } = useFormStatus()

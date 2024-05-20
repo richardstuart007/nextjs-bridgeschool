@@ -210,7 +210,16 @@ export async function updateCookie(Bssession_updates: Partial<BS_session>) {
     // Initialize BSsession if it doesn't exist
     //
     if (!BSsession) {
-      BSsession = {}
+      BSsession = {
+        bsuid: 0,
+        bsname: '',
+        bsemail: '',
+        bsid: 0,
+        bssignedin: false,
+        bssortquestions: false,
+        bsskipcorrect: false,
+        bsdftmaxquestions: 0
+      }
     }
     //
     // Update or add the fields from Bssession_updates
@@ -243,7 +252,7 @@ export async function deleteCookie() {
 // ----------------------------------------------------------------------
 //  Get Cookie information
 // ----------------------------------------------------------------------
-export async function getCookie() {
+export async function getCookie(): Promise<BS_session | null> {
   try {
     const cookie = cookies().get('BS_session')
     if (!cookie) return null
@@ -262,7 +271,8 @@ export async function getCookie() {
     //
     return JSON_cookie
   } catch (error) {
-    throw new Error('Failed to get cookie info.')
+    console.error('Failed to get cookie info.')
+    return null
   }
 }
 // ----------------------------------------------------------------------

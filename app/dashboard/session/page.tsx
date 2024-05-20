@@ -1,12 +1,14 @@
-'use client'
 import SessionForm from '@/app/ui/session/form'
 import Breadcrumbs from '@/app/ui/utils/breadcrumbs'
-// import { Metadata } from 'next'
+import { Metadata } from 'next'
+import { getCookie } from '@/app/lib/actions'
 
-// export const metadata: Metadata = {
-//   title: 'Session'
-// }
-export default function Page() {
+export const metadata: Metadata = {
+  title: 'Session Preferences'
+}
+
+export default async function Page(): Promise<JSX.Element> {
+  const sessionData = await getCookie()
   //---------------------------------------------------
   return (
     <>
@@ -20,7 +22,7 @@ export default function Page() {
           }
         ]}
       />
-      <SessionForm />
+      {sessionData ? <SessionForm BSsession={sessionData} /> : null}
     </>
   )
 }
