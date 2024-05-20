@@ -74,7 +74,10 @@ export async function registerUser(prevState: StateRegister, formData: FormData)
   // Check if email exists already
   //
   try {
-    const userrecord = await sql<UsersTable>`SELECT * FROM users WHERE u_email=${email}`
+    const userrecord = await sql<UsersTable>`SELECT *
+      FROM users
+      WHERE u_email=${email}`
+
     if (userrecord.rowCount > 0) {
       return {
         message: 'Email already exists.'
@@ -86,24 +89,38 @@ export async function registerUser(prevState: StateRegister, formData: FormData)
     }
   }
   //
-  //  Write Users
+  // Insert data into the database
   //
   const u_email = email
   const u_hash = await bcrypt.hash(password, 10)
-  const u_user = email
-  const fedid = email.split('@')[0]
+  const u_user = email.split('@')[0]
   const u_joined = new Date().toISOString().slice(0, 19).replace('T', ' ')
   const u_fedid = 'dummy'
   const u_admin = false
   const u_fedcountry = 'NZ'
   const u_dev = false
-  //
-  // Insert data into the database
-  //
   try {
     await sql`
-    INSERT INTO users (u_email, u_hash, u_user, fedid, u_joined, u_fedid, u_admin, u_fedcountry, u_dev)
-    VALUES (${u_email}, ${u_hash}, ${u_user}, ${fedid}, ${u_joined}, ${u_fedid}, ${u_admin}, ${u_fedcountry}, ${u_dev})
+    INSERT
+      INTO users
+       (
+        u_email,
+        u_hash,
+        u_user,
+        u_joined,
+        u_fedid,
+        u_admin,
+        u_fedcountry,
+        u_dev)
+    VALUES (
+      ${u_email},
+      ${u_hash},
+      ${u_user},
+      ${u_joined},
+      ${u_fedid},
+      ${u_admin},
+      ${u_fedcountry},
+      ${u_dev})
   `
   } catch (error) {
     return {
