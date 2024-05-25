@@ -29,6 +29,16 @@ export default function SessionForm({ BSsession }: { BSsession: BS_session }) {
       <div className='flex-1 rounded-lg bg-gray-50 px-4 pb-2 pt-2 max-w-md'>
         <div className=''>
           {/*  ...................................................................................*/}
+          {/*  SESSION INFO  */}
+          {/*  ...................................................................................*/}
+          {/*  Mobile  */}
+          <div className=' md:hidden'>
+            <div className='block text-xs font-medium text-gray-900'>
+              <h1>{`Session: ${BSsession?.bsid}`}</h1>
+              <h1>{`User: ${BSsession?.bsuid} ${BSsession?.bsname} `}</h1>
+            </div>
+          </div>
+          {/*  ...................................................................................*/}
           {/*  MAX QUESTIONS  */}
           {/*  ...................................................................................*/}
           <div className='mt-4'>

@@ -159,14 +159,18 @@ export default async function SummaryGraphs() {
   }
   //--------------------------------------------------------------------------------
   return (
-    <div className='flex flex-col gap-10'>
-      <div className='max-w-full bg-gray-100 md:max-w-2xl   '>
-        <h2>Top Results</h2>
-        <StackedBarChart StackedGraphData={TopGraphData} />
+    <div className='h-full flex flex-col gap-10'>
+      <div className='flex-grow flex flex-col items-center'>
+        <div className='w-full max-w-2xl bg-gray-100 flex-grow p-4'>
+          <h2 className='text-lg md:text-xl lg:text-2xl mb-4'>Top Results</h2>
+          <StackedBarChart StackedGraphData={TopGraphData} />
+        </div>
       </div>
-      <div className='max-w-full bg-gray-100 md:max-w-2xl '>
-        <h2>Recent Results</h2>
-        <StackedBarChart StackedGraphData={RecentGraphData} />
+      <div className='flex-grow flex flex-col items-center'>
+        <div className='w-full max-w-2xl bg-gray-100 flex-grow p-4'>
+          <h2 className='text-lg md:text-xl lg:text-2xl mb-4'>Recent Results</h2>
+          <StackedBarChart StackedGraphData={RecentGraphData} />
+        </div>
       </div>
     </div>
   )

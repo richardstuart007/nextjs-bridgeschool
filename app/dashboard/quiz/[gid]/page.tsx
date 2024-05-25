@@ -33,7 +33,7 @@ export default async function Page({ params }: { params: { gid: number } }) {
           { label: 'Library', href: '/dashboard/library' },
           {
             label: 'Quiz',
-            href: `/dashboard/quiz/${gid}/quiz`,
+            href: `/dashboard/quiz/${gid}`,
             active: true
           }
         ]}

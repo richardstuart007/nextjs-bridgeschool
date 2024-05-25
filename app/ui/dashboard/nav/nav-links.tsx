@@ -36,7 +36,7 @@ export default function NavLinks() {
   //
   const [links, setLinks] = useState<Link[]>([])
   useEffect(() => {
-    const hrefUser = `/dashboard/user/${bsuid}/user`
+    const hrefUser = `/dashboard/user/${bsuid}`
     const initialLinks = [
       { name: 'Home', href: '/dashboard', icon: HomeIcon },
       { name: 'Library', href: '/dashboard/library', icon: BuildingLibraryIcon },

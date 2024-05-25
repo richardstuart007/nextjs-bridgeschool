@@ -9,9 +9,7 @@ export default function NavSide() {
   //---------------------------------------------------------------------------
   return (
     <div className='flex h-full flex-col px-3 py-2 md:px-2'>
-      <div className='mb-2 flex h-20 items-center justify-center rounded-md bg-blue-600 p-2 md:h-40'>
-        <SchoolLogo />
-      </div>
+      <SchoolLogo />
       <NavSession />
       <div className='flex grow flex-row justify-between space-x-2 md:flex-col md:space-x-0 md:space-y-2'>
         <NavLinks />

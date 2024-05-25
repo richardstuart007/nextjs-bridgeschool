@@ -38,7 +38,7 @@ export default async function Page({ params }: { params: { hid: number } }) {
             { label: 'History', href: '/dashboard/history' },
             {
               label: 'Quiz-Review',
-              href: `/dashboard/quiz-review/${hid}/quiz-review`,
+              href: `/dashboard/quiz-review/${hid}`,
               active: true
             }
           ]}

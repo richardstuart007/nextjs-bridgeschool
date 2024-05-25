@@ -33,7 +33,7 @@ export function BookView({ type, link }: BookViewProps) {
 //-------------------------------------------------------------------------------------
 export function BookQuiz({ gid }: { gid: number }) {
   return (
-    <Link href={`/dashboard/quiz/${gid}/quiz`} className='hover:bg-gray-200'>
+    <Link href={`/dashboard/quiz/${gid}`} className='hover:bg-gray-200'>
       <TrophyIcon className='w-5' />
     </Link>
   )
@@ -43,7 +43,7 @@ export function BookQuiz({ gid }: { gid: number }) {
 //-------------------------------------------------------------------------------------
 export function QuizReview({ hid }: { hid: number }) {
   return (
-    <Link href={`/dashboard/quiz-review/${hid}/quiz-review`} className='hover:bg-gray-200'>
+    <Link href={`/dashboard/quiz-review/${hid}`} className='hover:bg-gray-200'>
       <DocumentMagnifyingGlassIcon className='w-5' />
     </Link>
   )

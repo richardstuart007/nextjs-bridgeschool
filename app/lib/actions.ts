@@ -94,6 +94,7 @@ export async function registerUser(prevState: StateRegister, formData: FormData)
   const u_email = email
   const u_hash = await bcrypt.hash(password, 10)
   const u_user = email.split('@')[0]
+  const u_name = u_user
   const u_joined = new Date().toISOString().slice(0, 19).replace('T', ' ')
   const u_fedid = 'dummy'
   const u_admin = false
@@ -107,6 +108,7 @@ export async function registerUser(prevState: StateRegister, formData: FormData)
         u_email,
         u_hash,
         u_user,
+        u_name,
         u_joined,
         u_fedid,
         u_admin,
@@ -116,6 +118,7 @@ export async function registerUser(prevState: StateRegister, formData: FormData)
       ${u_email},
       ${u_hash},
       ${u_user},
+      ${u_name},
       ${u_joined},
       ${u_fedid},
       ${u_admin},

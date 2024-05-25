@@ -33,7 +33,7 @@ export default async function Page({ params }: { params: { uid: number } }) {
           { label: 'Dashboard', href: '/dashboard' },
           {
             label: 'User',
-            href: `/dashboard/user/${uid}/user`,
+            href: `/dashboard/user/${uid}`,
             active: true
           }
         ]}

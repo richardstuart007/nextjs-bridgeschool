@@ -116,7 +116,7 @@ export default function QuestionsForm(props: QuestionsFormProps): JSX.Element {
     //  Go to the quiz review page
     //
     const { r_hid } = historyRecord
-    router.push(`/dashboard/quiz-review/${r_hid}/quiz-review`)
+    router.push(`/dashboard/quiz-review/${r_hid}`)
   }
   //...................................................................................
   //.  Render the form
