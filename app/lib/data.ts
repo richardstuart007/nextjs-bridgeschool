@@ -447,6 +447,8 @@ export async function fetchUserById(uid: number): Promise<UsersTable | undefined
 //---------------------------------------------------------------------
 export async function fetchTopResultsData() {
   // noStore()
+  // ????????????
+  await new Promise(resolve => setTimeout(resolve, 3000))
   try {
     const data = await sql<UsershistoryTopResults>`
       SELECT
@@ -486,6 +488,8 @@ export async function fetchTopResultsData() {
 //---------------------------------------------------------------------
 export async function fetchRecentResultsData1() {
   // noStore()
+  // ????????????
+  await new Promise(resolve => setTimeout(resolve, 3000))
   try {
     const data = await sql<UsershistoryRecentResults>`
   SELECT
@@ -525,6 +529,8 @@ export async function fetchRecentResultsData1() {
 //---------------------------------------------------------------------
 export async function fetchRecentResultsData5(userIds: number[]) {
   // noStore()
+  // ????????????
+  await new Promise(resolve => setTimeout(resolve, 3000))
   try {
     const [id1, id2, id3, id4, id5] = userIds
 
