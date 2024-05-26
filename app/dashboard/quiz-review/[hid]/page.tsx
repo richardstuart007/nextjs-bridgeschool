@@ -32,7 +32,7 @@ export default async function Page({ params }: { params: { hid: number } }) {
     }
 
     return (
-      <>
+      <div className='w-full md:p-6'>
         <Breadcrumbs
           breadcrumbs={[
             { label: 'History', href: '/dashboard/history' },
@@ -44,7 +44,7 @@ export default async function Page({ params }: { params: { hid: number } }) {
           ]}
         />
         <ReviewForm history={history} questions={questions} />
-      </>
+      </div>
     )
   } catch (error) {
     console.error('An error occurred while fetching history data:', error)

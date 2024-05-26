@@ -27,7 +27,7 @@ export default async function Page({ params }: { params: { uid: number } }) {
   }
   //---------------------------------------------------
   return (
-    <>
+    <div className='w-full md:p-6'>
       <Breadcrumbs
         breadcrumbs={[
           { label: 'Dashboard', href: '/dashboard' },
@@ -39,6 +39,6 @@ export default async function Page({ params }: { params: { uid: number } }) {
         ]}
       />
       {UserRecord ? <Form UserRecord={UserRecord} /> : null}
-    </>
+    </div>
   )
 }

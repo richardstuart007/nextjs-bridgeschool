@@ -11,7 +11,7 @@ export default async function Page(): Promise<JSX.Element> {
   const sessionData = await getCookie()
   //---------------------------------------------------
   return (
-    <>
+    <div className='w-full md:p-6'>
       <Breadcrumbs
         breadcrumbs={[
           { label: 'Dashboard', href: '/dashboard' },
@@ -23,6 +23,6 @@ export default async function Page(): Promise<JSX.Element> {
         ]}
       />
       {sessionData ? <SessionForm BSsession={sessionData} /> : null}
-    </>
+    </div>
   )
 }

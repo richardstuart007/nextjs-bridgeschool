@@ -23,7 +23,7 @@ export default async function Page({
   const currentPage = Number(searchParams?.page) || 1
   const totalPages = await fetchLibraryPages(query)
   return (
-    <div className='w-full'>
+    <div className='w-full md:p-6'>
       <div className='flex w-full items-center justify-between'>
         <h1 className={`${lusitana.className} text-2xl`}>Library</h1>
       </div>

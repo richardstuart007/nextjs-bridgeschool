@@ -27,7 +27,7 @@ export default async function Page({ params }: { params: { gid: number } }) {
   }
   //---------------------------------------------------
   return (
-    <>
+    <div className='w-full md:p-6'>
       <Breadcrumbs
         breadcrumbs={[
           { label: 'Library', href: '/dashboard/library' },
@@ -39,6 +39,6 @@ export default async function Page({ params }: { params: { gid: number } }) {
         ]}
       />
       <Form questions={questions} />
-    </>
+    </div>
   )
 }
