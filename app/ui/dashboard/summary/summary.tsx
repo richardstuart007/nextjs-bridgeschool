@@ -54,7 +54,8 @@ export default async function SummaryGraphs() {
       datasets: [
         {
           label: 'Percentage',
-          data: percentages
+          data: percentages,
+          backgroundColor: 'rgba(255, 165, 0, 0.6)'
         }
       ]
     }
