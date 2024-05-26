@@ -72,14 +72,13 @@ async function writeSession(userRecord: UsersTable) {
     //
     //  Destructure user record
     //
-    const { u_uid, u_user } = userRecord
+    const { u_uid } = userRecord
     //
     //  Create session record
     //
     const userssession: NewUserssessionsTable = {
       usdatetime: new Date().toISOString().replace('T', ' ').replace('Z', '').substring(0, 23),
-      usuid: u_uid,
-      ususer: u_user
+      usuid: u_uid
     }
     const usersessionsRecord = await writeUserssessions(userssession)
     //

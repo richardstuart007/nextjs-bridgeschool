@@ -101,7 +101,6 @@ export type UserssessionsTable = {
   usid: number
   usdatetime: DateTime
   usuid: number
-  ususer: string
   ussignedin: boolean
 }
 
@@ -119,7 +118,6 @@ export type BS_session = {
 export type NewUserssessionsTable = {
   usdatetime: DateTime
   usuid: number
-  ususer: string
 }
 
 export type UserAuth = {
@@ -132,7 +130,6 @@ export type UserAuth = {
 export type UsersTable = {
   u_uid: number
   u_hash: string
-  u_user: string
   u_name: string
   u_email: string
   u_joined: DateTime
