@@ -43,5 +43,11 @@
   },
   "engines": {
     "node": ">=20"
-  }
+  },
+  "name": "nextjs-bridgeschool",
+  "description": "Bridge School",
+  "version": "1.0.0",
+  "main": "next.config.js",
+  "author": "Richard",
+  "license": "ISC"
 }

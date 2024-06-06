@@ -1,5 +1,8 @@
+'use server'
+
 import { sql, db } from '@vercel/postgres'
 import { unstable_noStore as noStore } from 'next/cache'
+import { cookies } from 'next/headers'
 import {
   LibraryTable,
   LibraryGroupTable,
@@ -8,7 +11,10 @@ import {
   UsershistoryTable,
   HistoryGroupTable,
   UsershistoryTopResults,
-  UsershistoryRecentResults
+  UsershistoryRecentResults,
+  NewUsershistoryTable,
+  NewUserssessionsTable,  
+  BS_session
 } from './definitions'
 const LIBRARY_ITEMS_PER_PAGE = 10
 const HISTORY_ITEMS_PER_PAGE = 10
@@ -18,7 +24,7 @@ const HISTORY_ITEMS_PER_PAGE = 10
 export async function fetchLibraryPages(query: string) {
   // noStore()
   try {
-    let sqlWhere = buildWhere_Library(query)
+    let sqlWhere = await buildWhere_Library(query)
     const sqlQuery = `SELECT COUNT(*) FROM library
     LEFT JOIN ownergroup ON lrowner = ogowner and lrgroup = oggroup
     ${sqlWhere}`
@@ -43,7 +49,7 @@ export async function fetchFilteredLibrary(query: string, currentPage: number) {
   // noStore()
   const offset = (currentPage - 1) * LIBRARY_ITEMS_PER_PAGE
   try {
-    let sqlWhere = buildWhere_Library(query)
+    let sqlWhere = await buildWhere_Library(query)
     const sqlQuery = `SELECT *
     FROM library
     LEFT JOIN ownergroup ON lrgid = oggid
@@ -64,7 +70,7 @@ export async function fetchFilteredLibrary(query: string, currentPage: number) {
 //---------------------------------------------------------------------
 //  Library where clause
 //---------------------------------------------------------------------
-export function buildWhere_Library(query: string) {
+export async function buildWhere_Library(query: string) {
   //
   //  Empty search
   //
@@ -233,7 +239,7 @@ export async function fetchQuestionsByGid(qgid: number) {
 export async function fetchHistoryPages(query: string) {
   // noStore()
   try {
-    let sqlWhere = buildWhere_History(query)
+    let sqlWhere = await buildWhere_History(query)
     const sqlQuery = `
     SELECT COUNT(*)
     FROM usershistory
@@ -258,7 +264,7 @@ export async function fetchFilteredHistory(query: string, currentPage: number) {
   // noStore()
   const offset = (currentPage - 1) * HISTORY_ITEMS_PER_PAGE
   try {
-    let sqlWhere = buildWhere_History(query)
+    let sqlWhere = await buildWhere_History(query)
     const sqlQuery = `
     SELECT *
     FROM usershistory
@@ -281,7 +287,7 @@ export async function fetchFilteredHistory(query: string, currentPage: number) {
 //---------------------------------------------------------------------
 //  History where clause
 //---------------------------------------------------------------------
-export function buildWhere_History(query: string) {
+export async function buildWhere_History(query: string) {
   //
   //  Empty search
   //
@@ -555,5 +561,188 @@ ORDER BY r_uid;
   } catch (error) {
     console.error('Database Error:', error)
     throw new Error('Failed to fetch recent results.')
+  }
+}
+//---------------------------------------------------------------------
+//  Write User History
+//---------------------------------------------------------------------
+export async function writeUsershistory(NewUsershistoryTable: NewUsershistoryTable) {
+  try {
+    //
+    //  Deconstruct history
+    //
+    const {
+      r_datetime,
+      r_owner,
+      r_group,
+      r_questions,
+      r_qid,
+      r_ans,
+      r_uid,
+      r_points,
+      r_maxpoints,
+      r_totalpoints,
+      r_correctpercent,
+      r_gid,
+      r_sid
+    } = NewUsershistoryTable
+
+    const r_qid_string = `{${r_qid.join(',')}}`
+    const r_ans_string = `{${r_ans.join(',')}}`
+    const r_points_string = `{${r_points.join(',')}}`
+
+    const { rows } = await sql`INSERT INTO Usershistory
+    (r_datetime, r_owner, r_group, r_questions, r_qid, r_ans, r_uid, r_points,
+       r_maxpoints, r_totalpoints, r_correctpercent, r_gid, r_sid)
+    VALUES (${r_datetime}, ${r_owner},${r_group},${r_questions},${r_qid_string},${r_ans_string},${r_uid},${r_points_string},
+      ${r_maxpoints},${r_totalpoints},${r_correctpercent},${r_gid},${r_sid})
+    RETURNING *`
+    const UsershistoryTable = rows[0]
+    return UsershistoryTable
+  } catch (error) {
+    console.error('Database Error:', error)
+    throw new Error('Failed to write user history.')
+  }
+}
+
+//---------------------------------------------------------------------
+//  Write User Sessions
+//---------------------------------------------------------------------
+export async function writeUserssessions(usersessions: NewUserssessionsTable) {
+  try {
+    const { rows } = await sql`
+    INSERT INTO Userssessions (
+      usdatetime,
+      usuid
+    ) VALUES (
+      ${usersessions.usdatetime},
+      ${usersessions.usuid}
+    ) RETURNING *
+  `
+    return rows[0]
+  } catch (error) {
+    console.error('Database Error:', error)
+    throw new Error('Failed to write user sessions.')
+  }
+}
+//---------------------------------------------------------------------
+//  Update User Sessions to signed out
+//---------------------------------------------------------------------
+export async function UserssessionsSignout(usid: number) {
+  try {
+    await sql`
+    UPDATE userssessions
+    SET
+      ussignedin = false
+    WHERE usid = ${usid}
+    `
+  } catch (error) {
+    return {
+      message: 'Database Error: Failed to Update Userssession.'
+    }
+  }
+}
+// ----------------------------------------------------------------------
+//  Update Cookie information
+// ----------------------------------------------------------------------
+export async function updateCookie(Bssession_updates: Partial<BS_session>) {
+  try {
+    //
+    //  Get the Bridge School session cookie
+    //
+    let BSsession = await getCookie()
+    //
+    // Initialize BSsession if it doesn't exist
+    //
+    if (!BSsession) {
+      BSsession = {
+        bsuid: 0,
+        bsname: '',
+        bsemail: '',
+        bsid: 0,
+        bssignedin: false,
+        bssortquestions: false,
+        bsskipcorrect: false,
+        bsdftmaxquestions: 0
+      }
+    }
+    //
+    // Update or add the fields from Bssession_updates
+    //
+    Object.assign(BSsession, Bssession_updates)
+    //
+    //  Write the cookie
+    //
+    const JSON_BSsession = JSON.stringify(BSsession)
+    cookies().set('BS_session', JSON_BSsession, {
+      httpOnly: false,
+      secure: false,
+      sameSite: 'lax',
+      path: '/'
+    })
+  } catch (error) {
+    throw new Error('Failed to update cookie info.')
+  }
+}
+// ----------------------------------------------------------------------
+//  Delete Cookie
+// ----------------------------------------------------------------------
+export async function deleteCookie() {
+  try {
+    cookies().delete('BS_session')
+  } catch (error) {
+    throw new Error('Failed to delete cookie.')
+  }
+}
+// ----------------------------------------------------------------------
+//  Get Cookie information
+// ----------------------------------------------------------------------
+export async function getCookie(): Promise<BS_session | null> {
+  try {
+    const cookie = cookies().get('BS_session')
+    if (!cookie) return null
+    //
+    //  Get value
+    //
+    const decodedCookie = decodeURIComponent(cookie.value)
+    if (!decodedCookie) return null
+    //
+    //  Convert to JSON
+    //
+    const JSON_cookie = JSON.parse(decodedCookie)
+    if (!JSON_cookie) return null
+    //
+    //  Return JSON
+    //
+    return JSON_cookie
+  } catch (error) {
+    console.error('Failed to get cookie info.')
+    return null
+  }
+}
+// ----------------------------------------------------------------------
+//  Nav signout
+// ----------------------------------------------------------------------
+export async function navsignout() {
+  try {
+    //
+    //  Get the Bridge School session cookie
+    //
+    const bssession = await getCookie()
+    if (!bssession) return
+    //
+    //  Delete the cookie
+    //
+    await deleteCookie()
+    //
+    //  Update the session to signed out
+    //
+    const bsid = bssession.bsid
+    await UserssessionsSignout(bsid)
+    //
+    //  Errors
+    //
+  } catch (error) {
+    throw new Error('Failed to sign out.')
   }
 }

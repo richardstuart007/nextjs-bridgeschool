@@ -4,9 +4,8 @@ import { authConfig } from './auth.config'
 import { z } from 'zod'
 import type { UserAuth, UsersTable, NewUserssessionsTable, BS_session } from '@/app/lib/definitions'
 import bcrypt from 'bcrypt'
-import { writeUserssessions } from '@/app/lib/actions'
-import { updateCookie } from '@/app/lib/actions'
-import { fetchUserByEmail } from '@/app/lib/data'
+import { writeUserssessions, updateCookie, fetchUserByEmail } from '@/app/lib/data'
+
 // ----------------------------------------------------------------------
 //  Check User/Password
 // ----------------------------------------------------------------------

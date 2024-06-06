@@ -1,7 +1,7 @@
 import SessionForm from '@/app/ui/session/form'
 import Breadcrumbs from '@/app/ui/utils/breadcrumbs'
 import { Metadata } from 'next'
-import { getCookie } from '@/app/lib/actions'
+import { getCookie } from '@/app/lib/data'
 
 export const metadata: Metadata = {
   title: 'Session Preferences'

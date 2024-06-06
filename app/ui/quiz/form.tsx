@@ -1,15 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import { QuestionsTable } from '@/app/lib/definitions'
+import { QuestionsTable, NewUsershistoryTable } from '@/app/lib/definitions'
 import QuizQuestion from '@/app/ui/quiz-question/quiz-question'
 import QuizBidding from '@/app/ui/quiz-question/quiz-bidding/QuizBidding'
 import QuizHands from '@/app/ui/quiz-question/quiz-hands/QuizHands'
 import QuizChoice from './quiz-choice'
 import { QuizSubmit } from '@/app/ui/quiz/buttons'
 import { useRouter } from 'next/navigation'
-import { writeUsershistory } from '@/app/lib/actions'
-import type { NewUsershistoryTable } from '@/app/lib/definitions'
+import { writeUsershistory } from '@/app/lib/data'
 import { useUserContext } from '@/UserContext'
 
 interface QuestionsFormProps {

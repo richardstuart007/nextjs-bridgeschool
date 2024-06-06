@@ -6,14 +6,11 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { signIn } from '@/auth'
 import { AuthError } from 'next-auth'
+import { updateCookie } from '@/app/lib/data'
 import bcrypt from 'bcrypt'
-import type {
-  UsersTable,
-  NewUsershistoryTable,
-  NewUserssessionsTable,
-  BS_session
+import type {  UsersTable,
 } from '@/app/lib/definitions'
-import { cookies } from 'next/headers'
+
 // ----------------------------------------------------------------------
 //  Authenticate Login
 // ----------------------------------------------------------------------
@@ -95,7 +92,7 @@ export async function registerUser(prevState: StateRegister, formData: FormData)
   const u_hash = await bcrypt.hash(password, 10)
   const u_name = email.split('@')[0]
   const u_joined = new Date().toISOString().slice(0, 19).replace('T', ' ')
-  const u_fedid = 'dummy'
+  const u_fedid = 'none'
   const u_admin = false
   const u_fedcountry = 'NZ'
   const u_dev = false
@@ -132,163 +129,6 @@ export async function registerUser(prevState: StateRegister, formData: FormData)
   //
   revalidatePath('/dashboard')
   redirect('/dashboard')
-}
-//---------------------------------------------------------------------
-//  Write User History
-//---------------------------------------------------------------------
-export async function writeUsershistory(NewUsershistoryTable: NewUsershistoryTable) {
-  try {
-    //
-    //  Deconstruct history
-    //
-    const {
-      r_datetime,
-      r_owner,
-      r_group,
-      r_questions,
-      r_qid,
-      r_ans,
-      r_uid,
-      r_points,
-      r_maxpoints,
-      r_totalpoints,
-      r_correctpercent,
-      r_gid,
-      r_sid
-    } = NewUsershistoryTable
-
-    const r_qid_string = `{${r_qid.join(',')}}`
-    const r_ans_string = `{${r_ans.join(',')}}`
-    const r_points_string = `{${r_points.join(',')}}`
-
-    const { rows } = await sql`INSERT INTO Usershistory
-    (r_datetime, r_owner, r_group, r_questions, r_qid, r_ans, r_uid, r_points,
-       r_maxpoints, r_totalpoints, r_correctpercent, r_gid, r_sid)
-    VALUES (${r_datetime}, ${r_owner},${r_group},${r_questions},${r_qid_string},${r_ans_string},${r_uid},${r_points_string},
-      ${r_maxpoints},${r_totalpoints},${r_correctpercent},${r_gid},${r_sid})
-    RETURNING *`
-    const UsershistoryTable = rows[0]
-    return UsershistoryTable
-  } catch (error) {
-    console.error('Database Error:', error)
-    throw new Error('Failed to write user history.')
-  }
-}
-
-//---------------------------------------------------------------------
-//  Write User Sessions
-//---------------------------------------------------------------------
-export async function writeUserssessions(usersessions: NewUserssessionsTable) {
-  try {
-    const { rows } = await sql`
-    INSERT INTO Userssessions (
-      usdatetime,
-      usuid
-    ) VALUES (
-      ${usersessions.usdatetime},
-      ${usersessions.usuid}
-    ) RETURNING *
-  `
-    return rows[0]
-  } catch (error) {
-    console.error('Database Error:', error)
-    throw new Error('Failed to write user sessions.')
-  }
-}
-//---------------------------------------------------------------------
-//  Update User Sessions to signed out
-//---------------------------------------------------------------------
-export async function UserssessionsSignout(usid: number) {
-  try {
-    await sql`
-    UPDATE userssessions
-    SET
-      ussignedin = false
-    WHERE usid = ${usid}
-    `
-  } catch (error) {
-    return {
-      message: 'Database Error: Failed to Update Userssession.'
-    }
-  }
-}
-// ----------------------------------------------------------------------
-//  Update Cookie information
-// ----------------------------------------------------------------------
-export async function updateCookie(Bssession_updates: Partial<BS_session>) {
-  try {
-    //
-    //  Get the Bridge School session cookie
-    //
-    let BSsession = await getCookie()
-    //
-    // Initialize BSsession if it doesn't exist
-    //
-    if (!BSsession) {
-      BSsession = {
-        bsuid: 0,
-        bsname: '',
-        bsemail: '',
-        bsid: 0,
-        bssignedin: false,
-        bssortquestions: false,
-        bsskipcorrect: false,
-        bsdftmaxquestions: 0
-      }
-    }
-    //
-    // Update or add the fields from Bssession_updates
-    //
-    Object.assign(BSsession, Bssession_updates)
-    //
-    //  Write the cookie
-    //
-    const JSON_BSsession = JSON.stringify(BSsession)
-    cookies().set('BS_session', JSON_BSsession, {
-      httpOnly: false,
-      secure: false,
-      sameSite: 'lax',
-      path: '/'
-    })
-  } catch (error) {
-    throw new Error('Failed to update cookie info.')
-  }
-}
-// ----------------------------------------------------------------------
-//  Delete Cookie
-// ----------------------------------------------------------------------
-export async function deleteCookie() {
-  try {
-    cookies().delete('BS_session')
-  } catch (error) {
-    throw new Error('Failed to delete cookie.')
-  }
-}
-// ----------------------------------------------------------------------
-//  Get Cookie information
-// ----------------------------------------------------------------------
-export async function getCookie(): Promise<BS_session | null> {
-  try {
-    const cookie = cookies().get('BS_session')
-    if (!cookie) return null
-    //
-    //  Get value
-    //
-    const decodedCookie = decodeURIComponent(cookie.value)
-    if (!decodedCookie) return null
-    //
-    //  Convert to JSON
-    //
-    const JSON_cookie = JSON.parse(decodedCookie)
-    if (!JSON_cookie) return null
-    //
-    //  Return JSON
-    //
-    return JSON_cookie
-  } catch (error) {
-    console.error('Failed to get cookie info.')
-    return null
-  }
 }
 // ----------------------------------------------------------------------
 //  Update User Setup
@@ -427,30 +267,4 @@ export async function sessionUser(prevState: StateSession, formData: FormData) {
   //
   revalidatePath('/dashboard')
   redirect('/dashboard')
-}
-// ----------------------------------------------------------------------
-//  Nav signout
-// ----------------------------------------------------------------------
-export async function navsignout() {
-  try {
-    //
-    //  Get the Bridge School session cookie
-    //
-    const bssession = await getCookie()
-    if (!bssession) return
-    //
-    //  Delete the cookie
-    //
-    await deleteCookie()
-    //
-    //  Update the session to signed out
-    //
-    const bsid = bssession.bsid
-    await UserssessionsSignout(bsid)
-    //
-    //  Errors
-    //
-  } catch (error) {
-    throw new Error('Failed to sign out.')
-  }
 }
