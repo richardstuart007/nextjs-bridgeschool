@@ -17,7 +17,7 @@ export default function NavLinks() {
   //  Get user ID
   //
   const { session } = useUserContext()
-  const { bsuid } = session
+  const { bsuid, bsid } = session
   //
   // Define the Link type
   //
@@ -37,15 +37,16 @@ export default function NavLinks() {
   const [links, setLinks] = useState<Link[]>([])
   useEffect(() => {
     const hrefUser = `/dashboard/user/${bsuid}`
+    const hrefSession = `/dashboard/session/${bsid}`
     const initialLinks = [
       { name: 'Home', href: '/dashboard', icon: HomeIcon },
       { name: 'Library', href: '/dashboard/library', icon: BuildingLibraryIcon },
       { name: 'History', href: '/dashboard/history', icon: ArchiveBoxIcon },
       { name: 'User', href: hrefUser, icon: UserIcon },
-      { name: 'Session', href: '/dashboard/session', icon: Cog6ToothIcon }
+      { name: 'Session', href: hrefSession, icon: Cog6ToothIcon }
     ]
     setLinks(initialLinks)
-  }, [bsuid])
+  }, [bsuid, bsid])
   //
   //  Get path name
   //

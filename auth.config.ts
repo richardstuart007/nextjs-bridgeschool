@@ -15,9 +15,14 @@ export const authConfig = {
       //
       //  Login status (Auth not working yet)
       //
-      let isLoggedIn
+      let isLoggedIn = false
+      let sessionId: string | null = null
       const cookie = cookies().get('BS_session')
-      cookie ? (isLoggedIn = true) : (isLoggedIn = false)
+      if (cookie) {
+        isLoggedIn = true
+        const BS_session = JSON.parse(cookie.value)
+        sessionId = BS_session.bsid.toString()
+      }
       //
       //  If not on login and not on dashboard then OK
       //
@@ -35,7 +40,8 @@ export const authConfig = {
         //  NOT Dashboard and Logged in - redirect to dashboard
         //
       } else if (isLoggedIn) {
-        return Response.redirect(new URL('/dashboard', nextUrl.origin).href)
+        const URLstring = `/dashboard?sessionId=${sessionId}`
+        return Response.redirect(new URL(URLstring, nextUrl.origin).href)
       }
       //
       // Allow access for other pages

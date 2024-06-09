@@ -4,13 +4,18 @@ import { z } from 'zod'
 import { sql } from '@vercel/postgres'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-import { signIn } from '@/auth'
+import { signIn, signOut } from '@/auth'
 import { AuthError } from 'next-auth'
-import { updateCookie } from '@/app/lib/data'
+import {
+  updateCookieBS_session,
+  getCookie,
+  getCookieSessionId,
+  UpdateUserssessions,
+  UpdateSessions,
+  navsignout
+} from '@/app/lib/data'
 import bcrypt from 'bcrypt'
-import type {  UsersTable,
-} from '@/app/lib/definitions'
-
+import type { UsersTable } from '@/app/lib/definitions'
 // ----------------------------------------------------------------------
 //  Authenticate Login
 // ----------------------------------------------------------------------
@@ -200,7 +205,7 @@ export async function SetupUser(prevState: StateSetup, formData: FormData) {
   //
   //  Update the cookie name
   //
-  await updateCookie({ bsname: u_name })
+  await updateCookieBS_session({ bsname: u_name })
   //
   // Revalidate the cache and redirect the user.
   //
@@ -257,14 +262,57 @@ export async function sessionUser(prevState: StateSession, formData: FormData) {
   //
   //  Update the cookie name
   //
-  await updateCookie({
+  await updateCookieBS_session({
     bsdftmaxquestions: bsdftmaxquestions,
     bssortquestions: bssortquestions,
     bsskipcorrect: bsskipcorrect
   })
   //
+  //  Get session id
+  //
+  const BSsession = await getCookie()
+  let bsid = 0
+  if (BSsession?.bsid) {
+    bsid = BSsession?.bsid
+  }
+  //
+  //  Update the session
+  //
+  await UpdateUserssessions(bsid, bsdftmaxquestions, bssortquestions, bsskipcorrect)
+  //
+  //  Update the cookie name
+  //
+  await updateCookieBS_session({
+    bsdftmaxquestions: bsdftmaxquestions,
+    bssortquestions: bssortquestions,
+    bsskipcorrect: bsskipcorrect
+  })
+  //
+  //  Get session id
+  //
+  const cookie = await getCookieSessionId()
+  let sessionId = 0
+  //
+  //  Update the session
+  //
+  if (cookie) {
+    sessionId = parseInt(cookie, 10)
+    await UpdateSessions(sessionId, bsdftmaxquestions, bssortquestions, bsskipcorrect)
+  }
+  //
+  //  Update the session
+  //
+  await UpdateSessions(sessionId, bsdftmaxquestions, bssortquestions, bsskipcorrect)
+  //
   // Revalidate the cache and redirect the user.
   //
   revalidatePath('/dashboard')
   redirect('/dashboard')
+}
+// ----------------------------------------------------------------------
+//  Sign out
+// ----------------------------------------------------------------------
+export async function serverSignout() {
+  await navsignout()
+  await signOut()
 }

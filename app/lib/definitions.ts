@@ -102,6 +102,29 @@ export type UserssessionsTable = {
   usdatetime: DateTime
   usuid: number
   ussignedin: boolean
+  ussortquestions: boolean
+  usskipcorrect: boolean
+  usdftmaxquestions: number
+}
+
+export type NewUserssessionsTable = {
+  usdatetime: DateTime
+  usuid: number
+}
+
+export type SessionsTable = {
+  s_id: number
+  s_datetime: DateTime
+  s_uid: number
+  s_signedin: boolean
+  s_sortquestions: boolean
+  s_skipcorrect: boolean
+  s_dftmaxquestions: number
+}
+
+export type NewSessionsTable = {
+  s_datetime: DateTime
+  s_uid: number
 }
 
 export type BS_session = {
@@ -113,11 +136,6 @@ export type BS_session = {
   bssortquestions: boolean
   bsskipcorrect: boolean
   bsdftmaxquestions: number
-}
-
-export type NewUserssessionsTable = {
-  usdatetime: DateTime
-  usuid: number
 }
 
 export type UserAuth = {
@@ -137,14 +155,6 @@ export type UsersTable = {
   u_admin: boolean
   u_fedcountry: string
   u_dev: boolean
-}
-
-export type BSsessionTable = {
-  bsuid: number
-  bsname: string
-  bsemail: string
-  bsid: number
-  bssignedin: boolean
 }
 
 export interface UsershistoryTopResults {

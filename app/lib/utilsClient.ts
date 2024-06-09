@@ -1,30 +1,10 @@
 'use client'
-import { BSsessionTable } from './definitions'
-// ----------------------------------------------------------------------
-//  Write User Session to Session Storage from the cookie
-// ----------------------------------------------------------------------
-// export function writeSession_BS_session() {
-//   //
-//   //  If already written return
-//   //
-//   const BS_session = getSession_BS_session()
-//   if (BS_session) return BS_session
-//   //
-//   //  Get cookie
-//   //
-//   const data: BSsessionTable | null | undefined = getCookieClient()
-//   if (!data) return null
-//   //
-//   //  Write info to storage
-//   //
-//   const JSONdata = JSON.stringify(data)
-//   sessionStorage.setItem('BS_session', JSONdata)
-//   return data
-// }
+import { BS_session } from './definitions'
+
 // ----------------------------------------------------------------------
 //  Get cookie information from the client
 // ----------------------------------------------------------------------
-export function getCookieClient(): BSsessionTable | null {
+export function getCookieClient(): BS_session | null {
   const cookieName = 'BS_session'
   const value = `; ${document.cookie}`
   const parts = value.split(`; ${cookieName}=`)
@@ -40,7 +20,7 @@ export function getCookieClient(): BSsessionTable | null {
         //
         try {
           const parsedCookie = JSON.parse(decodedCookie)
-          return parsedCookie as BSsessionTable
+          return parsedCookie as BS_session
         } catch (error) {
           console.error('Error parsing cookie:', error)
           return null
@@ -53,7 +33,7 @@ export function getCookieClient(): BSsessionTable | null {
 // // ----------------------------------------------------------------------
 // //  GET User Session to Session Storage
 // // ----------------------------------------------------------------------
-// export function getSession_BS_session(): BSsessionTable | null {
+// export function getSession_BS_session(): BS_session | null {
 //   //
 //   //  Get the session info
 //   //
@@ -66,7 +46,7 @@ export function getCookieClient(): BSsessionTable | null {
 //   //  Parse the data & return
 //   //
 //   try {
-//     const data: BSsessionTable = JSON.parse(dataString)
+//     const data: BS_session = JSON.parse(dataString)
 //     return data
 //   } catch (error) {
 //     console.error('Error parsing session data:', error)

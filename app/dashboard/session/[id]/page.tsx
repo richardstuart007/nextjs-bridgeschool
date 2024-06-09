@@ -1,28 +1,32 @@
 import SessionForm from '@/app/ui/session/form'
 import Breadcrumbs from '@/app/ui/utils/breadcrumbs'
 import { Metadata } from 'next'
-import { getCookie } from '@/app/lib/data'
 
 export const metadata: Metadata = {
   title: 'Session Preferences'
 }
 
-export default async function Page(): Promise<JSX.Element> {
-  const sessionData = await getCookie()
+export default async function Page({ params }: { params: { id: number } }) {
+  //
+  //  Variables used in the return statement
+  //
+  let id: number = params.id
+  const hrefSession = `/dashboard/session/${id}`
+  const hrefDashboard = `/dashboard/session/?sessionId=${id}`
   //---------------------------------------------------
   return (
     <div className='w-full md:p-6'>
       <Breadcrumbs
         breadcrumbs={[
-          { label: 'Dashboard', href: '/dashboard' },
+          { label: 'Dashboard', href: hrefDashboard },
           {
             label: 'Session',
-            href: `/dashboard/session`,
+            href: hrefSession,
             active: true
           }
         ]}
       />
-      {sessionData ? <SessionForm BSsession={sessionData} /> : null}
+      <SessionForm id={id} />
     </div>
   )
 }

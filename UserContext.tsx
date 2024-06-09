@@ -1,22 +1,23 @@
 'use client'
 
 import { createContext, useState, useContext, ReactNode } from 'react'
-import { BSsessionTable } from '@/app/lib/definitions'
+import { BS_session } from '@/app/lib/definitions'
 //
 // Define the context type
 //
 type UserContextType = {
-  session: BSsessionTable
-  setSession: React.Dispatch<React.SetStateAction<BSsessionTable>>
+  session: BS_session
+  setSession: React.Dispatch<React.SetStateAction<BS_session>>
 }
-const defaultSession: BSsessionTable = {
+const defaultSession: BS_session = {
   bsuid: 0,
   bsname: '',
   bsemail: '',
   bsid: 0,
-  bssignedin: false
-
-  // Add other default values as necessary
+  bssignedin: false,
+  bssortquestions: true,
+  bsskipcorrect: true,
+  bsdftmaxquestions: 20
 }
 //
 // Create the context
@@ -32,7 +33,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   //
   //  Provided the user state and setter
   //
-  const [session, setSession] = useState<BSsessionTable>(defaultSession)
+  const [session, setSession] = useState<BS_session>(defaultSession)
   //
   //  Pass state to the context
   //

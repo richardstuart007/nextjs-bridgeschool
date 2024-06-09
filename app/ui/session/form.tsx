@@ -1,17 +1,48 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline'
 import { Button } from '../utils/button'
 import { useFormState, useFormStatus } from 'react-dom'
 import { sessionUser } from '@/app/lib/actions'
-import type { BS_session } from '@/app/lib/definitions'
+import { fetchBSsession } from '@/app/lib/data'
+import { BS_session } from '@/app/lib/definitions'
 
-export default function SessionForm({ BSsession }: { BSsession: BS_session }) {
+export default function SessionForm({ id }: { id: number }): JSX.Element {
+  //
+  // State variable to hold session data
+  //
+  const [BSsession, setBSsession] = useState<BS_session | null>(null)
+  const [bsdftmaxquestions, setbsdftmaxquestions] = useState<number>(0)
+  const [bsskipcorrect, setbsskipcorrect] = useState<boolean>(false)
+  const [bssortquestions, setbssortquestions] = useState<boolean>(false)
+  //
+  //  Fetch session data when the component mounts or when id changes
+  //
+  useEffect(() => {
+    console.log('id', id)
+    getBSsession(id)
+  }, [id])
+  //
+  //  FormData state
+  //
   const initialState = { message: null, errors: {} }
   const [stateSession, dispatch] = useFormState(sessionUser, initialState)
-  const [bsdftmaxquestions, setbsdftmaxquestions] = useState(BSsession.bsdftmaxquestions)
-  const [bsskipcorrect, setbsskipcorrect] = useState(BSsession.bsskipcorrect)
-  const [bssortquestions, setbssortquestions] = useState(BSsession.bssortquestions)
+  //-------------------------------------------------------------------------
+  //  Get Data
+  //-------------------------------------------------------------------------
+  async function getBSsession(id: number) {
+    try {
+      const data = await fetchBSsession(id)
+      if (data) {
+        setBSsession(data)
+        setbsdftmaxquestions(data.bsdftmaxquestions)
+        setbsskipcorrect(data.bsskipcorrect)
+        setbssortquestions(data.bssortquestions)
+      }
+    } catch (error) {
+      console.error('An error occurred while fetching data:', error)
+    }
+  }
   //-------------------------------------------------------------------------
   //  Update
   //-------------------------------------------------------------------------

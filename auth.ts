@@ -2,9 +2,20 @@ import NextAuth from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import { authConfig } from './auth.config'
 import { z } from 'zod'
-import type { UserAuth, UsersTable, NewUserssessionsTable, BS_session } from '@/app/lib/definitions'
+import type {
+  UserAuth,
+  UsersTable,
+  NewUserssessionsTable,
+  NewSessionsTable
+} from '@/app/lib/definitions'
 import bcrypt from 'bcrypt'
-import { writeUserssessions, updateCookie, fetchUserByEmail } from '@/app/lib/data'
+import {
+  writeUserssessions,
+  writeSessions,
+  updateCookieBS_session,
+  updateCookieSession,
+  fetchUserByEmail
+} from '@/app/lib/data'
 
 // ----------------------------------------------------------------------
 //  Check User/Password
@@ -33,23 +44,31 @@ export const { auth, signIn, signOut } = NextAuth({
         const passwordsMatch = await bcrypt.compare(password, userRecord.u_hash)
         if (!passwordsMatch) return null
         //
-        // Write session information
+        // Write user session information
         //
-        const usersessionsRecord = await writeSession(userRecord)
+        const userssessionsRecord = await writeUserssession(userRecord)
         //
-        // Write cookie
+        // Write cookie BS_session
         //
         const BS_session = {
           bsuid: userRecord.u_uid,
           bsname: userRecord.u_name,
           bsemail: userRecord.u_email,
-          bsid: usersessionsRecord.usid,
+          bsid: userssessionsRecord.usid,
           bssignedin: true,
           bssortquestions: true,
           bsskipcorrect: true,
           bsdftmaxquestions: 20
         }
-        await updateCookie(BS_session)
+        await updateCookieBS_session(BS_session)
+        //
+        // Write session information
+        //
+        const sessionsRecord = await writeSession(userRecord)
+        //
+        // Write cookie session
+        //
+        await updateCookieSession(sessionsRecord.s_id)
         //
         //  Return in correct format
         //
@@ -64,9 +83,9 @@ export const { auth, signIn, signOut } = NextAuth({
   ]
 })
 // ----------------------------------------------------------------------
-//  Write session information
+//  Write user session information
 // ----------------------------------------------------------------------
-async function writeSession(userRecord: UsersTable) {
+async function writeUserssession(userRecord: UsersTable) {
   try {
     //
     //  Destructure user record
@@ -84,6 +103,31 @@ async function writeSession(userRecord: UsersTable) {
     //  Return uer record
     //
     return usersessionsRecord
+  } catch (error) {
+    throw new Error('Failed to write session info.')
+  }
+}
+// ----------------------------------------------------------------------
+//  Write session information
+// ----------------------------------------------------------------------
+async function writeSession(userRecord: UsersTable) {
+  try {
+    //
+    //  Destructure user record
+    //
+    const { u_uid } = userRecord
+    //
+    //  Create session record
+    //
+    const session: NewSessionsTable = {
+      s_datetime: new Date().toISOString().replace('T', ' ').replace('Z', '').substring(0, 23),
+      s_uid: u_uid
+    }
+    const sessionsRecord = await writeSessions(session)
+    //
+    //  Return uer record
+    //
+    return sessionsRecord
   } catch (error) {
     throw new Error('Failed to write session info.')
   }

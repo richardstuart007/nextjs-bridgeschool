@@ -14,11 +14,10 @@ export default async function Page({ params }: { params: { uid: number } }) {
   //
   let uid: number = params.uid
   let UserRecord: UsersTable | null = null
-
+  //
+  //  Get User Info
+  //
   try {
-    //
-    //  Get User
-    //
     const data = await fetchUserById(uid)
     if (!data) notFound()
     UserRecord = data
