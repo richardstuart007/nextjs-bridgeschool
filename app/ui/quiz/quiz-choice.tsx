@@ -49,7 +49,6 @@ export default function QuizChoice(props: QuizChoiceProps): JSX.Element {
       label: option.toString(),
       value: question.qans.indexOf(option)
     }))
-
     setAnswers(newOptions)
     //
     //  Reset selected option

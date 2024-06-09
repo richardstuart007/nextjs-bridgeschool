@@ -13,11 +13,9 @@ import {
   UsershistoryTopResults,
   UsershistoryRecentResults,
   NewUsershistoryTable,
-  NewUserssessionsTable,
   NewSessionsTable,
-  UserssessionsTable,
   SessionsTable,
-  BS_session
+  SessionInfo
 } from './definitions'
 const LIBRARY_ITEMS_PER_PAGE = 10
 const HISTORY_ITEMS_PER_PAGE = 10
@@ -44,7 +42,6 @@ export async function fetchLibraryPages(query: string) {
     throw new Error('Failed to fetch library items.')
   }
 }
-
 //---------------------------------------------------------------------
 //  Library data
 //---------------------------------------------------------------------
@@ -235,7 +232,6 @@ export async function fetchQuestionsByGid(qgid: number) {
     throw new Error('Failed to fetch questions.')
   }
 }
-
 //---------------------------------------------------------------------
 //  History totals
 //---------------------------------------------------------------------
@@ -607,27 +603,6 @@ export async function writeUsershistory(NewUsershistoryTable: NewUsershistoryTab
     throw new Error('Failed to write user history.')
   }
 }
-
-//---------------------------------------------------------------------
-//  Write User Sessions
-//---------------------------------------------------------------------
-export async function writeUserssessions(usersessions: NewUserssessionsTable) {
-  try {
-    const { rows } = await sql`
-    INSERT INTO userssessions (
-      usdatetime,
-      usuid
-    ) VALUES (
-      ${usersessions.usdatetime},
-      ${usersessions.usuid}
-    ) RETURNING *
-  `
-    return rows[0]
-  } catch (error) {
-    console.error('Database Error:', error)
-    throw new Error('Failed to write user sessions.')
-  }
-}
 //---------------------------------------------------------------------
 //  Write User Sessions
 //---------------------------------------------------------------------
@@ -646,23 +621,6 @@ export async function writeSessions(usersessions: NewSessionsTable) {
   } catch (error) {
     console.error('Database Error:', error)
     throw new Error('Failed to write sessions.')
-  }
-}
-//---------------------------------------------------------------------
-//  Update User Sessions to signed out
-//---------------------------------------------------------------------
-export async function UserssessionsSignout(usid: number) {
-  try {
-    await sql`
-    UPDATE userssessions
-    SET
-      ussignedin = false
-    WHERE usid = ${usid}
-    `
-  } catch (error) {
-    return {
-      message: 'Database Error: Failed to Update Userssession.'
-    }
   }
 }
 //---------------------------------------------------------------------
@@ -702,24 +660,6 @@ export async function SessionsSignoutAll() {
   }
 }
 //---------------------------------------------------------------------
-//  Userssessions data by ID
-//---------------------------------------------------------------------
-export async function fetchUserssessionsById(usid: number) {
-  noStore()
-  try {
-    const data = await sql<UserssessionsTable>`
-      SELECT *
-      FROM userssessions
-      WHERE usid = ${usid};
-    `
-    const row = data.rows[0]
-    return row
-  } catch (error) {
-    console.error('Database Error:', error)
-    throw new Error('Failed to fetch userssessions.')
-  }
-}
-//---------------------------------------------------------------------
 //  sessions data by ID
 //---------------------------------------------------------------------
 export async function fetchSessionsById(s_id: number) {
@@ -735,30 +675,6 @@ export async function fetchSessionsById(s_id: number) {
   } catch (error) {
     console.error('Database Error:', error)
     throw new Error('Failed to fetch sessions.')
-  }
-}
-//---------------------------------------------------------------------
-//  Update User Sessions to signed out
-//---------------------------------------------------------------------
-export async function UpdateUserssessions(
-  usid: number,
-  usdftmaxquestions: number,
-  ussortquestions: boolean,
-  usskipcorrect: boolean
-) {
-  try {
-    await sql`
-    UPDATE userssessions
-    SET
-      usdftmaxquestions = ${usdftmaxquestions},
-      ussortquestions = ${ussortquestions},
-      usskipcorrect = ${usskipcorrect}
-    WHERE usid = ${usid}
-    `
-  } catch (error) {
-    return {
-      message: 'Database Error: Failed to Update Userssession.'
-    }
   }
 }
 //---------------------------------------------------------------------
@@ -796,30 +712,29 @@ export async function fetchBSsession(sessionId: number) {
         u_uid,
         u_name,
         u_email,
-        usid,
-        ussignedin,
-        ussortquestions,
-        usskipcorrect,
-        usdftmaxquestions
-      FROM userssessions
+        s_id,
+        s_signedin,
+        s_sortquestions,
+        s_skipcorrect,
+        s_dftmaxquestions
+      FROM sessions
       JOIN users
-      ON   usuid = u_uid
-      WHERE usid = ${sessionId};
+      ON   s_uid = u_uid
+      WHERE s_id = ${sessionId};
     `
 
     const row = data.rows[0]
-    const BS_session: BS_session = {
+    const SessionInfo: SessionInfo = {
       bsuid: row.u_uid,
       bsname: row.u_name,
       bsemail: row.u_email,
-      bsid: row.usid,
-      bssignedin: row.ussignedin,
-      bssortquestions: row.ussortquestions,
-      bsskipcorrect: row.usskipcorrect,
-      bsdftmaxquestions: row.usdftmaxquestions
+      bsid: row.s_id,
+      bssignedin: row.s_signedin,
+      bssortquestions: row.s_sortquestions,
+      bsskipcorrect: row.s_skipcorrect,
+      bsdftmaxquestions: row.s_dftmaxquestions
     }
-    console.log('BS_session', BS_session)
-    return BS_session
+    return SessionInfo
   } catch (error) {
     console.error('Database Error:', error)
     throw new Error('Failed to fetch BSsession.')
@@ -828,49 +743,7 @@ export async function fetchBSsession(sessionId: number) {
 // ----------------------------------------------------------------------
 //  Update Cookie information
 // ----------------------------------------------------------------------
-export async function updateCookieBS_session(Bssession_updates: Partial<BS_session>) {
-  try {
-    //
-    //  Get the Bridge School session cookie
-    //
-    let BSsession = await getCookie()
-    //
-    // Initialize BSsession if it doesn't exist
-    //
-    if (!BSsession) {
-      BSsession = {
-        bsuid: 0,
-        bsname: '',
-        bsemail: '',
-        bsid: 0,
-        bssignedin: false,
-        bssortquestions: false,
-        bsskipcorrect: false,
-        bsdftmaxquestions: 0
-      }
-    }
-    //
-    // Update or add the fields from Bssession_updates
-    //
-    Object.assign(BSsession, Bssession_updates)
-    //
-    //  Write the cookie
-    //
-    const JSON_BSsession = JSON.stringify(BSsession)
-    cookies().set('BS_session', JSON_BSsession, {
-      httpOnly: false,
-      secure: false,
-      sameSite: 'lax',
-      path: '/'
-    })
-  } catch (error) {
-    throw new Error('Failed to update cookie info.')
-  }
-}
-// ----------------------------------------------------------------------
-//  Update Cookie information
-// ----------------------------------------------------------------------
-export async function updateCookieSession(sessionId: number) {
+export async function updateCookieSessionId(sessionId: number) {
   try {
     //
     //  Cookiename
@@ -893,37 +766,11 @@ export async function updateCookieSession(sessionId: number) {
 // ----------------------------------------------------------------------
 //  Delete Cookie
 // ----------------------------------------------------------------------
-export async function deleteCookie(cookieName: string = 'BS_session') {
+export async function deleteCookie(cookieName: string = 'SessionId') {
   try {
     cookies().delete(cookieName)
   } catch (error) {
     throw new Error('Failed to delete cookie.')
-  }
-}
-// ----------------------------------------------------------------------
-//  Get Cookie information
-// ----------------------------------------------------------------------
-export async function getCookie(cookieName: string = 'BS_session'): Promise<BS_session | null> {
-  try {
-    const cookie = cookies().get(cookieName)
-    if (!cookie) return null
-    //
-    //  Get value
-    //
-    const decodedCookie = decodeURIComponent(cookie.value)
-    if (!decodedCookie) return null
-    //
-    //  Convert to JSON
-    //
-    const JSON_cookie = JSON.parse(decodedCookie)
-    if (!JSON_cookie) return null
-    //
-    //  Return JSON
-    //
-    return JSON_cookie
-  } catch (error) {
-    console.error('Failed to get cookie info.')
-    return null
   }
 }
 // ----------------------------------------------------------------------
@@ -960,21 +807,12 @@ export async function navsignout() {
     //
     //  Get the Bridge School session cookie
     //
-    const bssession = await getCookie()
-    if (!bssession) return
-    //
-    //  Delete the cookie
-    //
-    await deleteCookie()
-    //
-    //  Update the users session to signed out
-    //
-    const bsid = bssession.bsid
-    await UserssessionsSignout(bsid)
+    const sessionId = await getCookieSessionId()
+    if (!sessionId) return
     //
     //  Update the session to signed out
     //
-    const s_id = bssession.bsid
+    const s_id = parseInt(sessionId, 10)
     await SessionsSignout(s_id)
     //
     //  Delete the cookie

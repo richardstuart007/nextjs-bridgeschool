@@ -1,11 +1,11 @@
 'use client'
-import { BS_session } from './definitions'
+import { SessionInfo } from './definitions'
 
 // ----------------------------------------------------------------------
 //  Get cookie information from the client
 // ----------------------------------------------------------------------
-export function getCookieClient(): BS_session | null {
-  const cookieName = 'BS_session'
+export function getCookieClient(): SessionInfo | null {
+  const cookieName = 'SessionInfo'
   const value = `; ${document.cookie}`
   const parts = value.split(`; ${cookieName}=`)
   if (parts.length === 2) {
@@ -20,7 +20,7 @@ export function getCookieClient(): BS_session | null {
         //
         try {
           const parsedCookie = JSON.parse(decodedCookie)
-          return parsedCookie as BS_session
+          return parsedCookie as SessionInfo
         } catch (error) {
           console.error('Error parsing cookie:', error)
           return null
@@ -33,11 +33,11 @@ export function getCookieClient(): BS_session | null {
 // // ----------------------------------------------------------------------
 // //  GET User Session to Session Storage
 // // ----------------------------------------------------------------------
-// export function getSession_BS_session(): BS_session | null {
+// export function getSession_SessionInfo(): SessionInfo | null {
 //   //
 //   //  Get the session info
 //   //
-//   const dataString = sessionStorage.getItem('BS_session')
+//   const dataString = sessionStorage.getItem('SessionInfo')
 //   //
 //   //  No data
 //   //
@@ -46,7 +46,7 @@ export function getCookieClient(): BS_session | null {
 //   //  Parse the data & return
 //   //
 //   try {
-//     const data: BS_session = JSON.parse(dataString)
+//     const data: SessionInfo = JSON.parse(dataString)
 //     return data
 //   } catch (error) {
 //     console.error('Error parsing session data:', error)

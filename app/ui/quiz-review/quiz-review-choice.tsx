@@ -31,13 +31,14 @@ export default function QuizReviewChoice(props: QuizReviewChoiceProps): JSX.Elem
     const hyperLink = qdetail.substring(0, 8) === 'https://'
     const text = hyperLink ? 'Select your answer' : qdetail
     setQuestionText(text)
-
+    //
+    //  Answers
+    //
     const newOptions = question.qans.map((option, index) => ({
       id: index.toString(),
       label: option.toString(),
-      value: question.qans.indexOf(option) + 1
+      value: question.qans.indexOf(option)
     }))
-
     setAnswers(newOptions)
   }
 

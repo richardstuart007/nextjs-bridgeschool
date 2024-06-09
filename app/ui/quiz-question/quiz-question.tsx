@@ -21,7 +21,7 @@ export default function QuizQuestion(props: RadioGroupProps): JSX.Element {
   //
   //  Question Info
   //
-  let QuestionInfo = `${qowner}/${qgroup} ${quizQuestion}/${quizTotal} (${qqid})`
+  let QuestionInfo = `${qowner}/${qgroup}(${qqid}) ${quizQuestion}/${quizTotal}`
   //...................................................................................
   //.  Render the form
   //...................................................................................

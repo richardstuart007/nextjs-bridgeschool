@@ -17,11 +17,10 @@ export const authConfig = {
       //
       let isLoggedIn = false
       let sessionId: string | null = null
-      const cookie = cookies().get('BS_session')
+      const cookie = cookies().get('SessionId')
       if (cookie) {
         isLoggedIn = true
-        const BS_session = JSON.parse(cookie.value)
-        sessionId = BS_session.bsid.toString()
+        sessionId = JSON.parse(cookie.value).toString()
       }
       //
       //  If not on login and not on dashboard then OK

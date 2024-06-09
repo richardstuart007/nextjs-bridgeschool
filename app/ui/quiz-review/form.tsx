@@ -19,6 +19,7 @@ export default function ReviewForm(props: QuestionsFormProps): JSX.Element {
   const { questions, history } = props
   const r_ans = history.r_ans
   const r_qid = history.r_qid
+  const r_correctpercent = history.r_correctpercent
   const quizTotal = r_ans.length
   const questionIndex = questions.findIndex(q => q.qqid === r_qid[0])
   //
@@ -51,10 +52,13 @@ export default function ReviewForm(props: QuestionsFormProps): JSX.Element {
   //...................................................................................
   return (
     <>
+      <div className='rounded-md bg-gray-50 p-1 md:p-2'>
+        <p className='text-lg font-semibold text-left'>Quiz Result {r_correctpercent}%</p>
+      </div>
       <QuizQuestion question={question} quizQuestion={index + 1} quizTotal={quizTotal} />
       <QuizBidding question={question} />
       <QuizHands question={question} />
-      <QuizReviewChoice question={question} correctAnswer={1} selectedAnswer={ans} />
+      <QuizReviewChoice question={question} correctAnswer={0} selectedAnswer={ans} />
 
       <div className='flex bg-gray-50 px-3 h-5'>
         {index > 0 ? <QuizReviewPrevious onPreviousQuestion={handlePrevious} /> : null}

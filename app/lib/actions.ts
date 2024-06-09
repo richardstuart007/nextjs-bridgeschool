@@ -6,14 +6,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { signIn, signOut } from '@/auth'
 import { AuthError } from 'next-auth'
-import {
-  updateCookieBS_session,
-  getCookie,
-  getCookieSessionId,
-  UpdateUserssessions,
-  UpdateSessions,
-  navsignout
-} from '@/app/lib/data'
+import { getCookieSessionId, UpdateSessions, navsignout } from '@/app/lib/data'
 import bcrypt from 'bcrypt'
 import type { UsersTable } from '@/app/lib/definitions'
 // ----------------------------------------------------------------------
@@ -203,10 +196,6 @@ export async function SetupUser(prevState: StateSetup, formData: FormData) {
     }
   }
   //
-  //  Update the cookie name
-  //
-  await updateCookieBS_session({ bsname: u_name })
-  //
   // Revalidate the cache and redirect the user.
   //
   revalidatePath('/dashboard')
@@ -259,34 +248,6 @@ export async function sessionUser(prevState: StateSession, formData: FormData) {
   // Unpack form data
   //
   const { bsdftmaxquestions, bssortquestions, bsskipcorrect } = validatedFields.data
-  //
-  //  Update the cookie name
-  //
-  await updateCookieBS_session({
-    bsdftmaxquestions: bsdftmaxquestions,
-    bssortquestions: bssortquestions,
-    bsskipcorrect: bsskipcorrect
-  })
-  //
-  //  Get session id
-  //
-  const BSsession = await getCookie()
-  let bsid = 0
-  if (BSsession?.bsid) {
-    bsid = BSsession?.bsid
-  }
-  //
-  //  Update the session
-  //
-  await UpdateUserssessions(bsid, bsdftmaxquestions, bssortquestions, bsskipcorrect)
-  //
-  //  Update the cookie name
-  //
-  await updateCookieBS_session({
-    bsdftmaxquestions: bsdftmaxquestions,
-    bssortquestions: bssortquestions,
-    bsskipcorrect: bsskipcorrect
-  })
   //
   //  Get session id
   //

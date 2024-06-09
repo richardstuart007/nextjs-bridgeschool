@@ -97,21 +97,6 @@ export type OwnergroupTable = {
   oggid: number
 }
 
-export type UserssessionsTable = {
-  usid: number
-  usdatetime: DateTime
-  usuid: number
-  ussignedin: boolean
-  ussortquestions: boolean
-  usskipcorrect: boolean
-  usdftmaxquestions: number
-}
-
-export type NewUserssessionsTable = {
-  usdatetime: DateTime
-  usuid: number
-}
-
 export type SessionsTable = {
   s_id: number
   s_datetime: DateTime
@@ -127,7 +112,7 @@ export type NewSessionsTable = {
   s_uid: number
 }
 
-export type BS_session = {
+export type SessionInfo = {
   bsuid: number
   bsname: string
   bsemail: string

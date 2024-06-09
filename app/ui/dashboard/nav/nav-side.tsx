@@ -7,7 +7,7 @@ import { PowerIcon } from '@heroicons/react/24/outline'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useUserContext } from '@/UserContext'
 import { fetchBSsession } from '@/app/lib/data'
-import { BS_session } from '@/app/lib/definitions'
+import { SessionInfo } from '@/app/lib/definitions'
 import { serverSignout } from '@/app/lib/actions'
 
 export default function NavSide() {
@@ -49,7 +49,7 @@ export default function NavSide() {
     //
     if (sessionId) {
       const bsid = parseInt(sessionId, 10)
-      const BSsession: BS_session = await fetchBSsession(bsid)
+      const BSsession: SessionInfo = await fetchBSsession(bsid)
       setSession(BSsession)
     }
   }
