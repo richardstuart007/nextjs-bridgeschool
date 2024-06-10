@@ -1,6 +1,5 @@
 'use client'
-
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { QuestionsTable, NewUsershistoryTable } from '@/app/lib/definitions'
 import QuizQuestion from '@/app/ui/quiz-question/quiz-question'
 import QuizBidding from '@/app/ui/quiz-question/quiz-bidding/QuizBidding'
@@ -8,7 +7,7 @@ import QuizHands from '@/app/ui/quiz-question/quiz-hands/QuizHands'
 import QuizChoice from './quiz-choice'
 import { QuizSubmit } from '@/app/ui/quiz/buttons'
 import { useRouter } from 'next/navigation'
-import { writeUsershistory } from '@/app/lib/data'
+import { writeUsershistory, fetchSessionInfo } from '@/app/lib/data'
 import { useUserContext } from '@/UserContext'
 
 interface QuestionsFormProps {
@@ -19,25 +18,79 @@ interface QuestionsFormProps {
 //...................................................................................
 export default function QuestionsForm(props: QuestionsFormProps): JSX.Element {
   //
-  //  Deconstruct props
-  //
-  const questions = props.questions
-  const quizTotal = questions.length
-  //
-  //  Go back
+  //  Router
   //
   const router = useRouter()
   //
   //  User context
   //
-  const { session } = useUserContext()
+  const { sessionContext } = useUserContext()
+  const cxid = sessionContext.cxid
+  const cxuid = sessionContext.cxuid
   //
-  //  Define the State variables
+  //  Questions state updated in initial load
+  //
+  const [questions, setQuestions] = useState<QuestionsTable[]>([])
+  //
+  //  Fetch session data when the component mounts
+  //
+  useEffect(() => {
+    initializeData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+  //
+  //  State variables
   //
   const [index, setIndex] = useState(0)
   const [question, setQuestion] = useState(questions[index])
   const [answer, setAnswer] = useState<number[]>([])
   const [showSubmit, setShowSubmit] = useState(false)
+  //
+  //  Array length
+  //
+  const quizTotal = questions.length
+  //-------------------------------------------------------------------------
+  //  Get Data
+  //-------------------------------------------------------------------------
+  async function initializeData() {
+    try {
+      const data = await fetchSessionInfo(cxid)
+      if (!data) throw Error('No data')
+      //
+      //  Update variables
+      //
+      const { bsdftmaxquestions, bssortquestions } = data
+      //
+      //  Deconstruct props
+      //
+      let questions_work = [...props.questions]
+      //
+      //  Optionally shuffle array
+      //
+      if (bssortquestions) questions_work = shuffleAndRestrict(questions_work)
+      //
+      //  Restrict array size
+      //
+      questions_work = questions_work.slice(0, bsdftmaxquestions)
+      //
+      //  Update questions and initial question
+      //
+      setQuestions(questions_work)
+      setQuestion(questions_work[0])
+    } catch (error) {
+      console.error('An error occurred while fetching data:', error)
+    }
+  }
+  //...................................................................................
+  //.  Shuffle the array using Fisher-Yates algorithm
+  //...................................................................................
+  function shuffleAndRestrict<T>(array: T[]): T[] {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[array[i], array[j]] = [array[j], array[i]]
+    }
+    return array
+  }
   //...................................................................................
   //.  Next Question
   //...................................................................................
@@ -102,13 +155,13 @@ export default function QuestionsForm(props: QuestionsFormProps): JSX.Element {
       r_questions: answer.length,
       r_qid: r_qid,
       r_ans: answer,
-      r_uid: session.bsuid,
+      r_uid: cxuid,
       r_points: r_points,
       r_maxpoints: r_maxpoints,
       r_totalpoints: r_totalpoints,
       r_correctpercent: r_correctpercent,
       r_gid: question.qgid,
-      r_sid: session.bsid
+      r_sid: cxid
     }
     const historyRecord = await writeUsershistory(NewUsershistoryTable)
     //
@@ -120,6 +173,7 @@ export default function QuestionsForm(props: QuestionsFormProps): JSX.Element {
   //...................................................................................
   //.  Render the form
   //...................................................................................
+  if (!question) return <div>Loading...</div>
   return (
     <>
       <QuizQuestion question={question} quizQuestion={index + 1} quizTotal={quizTotal} />

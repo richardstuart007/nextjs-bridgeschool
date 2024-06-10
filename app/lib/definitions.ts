@@ -123,6 +123,11 @@ export type SessionInfo = {
   bsdftmaxquestions: number
 }
 
+export type ContextInfo = {
+  cxuid: number
+  cxid: number
+}
+
 export type UserAuth = {
   id: string
   name: string

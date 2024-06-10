@@ -4,14 +4,14 @@ import { ExclamationCircleIcon } from '@heroicons/react/24/outline'
 import { Button } from '../utils/button'
 import { useFormState, useFormStatus } from 'react-dom'
 import { sessionUser } from '@/app/lib/actions'
-import { fetchBSsession } from '@/app/lib/data'
+import { fetchSessionInfo } from '@/app/lib/data'
 import { SessionInfo } from '@/app/lib/definitions'
 
 export default function SessionForm({ id }: { id: number }): JSX.Element {
   //
   // State variable to hold session data
   //
-  const [BSsession, setBSsession] = useState<SessionInfo | null>(null)
+  const [sessionInfo, setSessionInfo] = useState<SessionInfo | null>(null)
   const [bsdftmaxquestions, setbsdftmaxquestions] = useState<number>(0)
   const [bsskipcorrect, setbsskipcorrect] = useState<boolean>(false)
   const [bssortquestions, setbssortquestions] = useState<boolean>(false)
@@ -19,7 +19,7 @@ export default function SessionForm({ id }: { id: number }): JSX.Element {
   //  Fetch session data when the component mounts or when id changes
   //
   useEffect(() => {
-    getBSsession(id)
+    getsessionInfo(id)
   }, [id])
   //
   //  FormData state
@@ -29,11 +29,11 @@ export default function SessionForm({ id }: { id: number }): JSX.Element {
   //-------------------------------------------------------------------------
   //  Get Data
   //-------------------------------------------------------------------------
-  async function getBSsession(id: number) {
+  async function getsessionInfo(id: number) {
     try {
-      const data = await fetchBSsession(id)
+      const data = await fetchSessionInfo(id)
       if (data) {
-        setBSsession(data)
+        setSessionInfo(data)
         setbsdftmaxquestions(data.bsdftmaxquestions)
         setbsskipcorrect(data.bsskipcorrect)
         setbssortquestions(data.bssortquestions)
@@ -64,8 +64,8 @@ export default function SessionForm({ id }: { id: number }): JSX.Element {
           {/*  Mobile  */}
           <div className=' md:hidden'>
             <div className='block text-xs font-medium text-gray-900'>
-              <h1>{`Session: ${BSsession?.bsid}`}</h1>
-              <h1>{`User: ${BSsession?.bsuid} ${BSsession?.bsname} `}</h1>
+              <h1>{`Session: ${sessionInfo?.bsid}`}</h1>
+              <h1>{`User: ${sessionInfo?.bsuid} ${sessionInfo?.bsname} `}</h1>
             </div>
           </div>
           {/*  ...................................................................................*/}

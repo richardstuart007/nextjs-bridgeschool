@@ -13,13 +13,13 @@ export default async function Page({ params }: { params: { gid: number } }) {
   //
   //  Variables used in the return statement
   //
-  let gid: number = params.gid
+  const gid: number = params.gid
   let questions: QuestionsTable[] = []
   try {
     //
     //  Get Questions
     //
-    const [questionsData] = await Promise.all([fetchQuestionsByGid(gid)])
+    const questionsData = await fetchQuestionsByGid(gid)
     if (!questionsData) notFound()
     questions = questionsData
   } catch (error) {

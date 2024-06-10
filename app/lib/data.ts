@@ -702,9 +702,9 @@ export async function UpdateSessions(
   }
 }
 //---------------------------------------------------------------------
-//  Fetch BSsession data by ID
+//  Fetch SessionInfo data by ID
 //---------------------------------------------------------------------
-export async function fetchBSsession(sessionId: number) {
+export async function fetchSessionInfo(sessionId: number) {
   // noStore()
   try {
     const data = await sql`
@@ -737,7 +737,7 @@ export async function fetchBSsession(sessionId: number) {
     return SessionInfo
   } catch (error) {
     console.error('Database Error:', error)
-    throw new Error('Failed to fetch BSsession.')
+    throw new Error('Failed to fetch SessionInfo.')
   }
 }
 // ----------------------------------------------------------------------

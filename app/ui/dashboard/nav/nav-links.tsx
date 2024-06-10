@@ -10,14 +10,17 @@ import {
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import clsx from 'clsx'
-import { useUserContext } from '@/UserContext'
+import { SessionInfo } from '@/app/lib/definitions'
 
-export default function NavLinks() {
+interface FormProps {
+  sessionInfo: SessionInfo
+}
+export default function NavLinks(props: FormProps): JSX.Element {
   //
-  //  Get user ID
+  //  Deconstruct props
   //
-  const { session } = useUserContext()
-  const { bsuid, bsid } = session
+  const sessionInfo = props.sessionInfo
+  const { bsuid, bsid } = sessionInfo
   //
   // Define the Link type
   //
