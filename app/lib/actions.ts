@@ -19,11 +19,20 @@ export async function authenticate(prevState: string | undefined, formData: Form
     if (error instanceof AuthError) {
       switch (error.type) {
         case 'CallbackRouteError':
-          return 'CallbackRouteError'
+          // Extract the underlying error if cause exists
+          const credentialsError = error.cause?.err
+          // Check if credentialsError is defined before accessing its properties
+          if (credentialsError) {
+            // Handle the credentials error
+            return credentialsError.message || 'Invalid email or password'
+          } else {
+            // Handle other cases where cause or err might be undefined
+            return 'CallbackRouteError'
+          }
         case 'CredentialsSignin':
-          return 'Invalid credentials.'
+          return 'Invalid email or password'
         default:
-          return 'Something went wrong.'
+          return 'Something went wrong - unknown error'
       }
     }
     throw error

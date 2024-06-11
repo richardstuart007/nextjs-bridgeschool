@@ -5,7 +5,6 @@ import { z } from 'zod'
 import type { UserAuth, UsersTable, NewSessionsTable } from '@/app/lib/definitions'
 import bcrypt from 'bcrypt'
 import { writeSessions, updateCookieSessionId, fetchUserByEmail } from '@/app/lib/data'
-
 // ----------------------------------------------------------------------
 //  Check User/Password
 // ----------------------------------------------------------------------
@@ -20,6 +19,9 @@ export const { auth, signIn, signOut } = NextAuth({
         const parsedCredentials = z
           .object({ email: z.string().email(), password: z.string() })
           .safeParse(credentials)
+        //
+        //  Fail credentials then return
+        //
         if (!parsedCredentials.success) return null
         //
         //  Get user from database
