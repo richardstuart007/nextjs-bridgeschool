@@ -7,7 +7,7 @@ import { redirect } from 'next/navigation'
 import { signIn, signOut } from '@/auth'
 import { AuthError } from 'next-auth'
 import { getCookieSessionId, UpdateSessions, navsignout } from '@/app/lib/data'
-import bcrypt from 'bcryptjs'
+import bcrypt from 'bcrypt'
 import type { UsersTable } from '@/app/lib/definitions'
 // import { DEFAULT_LOGIN_REDIRECT } from '@/routes'
 // ----------------------------------------------------------------------
@@ -286,9 +286,6 @@ export async function sessionUser(prevState: StateSession, formData: FormData) {
 //  Sign out
 // ----------------------------------------------------------------------
 export async function serverSignout() {
-  console.log('serverSignout: ------------------------------------')
-  console.log('serverSignout: navsignout')
   await navsignout()
-  console.log('serverSignout: signOut')
   await signOut()
 }

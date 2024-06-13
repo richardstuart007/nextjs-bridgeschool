@@ -768,6 +768,7 @@ export async function updateCookieSessionId(sessionId: number) {
 // ----------------------------------------------------------------------
 export async function deleteCookie(cookieName: string = 'SessionId') {
   try {
+    console.log('data: Delete cookie')
     cookies().delete(cookieName)
   } catch (error) {
     throw new Error('Failed to delete cookie.')
@@ -813,6 +814,7 @@ export async function navsignout() {
     //  Update the session to signed out
     //
     const s_id = parseInt(sessionId, 10)
+    console.log('SessionsSignout: ', s_id)
     await SessionsSignout(s_id)
     //
     //  Delete the cookie

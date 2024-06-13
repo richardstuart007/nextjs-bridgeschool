@@ -2,7 +2,6 @@
 
 import { lusitana } from '@/app/ui/fonts'
 import { AtSymbolIcon, KeyIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline'
-import { ArrowRightIcon, ArrowLeftIcon } from '@heroicons/react/20/solid'
 import { Button } from '../utils/button'
 import { useFormState, useFormStatus } from 'react-dom'
 import { registerUser } from '@/app/lib/actions'
@@ -21,8 +20,8 @@ export default function RegisterForm() {
   function RegisterButton() {
     const { pending } = useFormStatus()
     return (
-      <Button className='mt-4 w-full' aria-disabled={pending}>
-        Register <ArrowRightIcon className='ml-auto h-5 w-5 text-gray-50' />
+      <Button className='mt-4 w-full flex justify-center' aria-disabled={pending}>
+        Register
       </Button>
     )
   }
@@ -35,10 +34,10 @@ export default function RegisterForm() {
   function LoginButton({ onClick }: LoginButtonProps) {
     return (
       <Button
-        className='mt-4 w-full flex items-center justify-between bg-gray-400 hover:bg-gray-300'
+        className='mt-4 w-full flex items-center justify-center bg-gray-50 border-none shadow-none text-blue-300 underline hover:bg-gray-50'
         onClick={onClick}
       >
-        <ArrowLeftIcon className=' h-5 w-5 text-gray-50' /> Login
+        Back to Login, Click here
       </Button>
     )
   }
@@ -52,7 +51,7 @@ export default function RegisterForm() {
   return (
     <form action={dispatch} className='space-y-3'>
       <div className='flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8'>
-        <h1 className={`${lusitana.className} mb-3 text-2xl`}>Register to continue.</h1>
+        <h1 className={`${lusitana.className} mb-3 text-2xl`}>Register to continue</h1>
         <div className='w-full'>
           <div>
             <label className='mb-3 mt-5 block text-xs font-medium text-gray-900' htmlFor='email'>

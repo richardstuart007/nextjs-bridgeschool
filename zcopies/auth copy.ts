@@ -3,13 +3,13 @@ import Credentials from 'next-auth/providers/credentials'
 import { authConfig } from './auth.config'
 import { z } from 'zod'
 import type { UserAuth, UsersTable, NewSessionsTable } from '@/app/lib/definitions'
-import bcrypt from 'bcryptjs'
+import bcrypt from 'bcrypt'
 import { writeSessions, updateCookieSessionId, fetchUserByEmail } from '@/app/lib/data'
 // ----------------------------------------------------------------------
 //  Check User/Password
 // ----------------------------------------------------------------------
 export const {
-  handlers: { GET, POST },
+  // handlers: { GET, POST },
   auth,
   signIn,
   signOut
@@ -37,10 +37,10 @@ export const {
         //
         //  Check password if exists (Google/Github have no password) ????
         //
-        if (userRecord.u_hash) {
-          const passwordsMatch = await bcrypt.compare(password, userRecord.u_hash)
-          if (!passwordsMatch) return null
-        }
+        // if (userRecord.u_hash) {
+        const passwordsMatch = await bcrypt.compare(password, userRecord.u_hash)
+        if (!passwordsMatch) return null
+        // }
         //
         // Write session information
         //
