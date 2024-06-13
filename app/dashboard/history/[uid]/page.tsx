@@ -4,7 +4,7 @@ import Table from '@/app/ui/history/table'
 import { lusitana } from '@/app/ui/fonts'
 import { TableSkeleton } from '@/app/ui/history/skeleton'
 import { Suspense } from 'react'
-import { fetchHistoryPages } from '@/app/lib/data'
+import { fetchHistoryTotalPages } from '@/app/lib/data'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -21,7 +21,7 @@ export default async function Page({
 }) {
   const query = searchParams?.query || ''
   const currentPage = Number(searchParams?.page) || 1
-  const totalPages = await fetchHistoryPages(query)
+  const totalPages = await fetchHistoryTotalPages(query)
   return (
     <div className='w-full md:p-6'>
       <div className='flex w-full items-center justify-between'>

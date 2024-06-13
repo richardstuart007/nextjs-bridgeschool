@@ -11,7 +11,6 @@ export default function Page() {
   //  Reset the session
   //
   useEffect(() => {
-    console.log('App.page: resetSession')
     resetSession()
     // eslint-disable-next-line
   })

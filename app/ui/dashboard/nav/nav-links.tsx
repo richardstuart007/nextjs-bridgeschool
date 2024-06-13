@@ -41,10 +41,12 @@ export default function NavLinks(props: FormProps): JSX.Element {
   useEffect(() => {
     const hrefUser = `/dashboard/user/${bsuid}`
     const hrefSession = `/dashboard/session/${bsid}`
+    const hrefLibrary = `/dashboard/library/${bsuid}`
+    const hrefHistory = `/dashboard/history/${bsuid}`
     const initialLinks = [
       { name: 'Home', href: '/dashboard', icon: HomeIcon },
-      { name: 'Library', href: '/dashboard/library', icon: BuildingLibraryIcon },
-      { name: 'History', href: '/dashboard/history', icon: ArchiveBoxIcon },
+      { name: 'Library', href: hrefLibrary, icon: BuildingLibraryIcon },
+      { name: 'History', href: hrefHistory, icon: ArchiveBoxIcon },
       { name: 'User', href: hrefUser, icon: UserIcon },
       { name: 'Session', href: hrefSession, icon: Cog6ToothIcon }
     ]

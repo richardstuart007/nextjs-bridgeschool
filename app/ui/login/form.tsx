@@ -26,7 +26,6 @@ export default function LoginForm() {
   //  One time only
   //
   useEffect(() => {
-    console.log('Login.page: resetSession')
     resetSession()
     // eslint-disable-next-line
   }, [])

@@ -1,5 +1,5 @@
 import { BookQuiz, QuizReview } from '@/app/ui/utils/buttons'
-import { fetchFilteredHistory } from '@/app/lib/data'
+import { fetchHistoryFiltered } from '@/app/lib/data'
 
 export default async function HistoryTable({
   query,
@@ -9,7 +9,7 @@ export default async function HistoryTable({
   currentPage: number
 }) {
   // await new Promise(resolve => setTimeout(resolve, 23000))
-  const history = await fetchFilteredHistory(query, currentPage)
+  const history = await fetchHistoryFiltered(query, currentPage)
 
   return (
     <div className='mt-2 md:mt-6 flow-root'>

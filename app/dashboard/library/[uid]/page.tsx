@@ -4,24 +4,44 @@ import Table from '@/app/ui/library/table'
 import { lusitana } from '@/app/ui/fonts'
 import { TableSkeleton } from '@/app/ui/library/skeleton'
 import { Suspense } from 'react'
-import { fetchLibraryPages } from '@/app/lib/data'
+import { fetchLibraryTotalPages } from '@/app/lib/data'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Library'
 }
+//
+//  Interfaces
+//
+interface SearchParams {
+  query?: string
+  page?: string
+}
 
+interface Params {
+  uid: number
+}
+//
+//  Exported Function
+//
 export default async function Page({
-  searchParams
+  searchParams,
+  params
 }: {
-  searchParams?: {
-    query?: string
-    page?: string
-  }
+  searchParams?: SearchParams
+  params: Params
 }) {
+  //
+  //  Destructure Parameters
+  //
+  const { uid } = params
   const query = searchParams?.query || ''
   const currentPage = Number(searchParams?.page) || 1
-  const totalPages = await fetchLibraryPages(query)
+  //
+  //  Fetch Data
+  //
+  const totalPages = await fetchLibraryTotalPages(query, uid)
+
   return (
     <div className='w-full md:p-6'>
       <div className='flex w-full items-center justify-between'>
@@ -31,7 +51,7 @@ export default async function Page({
         <Search placeholder='lid:123  ref:leb desc: leb who:hugger type:youtube  owner:richard  group:leb  gid:123 cnt:' />
       </div>
       <Suspense key={query + currentPage} fallback={<TableSkeleton />}>
-        <Table query={query} currentPage={currentPage} />
+        <Table query={query} currentPage={currentPage} uid={uid} />
       </Suspense>
       <div className='mt-5 flex w-full justify-center'>
         <Pagination totalPages={totalPages} />

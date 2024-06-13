@@ -22,19 +22,31 @@ const HISTORY_ITEMS_PER_PAGE = 10
 //---------------------------------------------------------------------
 //  Library totals
 //---------------------------------------------------------------------
-export async function fetchLibraryPages(query: string) {
+export async function fetchLibraryTotalPages(query: string, uid: number) {
   // noStore()
   try {
-    let sqlWhere = await buildWhere_Library(query)
-    const sqlQuery = `SELECT COUNT(*) FROM library
+    //
+    //  Build Where clause
+    //
+    let sqlWhere = await buildWhere_Library(query, uid)
+    //
+    //  Build Query Statement
+    //
+    const sqlQuery = `SELECT COUNT(*) 
+    FROM library
+    LEFT JOIN usersowner ON lrowner = uoowner
     LEFT JOIN ownergroup ON lrowner = ogowner and lrgroup = oggroup
     ${sqlWhere}`
-
+    //
+    //  Run SQL
+    //
     const client = await db.connect()
     const result = await client.query(sqlQuery)
-    const count = result.rows[0].count
     client.release()
-
+    //
+    //  Return results
+    //
+    const count = result.rows[0].count
     const totalPages = Math.ceil(count / LIBRARY_ITEMS_PER_PAGE)
     return totalPages
   } catch (error) {
@@ -45,21 +57,34 @@ export async function fetchLibraryPages(query: string) {
 //---------------------------------------------------------------------
 //  Library data
 //---------------------------------------------------------------------
-export async function fetchFilteredLibrary(query: string, currentPage: number) {
+export async function fetchLibraryFiltered(query: string, currentPage: number, uid: number) {
   // noStore()
   const offset = (currentPage - 1) * LIBRARY_ITEMS_PER_PAGE
   try {
-    let sqlWhere = await buildWhere_Library(query)
+    //
+    //  Build Where clause
+    //
+    let sqlWhere = await buildWhere_Library(query, uid)
+    //
+    //  Build Query Statement
+    //
     const sqlQuery = `SELECT *
     FROM library
+    LEFT JOIN usersowner ON lrowner = uoowner
     LEFT JOIN ownergroup ON lrgid = oggid
      ${sqlWhere}
       ORDER BY lrref
       LIMIT ${LIBRARY_ITEMS_PER_PAGE} OFFSET ${offset}
      `
+    //
+    //  Run SQL
+    //
     const client = await db.connect()
     const data = await client.query<LibraryGroupTable>(sqlQuery)
     client.release()
+    //
+    //  Return results
+    //
     const rows = data.rows
     return rows
   } catch (error) {
@@ -70,11 +95,11 @@ export async function fetchFilteredLibrary(query: string, currentPage: number) {
 //---------------------------------------------------------------------
 //  Library where clause
 //---------------------------------------------------------------------
-export async function buildWhere_Library(query: string) {
+export async function buildWhere_Library(query: string, uid: number) {
   //
   //  Empty search
   //
-  let whereClause = ''
+  let whereClause = `WHERE uouid = ${uid} `
   if (!query) return whereClause
   //
   // Initialize variables
@@ -165,10 +190,11 @@ export async function buildWhere_Library(query: string) {
   //
   // Remove the trailing 'AND' if there are conditions
   //
+  let whereClauseUpdate = `WHERE uouid = ${uid}`
   if (whereClause !== '') {
-    whereClause = `WHERE ${whereClause.slice(0, -5)}`
+    whereClauseUpdate = `${whereClauseUpdate} AND ${whereClause.slice(0, -5)}`
   }
-  return whereClause
+  return whereClauseUpdate
 }
 //---------------------------------------------------------------------
 //  Library data by ID
@@ -235,7 +261,7 @@ export async function fetchQuestionsByGid(qgid: number) {
 //---------------------------------------------------------------------
 //  History totals
 //---------------------------------------------------------------------
-export async function fetchHistoryPages(query: string) {
+export async function fetchHistoryTotalPages(query: string) {
   // noStore()
   try {
     let sqlWhere = await buildWhere_History(query)
@@ -259,7 +285,7 @@ export async function fetchHistoryPages(query: string) {
 //---------------------------------------------------------------------
 //  History data
 //---------------------------------------------------------------------
-export async function fetchFilteredHistory(query: string, currentPage: number) {
+export async function fetchHistoryFiltered(query: string, currentPage: number) {
   // noStore()
   const offset = (currentPage - 1) * HISTORY_ITEMS_PER_PAGE
   try {
@@ -768,7 +794,6 @@ export async function updateCookieSessionId(sessionId: number) {
 // ----------------------------------------------------------------------
 export async function deleteCookie(cookieName: string = 'SessionId') {
   try {
-    console.log('data: Delete cookie')
     cookies().delete(cookieName)
   } catch (error) {
     throw new Error('Failed to delete cookie.')
@@ -814,7 +839,6 @@ export async function navsignout() {
     //  Update the session to signed out
     //
     const s_id = parseInt(sessionId, 10)
-    console.log('SessionsSignout: ', s_id)
     await SessionsSignout(s_id)
     //
     //  Delete the cookie

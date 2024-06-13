@@ -19,7 +19,6 @@ export async function authenticate(prevState: string | undefined, formData: Form
     await signIn('credentials', formData)
   } catch (error) {
     if (error instanceof AuthError) {
-      console.log('error.type: ', error.type)
       switch (error.type) {
         case 'CallbackRouteError':
           // Extract the underlying error if cause exists
@@ -286,9 +285,6 @@ export async function sessionUser(prevState: StateSession, formData: FormData) {
 //  Sign out
 // ----------------------------------------------------------------------
 export async function serverSignout() {
-  console.log('serverSignout: ------------------------------------')
-  console.log('serverSignout: navsignout')
   await navsignout()
-  console.log('serverSignout: signOut')
   await signOut()
 }
