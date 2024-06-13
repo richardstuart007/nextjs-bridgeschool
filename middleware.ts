@@ -5,7 +5,7 @@ import { cookies } from 'next/headers'
 
 const { auth } = NextAuth(authConfig)
 
-export default auth(req => {
+export default auth((req: any): any => {
   // console.log('Middleware ------------------------------------------')
   let isLoggedIn = !!req.auth
   const { nextUrl } = req
