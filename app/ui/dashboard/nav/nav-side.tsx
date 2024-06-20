@@ -4,9 +4,9 @@ import NavLinks from '@/app/ui/dashboard/nav/nav-links'
 import NavSession from '@/app/ui/dashboard/nav/nav-session'
 import SchoolLogo from '@/app/ui/utils/school-logo'
 import { PowerIcon } from '@heroicons/react/24/outline'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useUserContext } from '@/UserContext'
-import { fetchSessionInfo } from '@/app/lib/data'
+import { fetchSessionInfo, getAuthSession } from '@/app/lib/data'
 import { SessionInfo } from '@/app/lib/definitions'
 import { serverSignout } from '@/app/lib/actions'
 
@@ -23,7 +23,6 @@ export default function NavSide() {
   //  Change of pathname - Get session info
   //
   const pathname = usePathname()
-  const searchParams = useSearchParams()
   const [sessionInfo, setSessionInfo] = useState<SessionInfo | undefined>(undefined)
   useEffect(() => {
     getSessionInfo()
@@ -42,13 +41,14 @@ export default function NavSide() {
       return
     }
     //
-    //  Search Parameters
+    //  Auth Session
     //
-    const sessionId = searchParams.get('sessionId')
+    let sessionId
+    const authSession = await getAuthSession()
+    sessionId = authSession?.user?.sessionId
     //
     //  Get Session info from database & update Context
     //
-
     if (sessionId) {
       const bsid = parseInt(sessionId, 10)
       const sessionData = await fetchSessionInfo(bsid)

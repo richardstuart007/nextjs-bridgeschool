@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation'
 
 export default function RegisterForm() {
   const initialState = { message: null, errors: {} }
-  const [stateRegister, dispatch] = useFormState(registerUser, initialState)
+  const [formState, formAction] = useFormState(registerUser, initialState)
   //
   //  Get Router
   //
@@ -34,7 +34,7 @@ export default function RegisterForm() {
   function LoginButton({ onClick }: LoginButtonProps) {
     return (
       <Button
-        className='mt-4 w-full flex items-center justify-center bg-gray-50 border-none shadow-none text-blue-300 underline hover:bg-gray-50'
+        className='mt-4 w-full flex items-center justify-center bg-gray-300 border-none shadow-noneunderline  hover:bg-gray-500'
         onClick={onClick}
       >
         Back to Login, Click here
@@ -49,9 +49,9 @@ export default function RegisterForm() {
   }
   //-------------------------------------------------------------------------
   return (
-    <form action={dispatch} className='space-y-3'>
+    <form action={formAction} className='space-y-3'>
       <div className='flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8'>
-        <h1 className={`${lusitana.className} mb-3 text-2xl`}>Register to continue</h1>
+        <h1 className={`${lusitana.className} mb-3 text-2xl`}>Register</h1>
         <div className='w-full'>
           <div>
             <label className='mb-3 mt-5 block text-xs font-medium text-gray-900' htmlFor='email'>
@@ -71,8 +71,8 @@ export default function RegisterForm() {
             </div>
           </div>
           <div id='email-error' aria-live='polite' aria-atomic='true'>
-            {stateRegister.errors?.email &&
-              stateRegister.errors.email.map((error: string) => (
+            {formState.errors?.email &&
+              formState.errors.email.map((error: string) => (
                 <p className='mt-2 text-sm text-red-500' key={error}>
                   {error}
                 </p>
@@ -97,8 +97,8 @@ export default function RegisterForm() {
             </div>
           </div>
           <div id='password-error' aria-live='polite' aria-atomic='true'>
-            {stateRegister.errors?.password &&
-              stateRegister.errors.password.map((error: string) => (
+            {formState.errors?.password &&
+              formState.errors.password.map((error: string) => (
                 <p className='mt-2 text-sm text-red-500' key={error}>
                   {error}
                 </p>
@@ -109,10 +109,10 @@ export default function RegisterForm() {
         <LoginButton onClick={handleLoginClick} />
 
         <div className='flex h-8 items-end space-x-1' aria-live='polite' aria-atomic='true'>
-          {stateRegister.message && (
+          {formState.message && (
             <>
               <ExclamationCircleIcon className='h-5 w-5 text-red-500' />
-              <p className='text-sm text-red-500'>{stateRegister.message}</p>
+              <p className='text-sm text-red-500'>{formState.message}</p>
             </>
           )}
         </div>

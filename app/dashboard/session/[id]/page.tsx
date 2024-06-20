@@ -12,7 +12,7 @@ export default async function Page({ params }: { params: { id: number } }) {
   //
   let id: number = params.id
   const hrefSession = `/dashboard/session/${id}`
-  const hrefDashboard = `/dashboard/session/?sessionId=${id}`
+  const hrefDashboard = `/dashboard`
   //---------------------------------------------------
   return (
     <div className='w-full md:p-6'>

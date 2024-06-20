@@ -25,7 +25,7 @@ export default function SessionForm({ id }: { id: number }): JSX.Element {
   //  FormData state
   //
   const initialState = { message: null, errors: {} }
-  const [stateSession, dispatch] = useFormState(sessionUser, initialState)
+  const [formState, formAction] = useFormState(sessionUser, initialState)
   //-------------------------------------------------------------------------
   //  Get Data
   //-------------------------------------------------------------------------
@@ -55,7 +55,7 @@ export default function SessionForm({ id }: { id: number }): JSX.Element {
   }
   //-------------------------------------------------------------------------
   return (
-    <form action={dispatch} className='space-y-3 '>
+    <form action={formAction} className='space-y-3 '>
       <div className='flex-1 rounded-lg bg-gray-50 px-4 pb-2 pt-2 max-w-md'>
         <div className=''>
           {/*  ...................................................................................*/}
@@ -92,8 +92,8 @@ export default function SessionForm({ id }: { id: number }): JSX.Element {
             </div>
           </div>
           <div id='bsdftmaxquestions-error' aria-live='polite' aria-atomic='true'>
-            {stateSession.errors?.bsdftmaxquestions &&
-              stateSession.errors.bsdftmaxquestions.map((error: string) => (
+            {formState.errors?.bsdftmaxquestions &&
+              formState.errors.bsdftmaxquestions.map((error: string) => (
                 <p className='mt-2 text-sm text-red-500' key={error}>
                   {error}
                 </p>
@@ -198,10 +198,10 @@ export default function SessionForm({ id }: { id: number }): JSX.Element {
         {/*   Error Messages */}
         {/*  ...................................................................................*/}
         <div className='flex h-8 items-end space-x-1' aria-live='polite' aria-atomic='true'>
-          {stateSession.message && (
+          {formState.message && (
             <>
               <ExclamationCircleIcon className='h-5 w-5 text-red-500' />
-              <p className='text-sm text-red-500'>{stateSession.message}</p>
+              <p className='text-sm text-red-500'>{formState.message}</p>
             </>
           )}
         </div>

@@ -107,11 +107,6 @@ export type SessionsTable = {
   s_dftmaxquestions: number
 }
 
-export type NewSessionsTable = {
-  s_datetime: DateTime
-  s_uid: number
-}
-
 export type SessionInfo = {
   bsuid: number
   bsname: string
@@ -145,6 +140,12 @@ export type UsersTable = {
   u_admin: boolean
   u_fedcountry: string
   u_dev: boolean
+  u_provider: string
+}
+
+export type UsersOwnerTable = {
+  uouid: number
+  uoowner: string
 }
 
 export interface UsershistoryTopResults {
@@ -163,4 +164,10 @@ export interface UsershistoryRecentResults {
   r_totalpoints: number
   r_maxpoints: number
   r_correctpercent: number
+}
+
+export interface ProviderSignInParams {
+  provider: string
+  email: string
+  name: string
 }

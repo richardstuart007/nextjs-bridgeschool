@@ -6,36 +6,70 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { signIn, signOut } from '@/auth'
 import { AuthError } from 'next-auth'
-import { getCookieSessionId, UpdateSessions, navsignout } from '@/app/lib/data'
+import { getCookieSessionId, UpdateSessions, navsignout, writeUserOwner } from '@/app/lib/data'
 import bcrypt from 'bcryptjs'
 import type { UsersTable } from '@/app/lib/definitions'
-// import { DEFAULT_LOGIN_REDIRECT } from '@/routes'
 // ----------------------------------------------------------------------
-//  Authenticate Login
+//  loginUser Login
 // ----------------------------------------------------------------------
-export async function authenticate(prevState: string | undefined, formData: FormData) {
+//
+//  Define the schema for zod
+//
+const FormSchemaLogin = z.object({
+  email: z.string().email().toLowerCase(),
+  password: z.string()
+})
+//
+//  Define the state type
+//
+export type StateLogin = {
+  errors?: {
+    email?: string[]
+    password?: string[]
+  }
+  message?: string | null
+}
+
+const Login = FormSchemaLogin
+
+export async function loginUser(prevState: StateLogin | undefined, formData: FormData) {
+  //
+  //  Validate the fields using Zod
+  //
+  const validatedFields = Login.safeParse({
+    email: formData.get('email'),
+    password: formData.get('password')
+  })
+  //
+  // If form validation fails, return errors early. Otherwise, continue.
+  //
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Login.'
+    }
+  }
+  //
+  // Unpack form data
+  //
+  const { email, password } = validatedFields.data
   try {
-    // await signIn('credentials', { formData, redirectTo: DEFAULT_LOGIN_REDIRECT })
-    await signIn('credentials', formData)
+    await signIn('credentials', { email, password })
   } catch (error) {
     if (error instanceof AuthError) {
+      let errorMessage: string
       switch (error.type) {
         case 'CallbackRouteError':
-          // Extract the underlying error if cause exists
           const credentialsError = error.cause?.err
-          // Check if credentialsError is defined before accessing its properties
-          if (credentialsError) {
-            // Handle the credentials error
-            return credentialsError.message || 'Invalid email or password'
-          } else {
-            // Handle other cases where cause or err might be undefined
-            return 'CallbackRouteError'
-          }
+          errorMessage = credentialsError?.message || 'Invalid email or password'
+          break
         case 'CredentialsSignin':
-          return 'Invalid email or password'
+          errorMessage = 'Invalid email or password'
+          break
         default:
-          return 'Something went wrong - unknown error'
+          errorMessage = 'Something went wrong - unknown error'
       }
+      return { ...prevState, message: errorMessage }
     }
     throw error
   }
@@ -59,6 +93,9 @@ export type StateRegister = {
 const Register = FormSchemaRegister
 
 export async function registerUser(prevState: StateRegister, formData: FormData) {
+  //
+  //  Validate the fields using Zod
+  //
   const validatedFields = Register.safeParse({
     email: formData.get('email'),
     password: formData.get('password')
@@ -103,10 +140,11 @@ export async function registerUser(prevState: StateRegister, formData: FormData)
   const u_joined = new Date().toISOString().slice(0, 19).replace('T', ' ')
   const u_fedid = 'none'
   const u_admin = false
-  const u_fedcountry = 'NZ'
+  const u_fedcountry = 'ZZ'
   const u_dev = false
+  const u_provider = null
   try {
-    await sql`
+    const { rows } = await sql`
     INSERT
       INTO users
        (
@@ -117,7 +155,8 @@ export async function registerUser(prevState: StateRegister, formData: FormData)
         u_fedid,
         u_admin,
         u_fedcountry,
-        u_dev)
+        u_dev,
+        u_provider)
     VALUES (
       ${u_email},
       ${u_hash},
@@ -126,8 +165,16 @@ export async function registerUser(prevState: StateRegister, formData: FormData)
       ${u_fedid},
       ${u_admin},
       ${u_fedcountry},
-      ${u_dev})
+      ${u_dev},
+      ${u_provider}
+        ) RETURNING *
   `
+    //
+    //  Write the usersowner data
+    //
+    const userRecord = rows[0]
+    const userid = userRecord.u_uid
+    await writeUserOwner(userid)
   } catch (error) {
     return {
       message: 'Database Error: Failed to Register User.'

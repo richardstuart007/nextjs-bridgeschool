@@ -3,19 +3,22 @@
 import { sql, db } from '@vercel/postgres'
 import { unstable_noStore as noStore } from 'next/cache'
 import { cookies } from 'next/headers'
+import { auth } from '@/auth'
+import bcrypt from 'bcryptjs'
 import {
   LibraryTable,
   LibraryGroupTable,
   QuestionsTable,
   UsersTable,
+  UsersOwnerTable,
   UsershistoryTable,
   HistoryGroupTable,
   UsershistoryTopResults,
   UsershistoryRecentResults,
   NewUsershistoryTable,
-  NewSessionsTable,
   SessionsTable,
-  SessionInfo
+  SessionInfo,
+  ProviderSignInParams
 } from './definitions'
 const LIBRARY_ITEMS_PER_PAGE = 10
 const HISTORY_ITEMS_PER_PAGE = 10
@@ -632,15 +635,16 @@ export async function writeUsershistory(NewUsershistoryTable: NewUsershistoryTab
 //---------------------------------------------------------------------
 //  Write User Sessions
 //---------------------------------------------------------------------
-export async function writeSessions(usersessions: NewSessionsTable) {
+export async function writeSessions(s_uid: number) {
   try {
+    const s_datetime = new Date().toISOString().replace('T', ' ').replace('Z', '').substring(0, 23)
     const { rows } = await sql`
     INSERT INTO sessions (
       s_datetime,
       s_uid
     ) VALUES (
-      ${usersessions.s_datetime},
-      ${usersessions.s_uid}
+      ${s_datetime},
+      ${s_uid}
     ) RETURNING *
   `
     return rows[0]
@@ -849,5 +853,151 @@ export async function navsignout() {
     //
   } catch (error) {
     throw new Error('Failed to sign out.')
+  }
+}
+// ----------------------------------------------------------------------
+//  Write New User
+// ----------------------------------------------------------------------
+export async function writeUser(provider: string, email: string, name?: string, password?: string) {
+  //
+  // Insert data into the database
+  //
+  const u_email = email
+  //
+  //  Hash password if it exists
+  //
+  let u_hash
+  password ? (u_hash = await bcrypt.hash(password, 10)) : (u_hash = null)
+  //
+  //  Get name from email if it does not exist
+  //
+  let u_name
+  name ? (u_name = name) : (u_name = email.split('@')[0])
+  //
+  //  Use default values
+  //
+  const u_joined = new Date().toISOString().slice(0, 19).replace('T', ' ')
+  const u_fedid = 'none'
+  const u_admin = false
+  const u_fedcountry = 'ZZ'
+  const u_dev = false
+  const u_provider = provider
+  try {
+    const { rows } = await sql`
+    INSERT
+      INTO users
+       (
+        u_email,
+        u_hash,
+        u_name,
+        u_joined,
+        u_fedid,
+        u_admin,
+        u_fedcountry,
+        u_dev,
+        u_provider
+        )
+    VALUES (
+      ${u_email},
+      ${u_hash},
+      ${u_name},
+      ${u_joined},
+      ${u_fedid},
+      ${u_admin},
+      ${u_fedcountry},
+      ${u_dev},
+      ${u_provider}
+     ) RETURNING *
+  `
+    return rows[0]
+  } catch (error) {
+    console.error('writeUser: Failed to write User')
+    return undefined
+  }
+}
+// ----------------------------------------------------------------------
+//  Write UserOwner records
+// ----------------------------------------------------------------------
+export async function writeUserOwner(userid: number) {
+  //
+  // Insert data into the database
+  //
+  const uouid = userid
+  const uoowner = 'Richard'
+  try {
+    const { rows } = await sql`
+    INSERT
+      INTO usersowner
+       (
+        uouid,
+        uoowner
+        )
+    VALUES (
+      ${uouid},
+      ${uoowner}
+     ) RETURNING *
+  `
+    return rows[0]
+  } catch (error) {
+    console.error('writeUserOwner: Failed to write Userowners')
+    return undefined
+  }
+}
+// ----------------------------------------------------------------------
+//  Google Provider
+// ----------------------------------------------------------------------
+export async function providerSignIn({ provider, email, name }: ProviderSignInParams) {
+  try {
+    //
+    //  Get user from database
+    //
+    let userRecord: UsersTable | undefined
+    userRecord = (await fetchUserByEmail(email)) as UsersTable | undefined
+    //
+    //  Create user if does not exist
+    //
+    if (!userRecord) {
+      userRecord = (await writeUser(provider, email, name)) as UsersTable | undefined
+      if (!userRecord) {
+        console.log('providerSignIn: Write User Error:')
+        throw Error('providerSignIn: Write User Error')
+      }
+      //
+      //  Write the usersowner data
+      //
+      const userid = userRecord.u_uid
+      ;(await writeUserOwner(userid)) as UsersOwnerTable
+    }
+    //
+    // Write session information
+    //
+    const { u_uid } = userRecord
+    const sessionsRecord = await writeSessions(u_uid)
+    //
+    // Write cookie session
+    //
+    const sessionId = sessionsRecord.s_id
+    await updateCookieSessionId(sessionsRecord.s_id)
+    //
+    //  Return Session ID
+    //
+    return sessionId
+    //
+    //  Errors
+    //
+  } catch (error) {
+    throw new Error('providerSignIn: Failed to sign In')
+  }
+}
+// ----------------------------------------------------------------------
+//  Get Auth Session information
+// ----------------------------------------------------------------------
+export async function getAuthSession() {
+  try {
+    const session = await auth()
+    return session
+  } catch (error) {
+    console.error('getAuthSession Failed')
+    return null
   }
 }

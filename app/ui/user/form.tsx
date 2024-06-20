@@ -9,7 +9,7 @@ import SelectCountry from './select-country'
 
 export default function Form({ UserRecord }: { UserRecord: UsersTable }) {
   const initialState = { message: null, errors: {} }
-  const [stateuser, dispatch] = useFormState(SetupUser, initialState)
+  const [formState, formAction] = useFormState(SetupUser, initialState)
   const [u_name, setU_name] = useState(UserRecord.u_name)
   const [u_fedid, setU_fedid] = useState(UserRecord.u_fedid)
   const [u_fedcountry, setU_fedcountry] = useState(UserRecord.u_fedcountry)
@@ -37,7 +37,7 @@ export default function Form({ UserRecord }: { UserRecord: UsersTable }) {
   }
   //-------------------------------------------------------------------------
   return (
-    <form action={dispatch} className='space-y-3 '>
+    <form action={formAction} className='space-y-3 '>
       <div className='flex-1 rounded-lg bg-gray-50 px-4 pb-2 pt-2 max-w-md'>
         <div className=''>
           {/*  ...................................................................................*/}
@@ -72,8 +72,8 @@ export default function Form({ UserRecord }: { UserRecord: UsersTable }) {
             </div>
           </div>
           <div id='name-error' aria-live='polite' aria-atomic='true'>
-            {stateuser.errors?.u_name &&
-              stateuser.errors.u_name.map((error: string) => (
+            {formState.errors?.u_name &&
+              formState.errors.u_name.map((error: string) => (
                 <p className='mt-2 text-sm text-red-500' key={error}>
                   {error}
                 </p>
@@ -100,8 +100,8 @@ export default function Form({ UserRecord }: { UserRecord: UsersTable }) {
             </div>
           </div>
           <div id='fedid-error' aria-live='polite' aria-atomic='true'>
-            {stateuser.errors?.u_fedid &&
-              stateuser.errors.u_fedid.map((error: string) => (
+            {formState.errors?.u_fedid &&
+              formState.errors.u_fedid.map((error: string) => (
                 <p className='mt-2 text-sm text-red-500' key={error}>
                   {error}
                 </p>
@@ -134,10 +134,10 @@ export default function Form({ UserRecord }: { UserRecord: UsersTable }) {
           {/*   Error Messages */}
           {/*  ...................................................................................*/}
           <div className='flex h-8 items-end space-x-1' aria-live='polite' aria-atomic='true'>
-            {stateuser.message && (
+            {formState.message && (
               <>
                 <ExclamationCircleIcon className='h-5 w-5 text-red-500' />
-                <p className='text-sm text-red-500'>{stateuser.message}</p>
+                <p className='text-sm text-red-500'>{formState.message}</p>
               </>
             )}
           </div>

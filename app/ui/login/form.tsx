@@ -5,9 +5,10 @@ import { lusitana } from '@/app/ui/fonts'
 import { AtSymbolIcon, KeyIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline'
 import { Button } from '../utils/button'
 import { useFormState, useFormStatus } from 'react-dom'
-import { authenticate } from '@/app/lib/actions'
+import { loginUser } from '@/app/lib/actions'
 import { usePathname, useRouter } from 'next/navigation'
 import { resetSession } from '@/app/lib/actionsClient'
+import Socials from './socials'
 
 export default function LoginForm() {
   //
@@ -21,7 +22,8 @@ export default function LoginForm() {
   //
   //  State
   //
-  const [errorMessage, dispatch] = useFormState(authenticate, undefined)
+  const [formState, formAction] = useFormState(loginUser, undefined)
+  const errorMessage = formState?.message || null
   //
   //  One time only
   //
@@ -36,7 +38,6 @@ export default function LoginForm() {
     pathChange()
     // eslint-disable-next-line
   }, [pathname])
-
   //--------------------------------------------------------------------------------
   //  Every Time
   //--------------------------------------------------------------------------------
@@ -68,7 +69,7 @@ export default function LoginForm() {
   function RegisterButton({ onClick }: RegisterButtonProps) {
     return (
       <Button
-        className='mt-4 w-full flex items-center justify-center bg-gray-50 border-none shadow-none text-blue-300 underline  hover:bg-gray-50'
+        className='mt-4 w-full flex items-center justify-center bg-gray-300 border-none shadow-noneunderline  hover:bg-gray-500'
         onClick={onClick}
       >
         Not Registered yet? Click here
@@ -83,9 +84,9 @@ export default function LoginForm() {
   }
   //--------------------------------------------------------------------------------
   return (
-    <form action={dispatch} className='space-y-3'>
+    <form action={formAction} className='space-y-3'>
       <div className='flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8'>
-        <h1 className={`${lusitana.className} mb-3 text-2xl`}>Login to continue</h1>
+        <h1 className={`${lusitana.className} mb-3 text-2xl`}>Login</h1>
         <div className='w-full'>
           <div>
             <label className='mb-3 mt-5 block text-xs font-medium text-gray-900' htmlFor='email'>
@@ -123,6 +124,7 @@ export default function LoginForm() {
           </div>
         </div>
         <LoginButton />
+        <Socials />
         <RegisterButton onClick={handleRegisterClick} />
 
         <div className='flex h-8 items-end space-x-1' aria-live='polite' aria-atomic='true'>

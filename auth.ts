@@ -2,20 +2,66 @@ import NextAuth from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import { authConfig } from './auth.config'
 import { z } from 'zod'
-import type { UserAuth, UsersTable, NewSessionsTable } from '@/app/lib/definitions'
+import type { UserAuth, ProviderSignInParams } from '@/app/lib/definitions'
 import bcrypt from 'bcryptjs'
-import { writeSessions, updateCookieSessionId, fetchUserByEmail } from '@/app/lib/data'
+import {
+  writeSessions,
+  updateCookieSessionId,
+  fetchUserByEmail,
+  providerSignIn
+} from '@/app/lib/data'
+import Github from 'next-auth/providers/github'
+import Google from 'next-auth/providers/google'
 // ----------------------------------------------------------------------
 //  Check User/Password
 // ----------------------------------------------------------------------
+let sessionId = 0
 export const {
   handlers: { GET, POST },
   auth,
   signIn,
   signOut
 } = NextAuth({
+  callbacks: {
+    async signIn({ user, account }) {
+      const { email, name } = user
+      const provider = account?.provider
+      //
+      //  Errors
+      //
+      if (!provider || !email || !name) return false
+      //
+      //  Write session information
+      //
+      const signInData: ProviderSignInParams = {
+        provider: provider,
+        email: email,
+        name: name
+      }
+      sessionId = await providerSignIn(signInData)
+      return true
+    },
+    async session({ token, session }) {
+      if (token.sub && session.user) session.user.id = token.sub
+      if (token.sessionId && session.user) session.user.sessionId = token.sessionId as string
+      return session
+    },
+    async jwt({ token }) {
+      if (!token.sub) return token
+      if (sessionId !== 0) token.sessionId = sessionId
+      return token
+    }
+  },
   ...authConfig,
   providers: [
+    Github({
+      clientId: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET
+    }),
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET
+    }),
     Credentials({
       async authorize(credentials) {
         //
@@ -44,10 +90,12 @@ export const {
         //
         // Write session information
         //
-        const sessionsRecord = await writeSession(userRecord)
+        const { u_uid } = userRecord
+        const sessionsRecord = await writeSessions(u_uid)
         //
         // Write cookie session
         //
+        sessionId = sessionsRecord.s_id
         await updateCookieSessionId(sessionsRecord.s_id)
         //
         //  Return in correct format
@@ -62,28 +110,3 @@ export const {
     })
   ]
 })
-// ----------------------------------------------------------------------
-//  Write session information
-// ----------------------------------------------------------------------
-async function writeSession(userRecord: UsersTable) {
-  try {
-    //
-    //  Destructure user record
-    //
-    const { u_uid } = userRecord
-    //
-    //  Create session record
-    //
-    const session: NewSessionsTable = {
-      s_datetime: new Date().toISOString().replace('T', ' ').replace('Z', '').substring(0, 23),
-      s_uid: u_uid
-    }
-    const sessionsRecord = await writeSessions(session)
-    //
-    //  Return uer record
-    //
-    return sessionsRecord
-  } catch (error) {
-    throw new Error('Failed to write session info.')
-  }
-}
