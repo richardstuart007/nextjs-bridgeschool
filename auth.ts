@@ -22,6 +22,7 @@ export const {
   signIn,
   signOut
 } = NextAuth({
+  trustHost: true,
   callbacks: {
     async signIn({ user, account }) {
       const { email, name } = user
