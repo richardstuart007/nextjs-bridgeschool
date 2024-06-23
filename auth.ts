@@ -4,12 +4,7 @@ import { authConfig } from './auth.config'
 import { z } from 'zod'
 import type { UserAuth, ProviderSignInParams } from '@/app/lib/definitions'
 import bcrypt from 'bcryptjs'
-import {
-  writeSessions,
-  updateCookieSessionId,
-  fetchUserByEmail,
-  providerSignIn
-} from '@/app/lib/data'
+import { fetchUserByEmail, providerSignIn } from '@/app/lib/data'
 import Github from 'next-auth/providers/github'
 import Google from 'next-auth/providers/google'
 // ----------------------------------------------------------------------
@@ -32,7 +27,7 @@ export const {
       //
       if (!provider || !email || !name) return false
       //
-      //  Write session information
+      //  Write session information & cookie
       //
       const signInData: ProviderSignInParams = {
         provider: provider,
@@ -49,7 +44,12 @@ export const {
     },
     async jwt({ token }) {
       if (!token.sub) return token
-      if (sessionId !== 0) token.sessionId = sessionId
+      //
+      //  update token sessionId to latest
+      //
+      let tokenSessionId = 0
+      if (typeof token.sessionId === 'number') tokenSessionId = token.sessionId
+      if (sessionId > tokenSessionId) token.sessionId = sessionId
       return token
     }
   },
@@ -88,16 +88,6 @@ export const {
           const passwordsMatch = await bcrypt.compare(password, userRecord.u_hash)
           if (!passwordsMatch) return null
         }
-        //
-        // Write session information
-        //
-        const { u_uid } = userRecord
-        const sessionsRecord = await writeSessions(u_uid)
-        //
-        // Write cookie session
-        //
-        sessionId = sessionsRecord.s_id
-        await updateCookieSessionId(sessionsRecord.s_id)
         //
         //  Return in correct format
         //
