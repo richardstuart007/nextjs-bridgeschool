@@ -31,7 +31,6 @@ export default function QuizChoice(props: QuizChoiceProps): JSX.Element {
   //  Load the Choices
   //...................................................................................
   function loadChoices(): void {
-    // setValue(99)
     setShowSubmit(false)
     //
     //  Determine questionText
@@ -71,7 +70,6 @@ export default function QuizChoice(props: QuizChoiceProps): JSX.Element {
   //...................................................................................
   function handleSelect(value: number): void {
     setSelectedOption(value)
-    // setValue(value)
     setAnswer((prevAnswers: number[]) => [...prevAnswers, value])
     setShowSubmit(true)
   }

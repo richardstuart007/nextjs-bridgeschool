@@ -62,7 +62,7 @@ export default function ReviewForm(props: QuestionsFormProps): JSX.Element {
 
       <div className='flex bg-gray-50 px-3 h-5'>
         {index > 0 ? <QuizReviewPrevious onPreviousQuestion={handlePrevious} /> : null}
-        {index + 1 < questions.length ? <QuizReviewNext onNextQuestion={handleNext} /> : null}
+        {index + 1 < r_ans.length ? <QuizReviewNext onNextQuestion={handleNext} /> : null}
       </div>
     </>
   )

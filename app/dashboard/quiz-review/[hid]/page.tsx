@@ -26,11 +26,19 @@ export default async function Page({ params }: { params: { hid: number } }) {
     //  Get Questions
     //
     const qgid = history.r_gid
-    const questions: QuestionsTable[] = await fetchQuestionsByGid(qgid)
-    if (!questions || questions.length === 0) {
+    const questions_gid: QuestionsTable[] = await fetchQuestionsByGid(qgid)
+    if (!questions_gid || questions_gid.length === 0) {
       notFound()
     }
-
+    //
+    //  Strip out questions not answered
+    //
+    let questions: QuestionsTable[] = []
+    const qid = history.r_qid
+    qid.forEach(qid => {
+      const questionIndex = questions_gid.findIndex(q => q.qqid === qid)
+      questions.push(questions_gid[questionIndex])
+    })
     return (
       <div className='w-full md:p-6'>
         <Breadcrumbs
@@ -43,7 +51,7 @@ export default async function Page({ params }: { params: { hid: number } }) {
             }
           ]}
         />
-        <ReviewForm history={history} questions={questions} />
+        {questions ? <ReviewForm history={history} questions={questions} /> : null}
       </div>
     )
   } catch (error) {

@@ -40,6 +40,7 @@ export async function fetchLibraryTotalPages(query: string, uid: number) {
     LEFT JOIN usersowner ON lrowner = uoowner
     LEFT JOIN ownergroup ON lrowner = ogowner and lrgroup = oggroup
     ${sqlWhere}`
+    console.log('sqlQuery:', sqlQuery)
     //
     //  Run SQL
     //
@@ -79,6 +80,7 @@ export async function fetchLibraryFiltered(query: string, currentPage: number, u
       ORDER BY lrref
       LIMIT ${LIBRARY_ITEMS_PER_PAGE} OFFSET ${offset}
      `
+    console.log('sqlQuery:', sqlQuery)
     //
     //  Run SQL
     //
@@ -102,8 +104,7 @@ export async function buildWhere_Library(query: string, uid: number) {
   //
   //  Empty search
   //
-  let whereClause = `WHERE uouid = ${uid} `
-  if (!query) return whereClause
+  if (!query) return `WHERE uouid = ${uid}`
   //
   // Initialize variables
   //
@@ -181,6 +182,7 @@ export async function buildWhere_Library(query: string, uid: number) {
   //
   // Add conditions for each variable if not empty or zero
   //
+  let whereClause = ''
   if (lid !== 0) whereClause += `lrlid = ${lid} AND `
   if (ref !== '') whereClause += `lrref ILIKE '%${ref}%' AND `
   if (desc !== '') whereClause += `lrdesc ILIKE '%${desc}%' AND `

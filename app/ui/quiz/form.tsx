@@ -123,7 +123,7 @@ export default function QuestionsForm(props: QuestionsFormProps): JSX.Element {
     //
     const answeredQuestions = questions.slice(0, answer.length)
     //
-    //  Loop through the answered questions
+    //  Loop through the answered questions to populate the points
     //
     answeredQuestions.forEach((question, i) => {
       r_qid.push(question.qqid)
