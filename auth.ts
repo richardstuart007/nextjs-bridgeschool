@@ -4,7 +4,7 @@ import { authConfig } from './auth.config'
 import { z } from 'zod'
 import type { UserAuth, ProviderSignInParams } from '@/app/lib/definitions'
 import bcrypt from 'bcryptjs'
-import { fetchUserByEmail, providerSignIn } from '@/app/lib/data'
+import { fetchUserByEmail, fetchUserPwdByEmail, providerSignIn } from '@/app/lib/data'
 import Github from 'next-auth/providers/github'
 import Google from 'next-auth/providers/google'
 // ----------------------------------------------------------------------
@@ -76,18 +76,23 @@ export const {
         //
         if (!parsedCredentials.success) return null
         //
-        //  Get user from database
+        //  Get userpwd from database
         //
         const { email, password } = parsedCredentials.data
+        const userPwd = await fetchUserPwdByEmail(email)
+        if (!userPwd) return null
+        //
+        //  Check password if exists
+        //
+        // if (userPwd.uphash) {
+        const passwordsMatch = await bcrypt.compare(password, userPwd.uphash)
+        if (!passwordsMatch) return null
+        // }
+        //
+        //  Get User record
+        //
         const userRecord = await fetchUserByEmail(email)
         if (!userRecord) return null
-        //
-        //  Check password if exists (Google/Github have no password) ????
-        //
-        if (userRecord.u_hash) {
-          const passwordsMatch = await bcrypt.compare(password, userRecord.u_hash)
-          if (!passwordsMatch) return null
-        }
         //
         //  Return in correct format
         //
@@ -95,7 +100,7 @@ export const {
           id: userRecord.u_uid.toString(),
           name: userRecord.u_name,
           email: userRecord.u_email,
-          password: userRecord.u_hash
+          password: userPwd.uphash
         } as UserAuth
       }
     })

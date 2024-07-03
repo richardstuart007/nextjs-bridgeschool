@@ -4,12 +4,12 @@ import { sql, db } from '@vercel/postgres'
 import { unstable_noStore as noStore } from 'next/cache'
 import { cookies } from 'next/headers'
 import { auth } from '@/auth'
-import bcrypt from 'bcryptjs'
 import {
   LibraryTable,
   LibraryGroupTable,
   QuestionsTable,
   UsersTable,
+  UserspwdTable,
   UsersOwnerTable,
   UsershistoryTable,
   HistoryGroupTable,
@@ -22,6 +22,7 @@ import {
 } from './definitions'
 const LIBRARY_ITEMS_PER_PAGE = 10
 const HISTORY_ITEMS_PER_PAGE = 10
+const USERS_ITEMS_PER_PAGE = 20
 //---------------------------------------------------------------------
 //  Library totals
 //---------------------------------------------------------------------
@@ -40,7 +41,6 @@ export async function fetchLibraryTotalPages(query: string, uid: number) {
     LEFT JOIN usersowner ON lrowner = uoowner
     LEFT JOIN ownergroup ON lrowner = ogowner and lrgroup = oggroup
     ${sqlWhere}`
-    console.log('sqlQuery:', sqlQuery)
     //
     //  Run SQL
     //
@@ -54,8 +54,8 @@ export async function fetchLibraryTotalPages(query: string, uid: number) {
     const totalPages = Math.ceil(count / LIBRARY_ITEMS_PER_PAGE)
     return totalPages
   } catch (error) {
-    console.error('Database Error:', error)
-    throw new Error('Failed to fetch library items.')
+    console.error('fetchLibraryTotalPages:', error)
+    throw new Error('fetchLibraryTotalPages: Failed')
   }
 }
 //---------------------------------------------------------------------
@@ -80,7 +80,6 @@ export async function fetchLibraryFiltered(query: string, currentPage: number, u
       ORDER BY lrref
       LIMIT ${LIBRARY_ITEMS_PER_PAGE} OFFSET ${offset}
      `
-    console.log('sqlQuery:', sqlQuery)
     //
     //  Run SQL
     //
@@ -93,8 +92,8 @@ export async function fetchLibraryFiltered(query: string, currentPage: number, u
     const rows = data.rows
     return rows
   } catch (error) {
-    console.error('Database Error:', error)
-    throw new Error('Failed to fetch library.')
+    console.error('fetchLibraryFiltered:', error)
+    throw new Error('fetchLibraryFiltered: Failed')
   }
 }
 //---------------------------------------------------------------------
@@ -215,8 +214,8 @@ export async function fetchLibraryById(lrlid: number) {
     const row = data.rows[0]
     return row
   } catch (error) {
-    console.error('Database Error:', error)
-    throw new Error('Failed to fetch library.')
+    console.error('fetchLibraryById:', error)
+    throw new Error('fetchLibraryById: Failed')
   }
 }
 //---------------------------------------------------------------------
@@ -237,8 +236,8 @@ export async function fetchQuestionsByOwnerGroup(qowner: string, qgroup: string)
     const rows = data.rows
     return rows
   } catch (error) {
-    console.error('Database Error:', error)
-    throw new Error('Failed to fetch questions.')
+    console.error('fetchQuestionsByOwnerGroup:', error)
+    throw new Error('fetchQuestionsByOwnerGroup: Failed')
   }
 }
 //---------------------------------------------------------------------
@@ -259,8 +258,8 @@ export async function fetchQuestionsByGid(qgid: number) {
     const rows = data.rows
     return rows
   } catch (error) {
-    console.error('Database Error:', error)
-    throw new Error('Failed to fetch questions.')
+    console.error('fetchQuestionsByGid:', error)
+    throw new Error('fetchQuestionsByGid: Failed')
   }
 }
 //---------------------------------------------------------------------
@@ -283,8 +282,8 @@ export async function fetchHistoryTotalPages(query: string) {
     const totalPages = Math.ceil(count / HISTORY_ITEMS_PER_PAGE)
     return totalPages
   } catch (error) {
-    console.error('Database Error:', error)
-    throw new Error('Failed to fetch usershistory items.')
+    console.error('fetchHistoryTotalPages:', error)
+    throw new Error('fetchHistoryTotalPages: Failed')
   }
 }
 //---------------------------------------------------------------------
@@ -310,8 +309,8 @@ export async function fetchHistoryFiltered(query: string, currentPage: number) {
     const rows = data.rows
     return rows
   } catch (error) {
-    console.error('Database Error:', error)
-    throw new Error('Failed to fetch usershistory.')
+    console.error('fetchHistoryFiltered:', error)
+    throw new Error('fetchHistoryFiltered: Failed')
   }
 }
 //---------------------------------------------------------------------
@@ -428,8 +427,8 @@ export async function fetchHistoryById(r_hid: number) {
     const row = data.rows[0]
     return row
   } catch (error) {
-    console.error('Database Error:', error)
-    throw new Error('Failed to fetch history.')
+    console.error('fetchHistoryById:', error)
+    throw new Error('fetchHistoryById: Failed')
   }
 }
 //---------------------------------------------------------------------
@@ -451,8 +450,31 @@ export async function fetchUserByEmail(email: string): Promise<UsersTable | unde
     const row = userrecord.rows[0]
     return row
   } catch (error) {
-    console.error('Database Error:', error)
-    throw new Error('Failed to fetch user by email.')
+    console.error('fetchHistoryById:', error)
+    throw new Error('fetchUserByEmail: Failed')
+  }
+}
+//---------------------------------------------------------------------
+//  Fetch Userpwd by email
+//---------------------------------------------------------------------
+export async function fetchUserPwdByEmail(email: string): Promise<UserspwdTable | undefined> {
+  noStore()
+  try {
+    const data = await sql<UserspwdTable>`SELECT * FROM userspwd WHERE upemail=${email}`
+    //
+    //  Not found
+    //
+    if (data.rowCount === 0) {
+      return undefined
+    }
+    //
+    //  Return data
+    //
+    const row = data.rows[0]
+    return row
+  } catch (error) {
+    console.error('fetchUserPwdByEmail:', error)
+    throw new Error('fetchUserPwdByEmail: Failed')
   }
 }
 //---------------------------------------------------------------------
@@ -474,8 +496,8 @@ export async function fetchUserById(uid: number): Promise<UsersTable | undefined
     const row = userrecord.rows[0]
     return row
   } catch (error) {
-    console.error('Database Error:', error)
-    throw new Error('Failed to fetch user by Id.')
+    console.error('fetchUserById:', error)
+    throw new Error('fetchUserById: Failed')
   }
 }
 //---------------------------------------------------------------------
@@ -515,8 +537,8 @@ export async function fetchTopResultsData() {
     const rows = data.rows
     return rows
   } catch (error) {
-    console.error('Database Error:', error)
-    throw new Error('Failed to fetch top results.')
+    console.error('fetchTopResultsData:', error)
+    throw new Error('fetchTopResultsData: Failed')
   }
 }
 //---------------------------------------------------------------------
@@ -556,8 +578,8 @@ export async function fetchRecentResultsData1() {
     const rows = data.rows
     return rows
   } catch (error) {
-    console.error('Database Error:', error)
-    throw new Error('Failed to fetch recent results.')
+    console.error('fetchRecentResultsData1:', error)
+    throw new Error('fetchRecentResultsData1: Failed')
   }
 }
 //---------------------------------------------------------------------
@@ -589,8 +611,8 @@ ORDER BY r_uid;
     const rows = data.rows
     return rows
   } catch (error) {
-    console.error('Database Error:', error)
-    throw new Error('Failed to fetch recent results.')
+    console.error('fetchRecentResultsData5:', error)
+    throw new Error('fetchRecentResultsData5: Failed')
   }
 }
 //---------------------------------------------------------------------
@@ -630,8 +652,8 @@ export async function writeUsershistory(NewUsershistoryTable: NewUsershistoryTab
     const UsershistoryTable = rows[0]
     return UsershistoryTable
   } catch (error) {
-    console.error('Database Error:', error)
-    throw new Error('Failed to write user history.')
+    console.error('writeUsershistory:', error)
+    throw new Error('writeUsershistory: Failed')
   }
 }
 //---------------------------------------------------------------------
@@ -651,8 +673,8 @@ export async function writeSessions(s_uid: number) {
   `
     return rows[0]
   } catch (error) {
-    console.error('Database Error:', error)
-    throw new Error('Failed to write sessions.')
+    console.error('writeSessions:', error)
+    throw new Error('writeSessions: Failed')
   }
 }
 //---------------------------------------------------------------------
@@ -668,7 +690,7 @@ export async function SessionsSignout(s_id: number) {
     `
   } catch (error) {
     return {
-      message: 'Database Error: Failed to Update session.'
+      message: 'SessionsSignout: Failed to Update session.'
     }
   }
 }
@@ -687,7 +709,7 @@ export async function SessionsSignoutAll() {
     `
   } catch (error) {
     return {
-      message: 'Database Error: Failed to Update ssession.'
+      message: 'SessionsSignoutAll: Failed to Update ssession.'
     }
   }
 }
@@ -705,8 +727,8 @@ export async function fetchSessionsById(s_id: number) {
     const row = data.rows[0]
     return row
   } catch (error) {
-    console.error('Database Error:', error)
-    throw new Error('Failed to fetch sessions.')
+    console.error('fetchSessionsById:', error)
+    throw new Error('fetchSessionsById: Failed')
   }
 }
 //---------------------------------------------------------------------
@@ -729,7 +751,7 @@ export async function UpdateSessions(
     `
   } catch (error) {
     return {
-      message: 'Database Error: Failed to Update session.'
+      message: 'UpdateSessions: Failed to Update session.'
     }
   }
 }
@@ -768,8 +790,8 @@ export async function fetchSessionInfo(sessionId: number) {
     }
     return SessionInfo
   } catch (error) {
-    console.error('Database Error:', error)
-    throw new Error('Failed to fetch SessionInfo.')
+    console.error('fetchSessionInfo:', error)
+    throw new Error('fetchSessionInfo: Failed')
   }
 }
 // ----------------------------------------------------------------------
@@ -792,7 +814,7 @@ export async function updateCookieSessionId(sessionId: number) {
       path: '/'
     })
   } catch (error) {
-    throw new Error('Failed to update Session cookie info.')
+    throw new Error('updateCookieSessionId: Failed')
   }
 }
 // ----------------------------------------------------------------------
@@ -802,7 +824,7 @@ export async function deleteCookie(cookieName: string = 'SessionId') {
   try {
     cookies().delete(cookieName)
   } catch (error) {
-    throw new Error('Failed to delete cookie.')
+    throw new Error('deleteCookie: Failed')
   }
 }
 // ----------------------------------------------------------------------
@@ -854,22 +876,17 @@ export async function navsignout() {
     //  Errors
     //
   } catch (error) {
-    throw new Error('Failed to sign out.')
+    throw new Error('navsignout: Failed')
   }
 }
 // ----------------------------------------------------------------------
 //  Write New User
 // ----------------------------------------------------------------------
-export async function writeUser(provider: string, email: string, name?: string, password?: string) {
+export async function writeUser(provider: string, email: string, name?: string) {
   //
   // Insert data into the database
   //
   const u_email = email
-  //
-  //  Hash password if it exists
-  //
-  let u_hash
-  password ? (u_hash = await bcrypt.hash(password, 10)) : (u_hash = null)
   //
   //  Get name from email if it does not exist
   //
@@ -882,7 +899,6 @@ export async function writeUser(provider: string, email: string, name?: string, 
   const u_fedid = 'none'
   const u_admin = false
   const u_fedcountry = 'ZZ'
-  const u_dev = false
   const u_provider = provider
   try {
     const { rows } = await sql`
@@ -890,37 +906,33 @@ export async function writeUser(provider: string, email: string, name?: string, 
       INTO users
        (
         u_email,
-        u_hash,
         u_name,
         u_joined,
         u_fedid,
         u_admin,
         u_fedcountry,
-        u_dev,
         u_provider
         )
     VALUES (
       ${u_email},
-      ${u_hash},
       ${u_name},
       ${u_joined},
       ${u_fedid},
       ${u_admin},
       ${u_fedcountry},
-      ${u_dev},
       ${u_provider}
      ) RETURNING *
   `
     return rows[0]
   } catch (error) {
     console.error('writeUser: Failed to write User')
-    return undefined
+    throw new Error('writeUser: Failed')
   }
 }
 // ----------------------------------------------------------------------
 //  Write UserOwner records
 // ----------------------------------------------------------------------
-export async function writeUserOwner(userid: number) {
+export async function writeUsersOwner(userid: number) {
   //
   // Insert data into the database
   //
@@ -941,8 +953,39 @@ export async function writeUserOwner(userid: number) {
   `
     return rows[0]
   } catch (error) {
-    console.error('writeUserOwner: Failed to write Userowners')
-    return undefined
+    console.error('writeUsersOwner: Failed to write Userowners')
+    throw new Error('writeUsersOwner: Failed')
+  }
+}
+// ----------------------------------------------------------------------
+//  Write Userpwd record
+// ----------------------------------------------------------------------
+export async function writeUsersPwd(userid: number, userhash: string, email: string) {
+  //
+  // Insert data into the database
+  //
+  const upuid = userid
+  const uphash = userhash
+  const upemail = email
+  try {
+    const { rows } = await sql`
+    INSERT
+      INTO userspwd
+       (
+        upuid,
+        uphash,
+        upemail
+        )
+    VALUES (
+      ${upuid},
+      ${uphash},
+      ${upemail}
+     ) RETURNING *
+  `
+    return rows[0]
+  } catch (error) {
+    console.error('writeUserpwd: Failed to write Userpwd')
+    throw new Error('writeUsersPwd: Failed')
   }
 }
 // ----------------------------------------------------------------------
@@ -968,7 +1011,7 @@ export async function providerSignIn({ provider, email, name }: ProviderSignInPa
       //  Write the usersowner data
       //
       const userid = userRecord.u_uid
-      ;(await writeUserOwner(userid)) as UsersOwnerTable
+      ;(await writeUsersOwner(userid)) as UsersOwnerTable
     }
     //
     // Write session information
@@ -988,7 +1031,7 @@ export async function providerSignIn({ provider, email, name }: ProviderSignInPa
     //  Errors
     //
   } catch (error) {
-    throw new Error('providerSignIn: Failed to sign In')
+    throw new Error('providerSignIn: Failed')
   }
 }
 // ----------------------------------------------------------------------
@@ -1000,6 +1043,141 @@ export async function getAuthSession() {
     return session
   } catch (error) {
     console.error('getAuthSession Failed')
-    return null
+    throw new Error('getAuthSession: Failed')
   }
+}
+//---------------------------------------------------------------------
+//  Users data
+//---------------------------------------------------------------------
+export async function fetchUsersFiltered(query: string, currentPage: number) {
+  // noStore()
+  const offset = (currentPage - 1) * USERS_ITEMS_PER_PAGE
+  try {
+    //
+    //  Build Where clause
+    //
+    let sqlWhere = await buildWhere_Users(query)
+    //
+    //  Build Query Statement
+    //
+    const sqlQuery = `SELECT *
+    FROM users
+     ${sqlWhere}
+      ORDER BY u_name
+      LIMIT ${USERS_ITEMS_PER_PAGE} OFFSET ${offset}
+     `
+    //
+    //  Run SQL
+    //
+    const client = await db.connect()
+    const data = await client.query<UsersTable>(sqlQuery)
+    client.release()
+    //
+    //  Return results
+    //
+    const rows = data.rows
+    return rows
+  } catch (error) {
+    console.error('fetchUsersFiltered:', error)
+    throw new Error('fetchUsersFiltered: Failed')
+  }
+}
+//---------------------------------------------------------------------
+//  Users totals
+//---------------------------------------------------------------------
+export async function fetchUsersTotalPages(query: string) {
+  // noStore()
+  try {
+    //
+    //  Build Where clause
+    //
+    let sqlWhere = await buildWhere_Users(query)
+    //
+    //  Build Query Statement
+    //
+    const sqlQuery = `SELECT COUNT(*) 
+    FROM users
+    ${sqlWhere}`
+    //
+    //  Run SQL
+    //
+    const client = await db.connect()
+    const result = await client.query(sqlQuery)
+    client.release()
+    //
+    //  Return results
+    //
+    const count = result.rows[0].count
+    const totalPages = Math.ceil(count / USERS_ITEMS_PER_PAGE)
+    return totalPages
+  } catch (error) {
+    console.error('fetchUsersTotalPages:', error)
+    throw new Error('fetchUsersTotalPages: Failed')
+  }
+}
+//---------------------------------------------------------------------
+//  Users where clause
+//---------------------------------------------------------------------
+export async function buildWhere_Users(query: string) {
+  //
+  //  Empty search
+  //
+  if (!query) return ``
+  //
+  // Initialize variables
+  //
+  let uid = 0
+  let name = ''
+  //
+  // Split the search query into parts based on spaces
+  //
+  const parts = query.split(/\s+/).filter(part => part.trim() !== '')
+  //
+  // Loop through each part to extract values using switch statement
+  //
+  parts.forEach(part => {
+    if (part.includes(':')) {
+      const [key, value] = part.split(':')
+      //
+      //  Check for empty values
+      //
+      if (value === '') return
+      //
+      // Process each part
+      //
+      switch (key) {
+        case 'uid':
+          if (!isNaN(Number(value))) {
+            uid = parseInt(value, 10)
+          }
+          break
+        case 'name':
+          name = value
+          break
+        default:
+          name = value
+          break
+      }
+    } else {
+      // Default to 'name' if no key is provided
+      if (name === '') {
+        name = part
+      }
+    }
+  })
+  //
+  // Add conditions for each variable if not empty or zero
+  //
+  let whereClause = ''
+  if (uid !== 0) whereClause += `u_uid = ${uid} AND `
+  if (name !== '') whereClause += `u_name ILIKE '%${name}%' AND `
+  //
+  //  No where clause
+  //
+  if (whereClause === '') return ''
+  //
+  // Remove the trailing 'AND' if there are conditions
+  //
+  const whereClauseUpdate = `WHERE ${whereClause.slice(0, -5)}`
+  return whereClauseUpdate
 }

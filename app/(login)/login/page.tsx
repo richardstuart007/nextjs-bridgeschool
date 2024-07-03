@@ -1,5 +1,5 @@
 import SchoolLogo from '@/app/ui/utils/school-logo'
-import LoginForm from '@/app/ui/login/form'
+import LoginForm from '@/app/(login)/login/form'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {

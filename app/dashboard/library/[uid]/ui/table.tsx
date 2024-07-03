@@ -1,4 +1,4 @@
-import { BookView, BookQuiz } from '@/app/ui/utils/buttons'
+import { BookView, BookQuiz } from '@/app/ui/utils/link-buttons'
 import { fetchLibraryFiltered } from '@/app/lib/data'
 export default async function LibraryTable({
   query,

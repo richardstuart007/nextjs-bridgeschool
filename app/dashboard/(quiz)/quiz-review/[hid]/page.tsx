@@ -1,4 +1,4 @@
-import ReviewForm from '@/app/ui/quiz-review/form'
+import ReviewForm from '@/app/dashboard/(quiz)/quiz-review/[hid]/ui/form'
 import Breadcrumbs from '@/app/ui/utils/breadcrumbs'
 import { fetchQuestionsByGid, fetchHistoryById } from '@/app/lib/data'
 import { notFound } from 'next/navigation'

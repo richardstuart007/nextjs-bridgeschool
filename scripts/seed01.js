@@ -243,7 +243,6 @@ async function create_users(client) {
     u_fedid character varying(30) ,
     u_admin boolean,
     u_fedcountry character varying(16) ,
-    u_dev boolean,
     CONSTRAINT users_pkey PRIMARY KEY (u_uid)
 )
 `

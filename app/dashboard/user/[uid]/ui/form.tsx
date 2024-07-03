@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline'
-import { Button } from '../utils/button'
+import { Button } from '../../../../ui/utils/button'
 import { useFormState, useFormStatus } from 'react-dom'
 import { SetupUser } from '@/app/lib/actions'
 import type { UsersTable } from '@/app/lib/definitions'

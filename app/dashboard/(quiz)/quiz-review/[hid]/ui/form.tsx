@@ -2,10 +2,13 @@
 
 import { useState } from 'react'
 import { QuestionsTable, UsershistoryTable } from '@/app/lib/definitions'
-import QuizQuestion from '@/app/ui/quiz-question/quiz-question'
-import QuizBidding from '@/app/ui/quiz-question/quiz-bidding/QuizBidding'
-import QuizHands from '@/app/ui/quiz-question/quiz-hands/QuizHands'
-import { QuizReviewNext, QuizReviewPrevious } from '@/app/ui/quiz-review/buttons'
+import QuizQuestion from '@/app/dashboard/(quiz)/quiz-question/quiz-question'
+import QuizBidding from '@/app/dashboard/(quiz)/quiz-question/quiz-bidding/QuizBidding'
+import QuizHands from '@/app/dashboard/(quiz)/quiz-question/quiz-hands/QuizHands'
+import {
+  QuizReviewNext,
+  QuizReviewPrevious
+} from '@/app/dashboard/(quiz)/quiz-review/[hid]/ui/buttons'
 import QuizReviewChoice from './quiz-review-choice'
 
 interface QuestionsFormProps {

@@ -132,15 +132,19 @@ export type UserAuth = {
 
 export type UsersTable = {
   u_uid: number
-  u_hash: string
   u_name: string
   u_email: string
   u_joined: DateTime
   u_fedid: string
   u_admin: boolean
   u_fedcountry: string
-  u_dev: boolean
   u_provider: string
+}
+
+export type UserspwdTable = {
+  upuid: number
+  upemail: string
+  uphash: string
 }
 
 export type UsersOwnerTable = {

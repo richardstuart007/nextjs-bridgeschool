@@ -1,4 +1,4 @@
-import SessionForm from '@/app/ui/session/form'
+import SessionForm from '@/app/dashboard/session/[id]/form'
 import Breadcrumbs from '@/app/ui/utils/breadcrumbs'
 import { Metadata } from 'next'
 

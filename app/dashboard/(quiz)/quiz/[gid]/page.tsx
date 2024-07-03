@@ -1,4 +1,4 @@
-import Form from '@/app/ui/quiz/form'
+import Form from '@/app/dashboard/(quiz)/quiz/[gid]/ui/form'
 import Breadcrumbs from '@/app/ui/utils/breadcrumbs'
 import { fetchQuestionsByGid } from '@/app/lib/data'
 import { notFound } from 'next/navigation'

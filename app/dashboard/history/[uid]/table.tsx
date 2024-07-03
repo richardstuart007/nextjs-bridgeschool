@@ -1,4 +1,4 @@
-import { BookQuiz, QuizReview } from '@/app/ui/utils/buttons'
+import { BookQuiz, QuizReview } from '@/app/ui/utils/link-buttons'
 import { fetchHistoryFiltered } from '@/app/lib/data'
 
 export default async function HistoryTable({

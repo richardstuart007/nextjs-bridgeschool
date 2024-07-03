@@ -6,7 +6,14 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { signIn, signOut } from '@/auth'
 import { AuthError } from 'next-auth'
-import { getCookieSessionId, UpdateSessions, navsignout, writeUserOwner } from '@/app/lib/data'
+import {
+  getCookieSessionId,
+  UpdateSessions,
+  navsignout,
+  writeUser,
+  writeUsersOwner,
+  writeUsersPwd
+} from '@/app/lib/data'
 import bcrypt from 'bcryptjs'
 import type { UsersTable } from '@/app/lib/definitions'
 // ----------------------------------------------------------------------
@@ -134,47 +141,30 @@ export async function registerUser(prevState: StateRegister, formData: FormData)
   //
   // Insert data into the database
   //
-  const u_email = email
-  const u_hash = await bcrypt.hash(password, 10)
-  const u_name = email.split('@')[0]
-  const u_joined = new Date().toISOString().slice(0, 19).replace('T', ' ')
-  const u_fedid = 'none'
-  const u_admin = false
-  const u_fedcountry = 'ZZ'
-  const u_dev = false
-  const u_provider = null
+  const name = email.split('@')[0]
+  const provider = 'email'
+  //
+  //  Write User
+  //
   try {
-    const { rows } = await sql`
-    INSERT
-      INTO users
-       (
-        u_email,
-        u_hash,
-        u_name,
-        u_joined,
-        u_fedid,
-        u_admin,
-        u_fedcountry,
-        u_dev,
-        u_provider)
-    VALUES (
-      ${u_email},
-      ${u_hash},
-      ${u_name},
-      ${u_joined},
-      ${u_fedid},
-      ${u_admin},
-      ${u_fedcountry},
-      ${u_dev},
-      ${u_provider}
-        ) RETURNING *
-  `
+    const userRecord = (await writeUser(provider, email, name)) as UsersTable | undefined
+    if (!userRecord) {
+      console.log('registerUser: Write User Error:')
+      throw Error('registerUser: Write User Error')
+    }
+    //
+    //  Get inserted record
+    //
+    const userid = userRecord.u_uid
+    //
+    //  Write the userspwd data
+    //
+    const uphash = await bcrypt.hash(password, 10)
+    await writeUsersPwd(userid, uphash, email)
     //
     //  Write the usersowner data
     //
-    const userRecord = rows[0]
-    const userid = userRecord.u_uid
-    await writeUserOwner(userid)
+    await writeUsersOwner(userid)
   } catch (error) {
     return {
       message: 'Database Error: Failed to Register User.'

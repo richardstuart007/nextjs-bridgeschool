@@ -1,6 +1,12 @@
 import NextAuth from 'next-auth'
 import { authConfig } from './auth.config'
-import { publicRoutes, authRoutes, apiAuthPrefix, DEFAULT_LOGIN_REDIRECT } from '@/routes'
+import {
+  publicRoutes,
+  authRoutes,
+  apiAuthPrefix,
+  DEFAULT_LOGIN_REDIRECT,
+  adminRoutePrefix
+} from '@/routes'
 import { cookies } from 'next/headers'
 
 const { auth } = NextAuth(authConfig)
@@ -9,13 +15,20 @@ export default auth((req: any): any => {
   let isLoggedIn = !!req.auth
   const { nextUrl } = req
   const pathname = nextUrl.pathname
-  const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix)
+  const isApiAuthRoute = pathname.startsWith(apiAuthPrefix)
   const isPublicRoute = publicRoutes.includes(pathname)
   const isAuthRoute = authRoutes.includes(pathname)
+  const isAdminRoute = pathname.startsWith(adminRoutePrefix)
   //
   //  Allow all API routes
   //
   if (isApiAuthRoute) {
+    return null
+  }
+  //
+  //  Allow Admin route ????????????
+  //
+  if (isAdminRoute) {
     return null
   }
   //
