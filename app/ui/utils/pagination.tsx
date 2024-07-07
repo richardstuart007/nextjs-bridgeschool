@@ -121,7 +121,7 @@ function PaginationArrow({
 //------------------------------------------------------
 //  Generate the pagination controls
 //------------------------------------------------------
-function generatePagination(currentPage: number, totalPages: number): any {
+function generatePagination(currentPage: number, totalPages: number): (number | string)[] {
   // If the total number of pages is 7 or less,
   // display all pages without any ellipsis.
   if (totalPages <= 7) {
