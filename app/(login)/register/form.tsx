@@ -4,7 +4,7 @@ import { lusitana } from '@/app/ui/fonts'
 import { AtSymbolIcon, KeyIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline'
 import { Button } from '../../ui/utils/button'
 import { useFormState, useFormStatus } from 'react-dom'
-import { registerUser } from '@/app/lib/actions'
+import { registerUser } from '@/app/lib/actions/user-register'
 import { useRouter } from 'next/navigation'
 
 export default function RegisterForm() {

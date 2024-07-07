@@ -203,7 +203,7 @@ export type StateSetup = {
 
 const Setup = FormSchemaSetup
 
-export async function SetupUser(prevState: StateSetup, formData: FormData) {
+export async function UserEdit(prevState: StateSetup, formData: FormData) {
   //
   //  Validate form data
   //
@@ -321,7 +321,7 @@ export async function sessionUser(prevState: StateSession, formData: FormData) {
 // ----------------------------------------------------------------------
 //  Sign out
 // ----------------------------------------------------------------------
-export async function serverSignout() {
+export async function logout() {
   await navsignout()
   await signOut()
 }

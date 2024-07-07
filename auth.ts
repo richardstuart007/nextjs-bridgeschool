@@ -37,16 +37,19 @@ export const {
       sessionId = await providerSignIn(signInData)
       return true
     },
+    //
+    //  Update the session information from the Token
+    //
     async session({ token, session }) {
       if (token.sub && session.user) session.user.id = token.sub
       if (token.sessionId && session.user) session.user.sessionId = token.sessionId as string
       return session
     },
+    //
+    //  update token sessionId to latest
+    //
     async jwt({ token }) {
       if (!token.sub) return token
-      //
-      //  update token sessionId to latest
-      //
       let tokenSessionId = 0
       if (typeof token.sessionId === 'number') tokenSessionId = token.sessionId
       if (sessionId > tokenSessionId) token.sessionId = sessionId
@@ -84,10 +87,8 @@ export const {
         //
         //  Check password if exists
         //
-        // if (userPwd.uphash) {
         const passwordsMatch = await bcrypt.compare(password, userPwd.uphash)
         if (!passwordsMatch) return null
-        // }
         //
         //  Get User record
         //

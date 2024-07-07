@@ -5,9 +5,9 @@ import { lusitana } from '@/app/ui/fonts'
 import { AtSymbolIcon, KeyIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline'
 import { Button } from '../../ui/utils/button'
 import { useFormState, useFormStatus } from 'react-dom'
-import { loginUser } from '@/app/lib/actions'
+import { loginUser } from '@/app/lib/actions/user-login'
 import { usePathname, useRouter } from 'next/navigation'
-import { resetSession } from '@/app/lib/actionsClient'
+import { resetSession } from '@/app/lib/reset-session'
 import Socials from './socials'
 
 export default function LoginForm() {

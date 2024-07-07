@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline'
 import { Button } from '@/app/ui/utils/button'
 import { useFormState, useFormStatus } from 'react-dom'
-import { sessionUser } from '@/app/lib/actions'
+import { sessionUser } from '@/app/lib/actions/session-edit'
 import { fetchSessionInfo } from '@/app/lib/data'
 import { SessionInfo } from '@/app/lib/definitions'
 

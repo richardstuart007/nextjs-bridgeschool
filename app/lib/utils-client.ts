@@ -30,26 +30,3 @@ export function getCookieClient(): SessionInfo | null {
   }
   return null
 }
-// // ----------------------------------------------------------------------
-// //  GET User Session to Session Storage
-// // ----------------------------------------------------------------------
-// export function getSession_SessionInfo(): SessionInfo | null {
-//   //
-//   //  Get the session info
-//   //
-//   const dataString = sessionStorage.getItem('SessionInfo')
-//   //
-//   //  No data
-//   //
-//   if (!dataString) return null
-//   //
-//   //  Parse the data & return
-//   //
-//   try {
-//     const data: SessionInfo = JSON.parse(dataString)
-//     return data
-//   } catch (error) {
-//     console.error('Error parsing session data:', error)
-//     return null
-//   }
-// }
