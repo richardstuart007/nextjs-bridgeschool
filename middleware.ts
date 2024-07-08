@@ -46,7 +46,7 @@ export default auth((req: any): any => {
   //
   if (isLoggedIn && !isLoggedInCookie) {
     isLoggedIn = false
-    console.log('Middleware: isLoggedIn CHANGED ', isLoggedIn)
+    console.log('Middleware: isLoggedIn CHANGED to FALSE')
   }
   //
   //  Authorised Route

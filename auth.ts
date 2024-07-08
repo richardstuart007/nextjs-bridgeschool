@@ -20,6 +20,8 @@ export const {
   trustHost: true,
   callbacks: {
     async signIn({ user, account }) {
+      // console.log('Auth callbacks: user:', user)
+      // console.log('Auth callbacks: account:', account)
       const { email, name } = user
       const provider = account?.provider
       //
@@ -34,8 +36,15 @@ export const {
         email: email,
         name: name
       }
-      sessionId = await providerSignIn(signInData)
-      return true
+      // console.log('Auth callbacks: signInData:', signInData)
+      try {
+        sessionId = await providerSignIn(signInData)
+        // console.log('Auth callbacks: sessionId:', sessionId)
+        return true
+      } catch (error) {
+        console.error('Provider signIn error:', error)
+        return false
+      }
     },
     //
     //  Update the session information from the Token
@@ -77,32 +86,55 @@ export const {
         //
         //  Fail credentials then return
         //
-        if (!parsedCredentials.success) return null
+        if (!parsedCredentials.success) {
+          // console.log('Auth: Credentials Failed')
+          return null
+        }
         //
         //  Get userpwd from database
         //
-        const { email, password } = parsedCredentials.data
-        const userPwd = await fetchUserPwdByEmail(email)
-        if (!userPwd) return null
-        //
-        //  Check password if exists
-        //
-        const passwordsMatch = await bcrypt.compare(password, userPwd.uphash)
-        if (!passwordsMatch) return null
-        //
-        //  Get User record
-        //
-        const userRecord = await fetchUserByEmail(email)
-        if (!userRecord) return null
-        //
-        //  Return in correct format
-        //
-        return {
-          id: userRecord.u_uid.toString(),
-          name: userRecord.u_name,
-          email: userRecord.u_email,
-          password: userPwd.uphash
-        } as UserAuth
+        try {
+          const { email, password } = parsedCredentials.data
+          // console.log('Auth: email:', email)
+          // console.log('Auth: password:', password)
+          const userPwd = await fetchUserPwdByEmail(email)
+          if (!userPwd) {
+            // console.log('Auth: User Password not found')
+            return null
+          }
+          // console.log('Auth: userPwd:', userPwd)
+          //
+          //  Check password if exists
+          //
+          const passwordsMatch = await bcrypt.compare(password, userPwd.uphash)
+          if (!passwordsMatch) {
+            // console.log('Auth: Password match Failed')
+            return null
+          }
+          //
+          //  Get User record
+          //
+          const userRecord = await fetchUserByEmail(email)
+          if (!userRecord) {
+            // console.log('Auth: User Fetch failed')
+            return null
+          }
+          // console.log('Auth: userRecord:', userRecord)
+          //
+          //  Return in correct format
+          //
+          const rtnData = {
+            id: userRecord.u_uid.toString(),
+            name: userRecord.u_name,
+            email: userRecord.u_email,
+            password: userPwd.uphash
+          }
+          // console.log('Auth: rtnData:', rtnData)
+          return rtnData as UserAuth
+        } catch (error) {
+          console.error('Authorization error:', error)
+          return null
+        }
       }
     })
   ]

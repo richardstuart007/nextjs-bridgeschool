@@ -1,12 +1,10 @@
 'use server'
 
 import { z } from 'zod'
-import { sql } from '@vercel/postgres'
-import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
-import { writeUser, writeUsersOwner, writeUsersPwd } from '@/app/lib/data'
+import { writeUser, writeUsersOwner, writeUsersPwd, fetchUserByEmail } from '@/app/lib/data'
 import bcrypt from 'bcryptjs'
 import type { UsersTable } from '@/app/lib/definitions'
+import { signIn } from '@/auth'
 // ----------------------------------------------------------------------
 //  Register
 // ----------------------------------------------------------------------
@@ -25,7 +23,7 @@ export type StateRegister = {
 
 const Register = FormSchemaRegister
 
-export async function registerUser(prevState: StateRegister, formData: FormData) {
+export async function registerUser(prevState: StateRegister | undefined, formData: FormData) {
   //
   //  Validate the fields using Zod
   //
@@ -49,19 +47,10 @@ export async function registerUser(prevState: StateRegister, formData: FormData)
   //
   // Check if email exists already
   //
-  try {
-    const userrecord = await sql<UsersTable>`SELECT *
-      FROM users
-      WHERE u_email=${email}`
-
-    if (userrecord.rowCount > 0) {
-      return {
-        message: 'Email already exists.'
-      }
-    }
-  } catch (error) {
+  const data = await fetchUserByEmail(email)
+  if (data) {
     return {
-      message: 'Database Error: Failed to check User.'
+      message: 'Email already exists'
     }
   }
   //
@@ -72,33 +61,22 @@ export async function registerUser(prevState: StateRegister, formData: FormData)
   //
   //  Write User
   //
-  try {
-    const userRecord = (await writeUser(provider, email, name)) as UsersTable | undefined
-    if (!userRecord) {
-      console.log('registerUser: Write User Error:')
-      throw Error('registerUser: Write User Error')
-    }
-    //
-    //  Get inserted record
-    //
-    const userid = userRecord.u_uid
-    //
-    //  Write the userspwd data
-    //
-    const uphash = await bcrypt.hash(password, 10)
-    await writeUsersPwd(userid, uphash, email)
-    //
-    //  Write the usersowner data
-    //
-    await writeUsersOwner(userid)
-  } catch (error) {
-    return {
-      message: 'Database Error: Failed to Register User.'
-    }
+  const userRecord = (await writeUser(provider, email, name)) as UsersTable | undefined
+  if (!userRecord) {
+    throw Error('registerUser: Write User Error')
   }
   //
-  // Revalidate the cache and redirect the user.
+  //  Write the userspwd data
   //
-  revalidatePath('/dashboard')
-  redirect('/dashboard')
+  const userid = userRecord.u_uid
+  const uphash = await bcrypt.hash(password, 10)
+  await writeUsersPwd(userid, uphash, email)
+  //
+  //  Write the usersowner data
+  //
+  await writeUsersOwner(userid)
+  //
+  //  SignIn
+  //
+  await signIn('credentials', { email, password })
 }

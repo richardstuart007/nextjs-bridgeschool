@@ -1004,7 +1004,6 @@ export async function providerSignIn({ provider, email, name }: ProviderSignInPa
     if (!userRecord) {
       userRecord = (await writeUser(provider, email, name)) as UsersTable | undefined
       if (!userRecord) {
-        console.log('providerSignIn: Write User Error:')
         throw Error('providerSignIn: Write User Error')
       }
       //
