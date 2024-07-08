@@ -12,7 +12,6 @@ import { cookies } from 'next/headers'
 const { auth } = NextAuth(authConfig)
 
 export default auth((req: any): any => {
-  let isLoggedIn = !!req.auth
   const { nextUrl } = req
   const pathname = nextUrl.pathname
   const isApiAuthRoute = pathname.startsWith(apiAuthPrefix)
@@ -20,9 +19,26 @@ export default auth((req: any): any => {
   const isAuthRoute = authRoutes.includes(pathname)
   const isAdminRoute = pathname.startsWith(adminRoutePrefix)
   //
+  //  Login status (Auth not working yet)
+  //
+  const cookie = cookies().get('SessionId')
+  const isLoggedInCookie = !!cookie
+  // console.log('isLoggedInCookie:', isLoggedInCookie)
+  // console.log('pathname:', pathname)
+  // console.log('isApiAuthRoute:', isApiAuthRoute)
+  // console.log('isPublicRoute:', isPublicRoute)
+  // console.log('isAuthRoute:', isAuthRoute)
+  // console.log('isAdminRoute:', isAdminRoute)
+  //
   //  Allow all API routes
   //
   if (isApiAuthRoute) {
+    return null
+  }
+  //
+  //  Allow public route
+  //
+  if (isPublicRoute) {
     return null
   }
   //
@@ -32,35 +48,18 @@ export default auth((req: any): any => {
     return null
   }
   //
-  //  Login status (Auth not working yet)
-  //
-  let sessionId: string | null = null
-  const cookie = cookies().get('SessionId')
-  let isLoggedInCookie = false
-  if (cookie) {
-    isLoggedInCookie = true
-    sessionId = JSON.parse(cookie.value).toString()
-  }
-  //
-  //  Login is true but SessionId cookie missing - therefore effectively logged out
-  //
-  if (isLoggedIn && !isLoggedInCookie) {
-    isLoggedIn = false
-    console.log('Middleware: isLoggedIn CHANGED to FALSE')
-  }
-  //
   //  Authorised Route
   //
   if (isAuthRoute) {
-    if (isLoggedIn) {
+    if (isLoggedInCookie) {
       return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl))
     }
     return null
   }
   //
-  //  Not logged in & not a public route, go to login
+  //  Not logged in go to login
   //
-  if (!isLoggedIn && !isPublicRoute) {
+  if (!isLoggedInCookie) {
     return Response.redirect(new URL('/login', nextUrl))
   }
   //

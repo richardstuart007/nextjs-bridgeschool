@@ -7,7 +7,7 @@ import { Button } from '../../ui/utils/button'
 import { useFormState, useFormStatus } from 'react-dom'
 import { loginUser } from '@/app/lib/actions/user-login'
 import { usePathname, useRouter } from 'next/navigation'
-import { resetSession } from '@/app/lib/reset-session'
+import { deleteCookie } from '@/app/lib/data'
 import Socials from './socials'
 
 export default function LoginForm() {
@@ -29,7 +29,7 @@ export default function LoginForm() {
   //  One time only
   //
   useEffect(() => {
-    resetSession()
+    deleteCookie()
     // eslint-disable-next-line
   }, [])
   //
