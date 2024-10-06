@@ -111,6 +111,7 @@ export type SessionInfo = {
   bsuid: number
   bsname: string
   bsemail: string
+  bsadmin: boolean
   bsid: number
   bssignedin: boolean
   bssortquestions: boolean
@@ -174,4 +175,12 @@ export interface ProviderSignInParams {
   provider: string
   email: string
   name: string
+}
+
+export type LoggingTable = {
+  lgid: number
+  lgdatetime: DateTime
+  lgmsg: string
+  lgfunctionname: string
+  lgsession: number
 }

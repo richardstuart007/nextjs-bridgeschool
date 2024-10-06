@@ -2,8 +2,6 @@
 
 import { z } from 'zod'
 import { sql } from '@vercel/postgres'
-import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
 // ----------------------------------------------------------------------
 //  Update User Setup
 // ----------------------------------------------------------------------
@@ -14,7 +12,8 @@ const FormSchemaSetup = z.object({
   u_uid: z.string(),
   u_name: z.string(),
   u_fedid: z.string(),
-  u_fedcountry: z.string()
+  u_fedcountry: z.string(),
+  u_admin: z.boolean()
 })
 //
 //  Errors and Messages
@@ -25,13 +24,14 @@ export type StateSetup = {
     u_name?: string[]
     u_fedid?: string[]
     u_fedcountry?: string[]
+    u_admin?: string[]
   }
   message?: string | null
 }
 
 const Setup = FormSchemaSetup
 
-export async function UserEdit(prevState: StateSetup, formData: FormData) {
+export async function UserEdit(prevState: StateSetup, formData: FormData): Promise<StateSetup> {
   //
   //  Validate form data
   //
@@ -39,7 +39,8 @@ export async function UserEdit(prevState: StateSetup, formData: FormData) {
     u_uid: formData.get('u_uid'),
     u_name: formData.get('u_name'),
     u_fedid: formData.get('u_fedid'),
-    u_fedcountry: formData.get('u_fedcountry')
+    u_fedcountry: formData.get('u_fedcountry'),
+    u_admin: formData.get('u_admin') === 'true'
   })
   //
   // If form validation fails, return errors early. Otherwise, continue.
@@ -53,7 +54,7 @@ export async function UserEdit(prevState: StateSetup, formData: FormData) {
   //
   // Unpack form data
   //
-  const { u_uid, u_name, u_fedid, u_fedcountry } = validatedFields.data
+  const { u_uid, u_name, u_fedid, u_fedcountry, u_admin } = validatedFields.data
   //
   // Update data into the database
   //
@@ -63,7 +64,8 @@ export async function UserEdit(prevState: StateSetup, formData: FormData) {
     SET
       u_name = ${u_name},
       u_fedid = ${u_fedid},
-      u_fedcountry = ${u_fedcountry}
+      u_fedcountry = ${u_fedcountry},
+      u_admin = ${u_admin}
     WHERE u_uid = ${u_uid}
     `
 
@@ -73,12 +75,8 @@ export async function UserEdit(prevState: StateSetup, formData: FormData) {
     }
   } catch (error) {
     return {
-      message: 'Database Error: Failed to Update User.'
+      message: 'Database Error: Failed to Update User.',
+      errors: undefined
     }
   }
-  //
-  // Revalidate the cache and redirect the user.
-  //
-  revalidatePath('/dashboard')
-  redirect('/dashboard')
 }

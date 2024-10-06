@@ -1,72 +1,111 @@
-import NextAuth from 'next-auth'
-import { authConfig } from './auth.config'
 import {
-  publicRoutes,
-  authRoutes,
-  apiAuthPrefix,
-  DEFAULT_LOGIN_REDIRECT,
-  adminRoutePrefix
+  Routes_App,
+  Routes_LoginRegister,
+  Routes_Prefix_auth,
+  Routes_AfterLogin_redirect,
+  Routes_Prefix_admin,
+  Routes_Login
 } from '@/routes'
+import { isAdmin, writeLogging } from '@/app/lib/data'
 import { cookies } from 'next/headers'
 
-const { auth } = NextAuth(authConfig)
-
-export default auth((req: any): any => {
+export default async function middleware(req: any): Promise<any> {
+  const functionName = 'middleware'
   const { nextUrl } = req
-  const pathname = nextUrl.pathname
-  const isApiAuthRoute = pathname.startsWith(apiAuthPrefix)
-  const isPublicRoute = publicRoutes.includes(pathname)
-  const isAuthRoute = authRoutes.includes(pathname)
-  const isAdminRoute = pathname.startsWith(adminRoutePrefix)
+  //
+  //  Requested path name
+  //
+  const pathnameNew = req.nextUrl.pathname
+  //
+  //  Current path name
+  //
+  const pathnameCurrentobj = req.headers.get('referer')
+  let pathnameCurrent = '/'
+  if (pathnameCurrentobj) {
+    const previousUrl = new URL(pathnameCurrentobj)
+    pathnameCurrent = previousUrl.pathname
+  }
+  //
+  //  Flags
+  //
+  const isPrefixApiAuth = pathnameNew.startsWith(Routes_Prefix_auth)
+  const isAppRoute = Routes_App.includes(pathnameNew)
+  const wasLoginRegisterRoute = Routes_LoginRegister.includes(pathnameCurrent)
+  const isPrefixAdminRoute = pathnameNew.startsWith(Routes_Prefix_admin)
   //
   //  Login status (Auth not working yet)
   //
   const cookie = cookies().get('SessionId')
   const isLoggedInCookie = !!cookie
+  // console.log('---------------------------pathnameNew:', pathnameNew)
+  // console.log('pathnameCurrent:', pathnameCurrent)
   // console.log('isLoggedInCookie:', isLoggedInCookie)
-  // console.log('pathname:', pathname)
-  // console.log('isApiAuthRoute:', isApiAuthRoute)
-  // console.log('isPublicRoute:', isPublicRoute)
-  // console.log('isAuthRoute:', isAuthRoute)
-  // console.log('isAdminRoute:', isAdminRoute)
-  //
+  // console.log('isPrefixApiAuth:', isPrefixApiAuth)
+  // console.log('isAppRoute:', isAppRoute)
+  // console.log('isPrefixAdminRoute:', isPrefixAdminRoute)
+  // console.log('wasLoginRegisterRoute:', wasLoginRegisterRoute)
+  //-------------------------------------------------------------------------------------------------
   //  Allow all API routes
-  //
-  if (isApiAuthRoute) {
-    return null
+  //-------------------------------------------------------------------------------------------------
+  if (isPrefixApiAuth) return null
+  //-------------------------------------------------------------------------------------------------
+  //  Allow App route
+  //-------------------------------------------------------------------------------------------------
+  if (isAppRoute) return null
+  //-------------------------------------------------------------------------------------------------
+  //  Login/Register
+  //-------------------------------------------------------------------------------------------------
+  if (wasLoginRegisterRoute) {
+    //
+    // If not logged in then do not redirect
+    //
+    if (!isLoggedInCookie) return null
+    //
+    // Logged in and already redirected
+    //
+    if (pathnameNew === Routes_AfterLogin_redirect) return null
+    //
+    //  Logged in then Redirect to dashboard
+    //
+    return Response.redirect(new URL(Routes_AfterLogin_redirect, nextUrl))
   }
-  //
-  //  Allow public route
-  //
-  if (isPublicRoute) {
-    return null
-  }
-  //
-  //  Allow Admin route ????????????
-  //
-  if (isAdminRoute) {
-    return null
-  }
-  //
-  //  Authorised Route
-  //
-  if (isAuthRoute) {
-    if (isLoggedInCookie) {
-      return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl))
+  //-------------------------------------------------------------------------------------------------
+  //  If no change in path, allow
+  //-------------------------------------------------------------------------------------------------
+  if (pathnameNew === pathnameCurrent) return null
+  //-------------------------------------------------------------------------------------------------
+  //  Admin route
+  //-------------------------------------------------------------------------------------------------
+  if (isPrefixAdminRoute) {
+    //
+    //  Not logged in
+    //
+    if (!isLoggedInCookie) {
+      writeLogging(functionName, `Admin Route not logged in: Redirect ${Routes_Login}`)
+      return Response.redirect(new URL(Routes_Login, nextUrl))
     }
+    //
+    //  Not authorised ()
+    //
+    const isAdminAuthorised = await isAdmin()
+    // console.log('isAdminAuthorised', isAdminAuthorised)
+    if (!isAdminAuthorised) {
+      writeLogging(
+        functionName,
+        `Admin Route not Authorised: Redirect ${Routes_AfterLogin_redirect}`
+      )
+      return Response.redirect(new URL(Routes_AfterLogin_redirect, nextUrl))
+    }
+    //
+    //  Authorised
+    //
     return null
   }
-  //
-  //  Not logged in go to login
-  //
-  if (!isLoggedInCookie) {
-    return Response.redirect(new URL('/login', nextUrl))
-  }
-  //
+  //-------------------------------------------------------------------------------------------------
   //  Allow others
-  //
+  //-------------------------------------------------------------------------------------------------
   return null
-})
+}
 
 export const config = {
   matcher: ['/((?!.*\\..*|_next).*)', '/', '/(api|trpc)(.*)']

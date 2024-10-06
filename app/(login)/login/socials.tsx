@@ -4,14 +4,14 @@ import { FcGoogle } from 'react-icons/fc'
 import { FaGithub } from 'react-icons/fa'
 
 import { Button } from '../../ui/utils/button'
-import { DEFAULT_LOGIN_REDIRECT } from '@/routes'
+import { Routes_AfterLogin_redirect } from '@/routes'
 export default function Socials() {
   //
   //  Signin using provider
   //
   const signInProvider = (provider: 'google' | 'github') => {
     signIn(provider, {
-      callbackUrl: DEFAULT_LOGIN_REDIRECT
+      callbackUrl: Routes_AfterLogin_redirect
     })
   }
   return (

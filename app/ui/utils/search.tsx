@@ -22,9 +22,9 @@ export default function Search({ placeholder }: { placeholder: string }) {
     }
     replace(`${pathname}?${params.toString()}`)
   }, wait)
-
+  //-----------------------------------------------------------------------
   return (
-    <div className='relative flex flex-1 flex-shrink-0'>
+    <div className='mt-2 relative flex flex-1 flex-shrink-0'>
       <label htmlFor='search' className='sr-only'>
         Search
       </label>

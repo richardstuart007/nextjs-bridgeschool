@@ -1,4 +1,4 @@
-import Form from '@/app/dashboard/user/[uid]/ui/form'
+import Form from '@/app/dashboard/user/[uid]/form'
 import Breadcrumbs from '@/app/ui/utils/breadcrumbs'
 import { fetchUserById } from '@/app/lib/data'
 import { notFound } from 'next/navigation'

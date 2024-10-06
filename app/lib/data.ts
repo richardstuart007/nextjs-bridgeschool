@@ -22,11 +22,12 @@ import {
 } from './definitions'
 const LIBRARY_ITEMS_PER_PAGE = 10
 const HISTORY_ITEMS_PER_PAGE = 10
-const USERS_ITEMS_PER_PAGE = 20
+const USERS_ITEMS_PER_PAGE = 15
 //---------------------------------------------------------------------
 //  Library totals
 //---------------------------------------------------------------------
 export async function fetchLibraryTotalPages(query: string, uid: number) {
+  const functionName = 'fetchLibraryTotalPages'
   // noStore()
   try {
     //
@@ -54,14 +55,16 @@ export async function fetchLibraryTotalPages(query: string, uid: number) {
     const totalPages = Math.ceil(count / LIBRARY_ITEMS_PER_PAGE)
     return totalPages
   } catch (error) {
-    console.error('fetchLibraryTotalPages:', error)
-    throw new Error('fetchLibraryTotalPages: Failed')
+    console.error(`${functionName}:`, error)
+    writeLogging(functionName, 'Function failed')
+    throw new Error(`${functionName}: Failed`)
   }
 }
 //---------------------------------------------------------------------
 //  Library data
 //---------------------------------------------------------------------
 export async function fetchLibraryFiltered(query: string, currentPage: number, uid: number) {
+  const functionName = 'fetchLibraryFiltered'
   // noStore()
   const offset = (currentPage - 1) * LIBRARY_ITEMS_PER_PAGE
   try {
@@ -92,14 +95,16 @@ export async function fetchLibraryFiltered(query: string, currentPage: number, u
     const rows = data.rows
     return rows
   } catch (error) {
-    console.error('fetchLibraryFiltered:', error)
-    throw new Error('fetchLibraryFiltered: Failed')
+    console.error(`${functionName}:`, error)
+    writeLogging(functionName, 'Function failed')
+    throw new Error(`${functionName}: Failed`)
   }
 }
 //---------------------------------------------------------------------
 //  Library where clause
 //---------------------------------------------------------------------
 export async function buildWhere_Library(query: string, uid: number) {
+  const functionName = 'buildWhere_Library'
   //
   //  Empty search
   //
@@ -204,6 +209,7 @@ export async function buildWhere_Library(query: string, uid: number) {
 //  Library data by ID
 //---------------------------------------------------------------------
 export async function fetchLibraryById(lrlid: number) {
+  const functionName = 'fetchLibraryById'
   // noStore()
   try {
     const data = await sql<LibraryTable>`
@@ -214,14 +220,16 @@ export async function fetchLibraryById(lrlid: number) {
     const row = data.rows[0]
     return row
   } catch (error) {
-    console.error('fetchLibraryById:', error)
-    throw new Error('fetchLibraryById: Failed')
+    console.error(`${functionName}:`, error)
+    writeLogging(functionName, 'Function failed')
+    throw new Error(`${functionName}: Failed`)
   }
 }
 //---------------------------------------------------------------------
 //  Questions data by Owner/Group
 //---------------------------------------------------------------------
 export async function fetchQuestionsByOwnerGroup(qowner: string, qgroup: string) {
+  const functionName = 'fetchQuestionsByOwnerGroup'
   // noStore()
   try {
     const data = await sql<QuestionsTable>`
@@ -236,14 +244,16 @@ export async function fetchQuestionsByOwnerGroup(qowner: string, qgroup: string)
     const rows = data.rows
     return rows
   } catch (error) {
-    console.error('fetchQuestionsByOwnerGroup:', error)
-    throw new Error('fetchQuestionsByOwnerGroup: Failed')
+    console.error(`${functionName}:`, error)
+    writeLogging(functionName, 'Function failed')
+    throw new Error(`${functionName}: Failed`)
   }
 }
 //---------------------------------------------------------------------
 //  Questions data by ID
 //---------------------------------------------------------------------
 export async function fetchQuestionsByGid(qgid: number) {
+  const functionName = 'fetchQuestionsByGid'
   // noStore()
   try {
     const data = await sql<QuestionsTable>`
@@ -258,14 +268,16 @@ export async function fetchQuestionsByGid(qgid: number) {
     const rows = data.rows
     return rows
   } catch (error) {
-    console.error('fetchQuestionsByGid:', error)
-    throw new Error('fetchQuestionsByGid: Failed')
+    console.error(`${functionName}:`, error)
+    writeLogging(functionName, 'Function failed')
+    throw new Error(`${functionName}: Failed`)
   }
 }
 //---------------------------------------------------------------------
 //  History totals
 //---------------------------------------------------------------------
 export async function fetchHistoryTotalPages(query: string) {
+  const functionName = 'fetchHistoryTotalPages'
   // noStore()
   try {
     let sqlWhere = await buildWhere_History(query)
@@ -282,14 +294,16 @@ export async function fetchHistoryTotalPages(query: string) {
     const totalPages = Math.ceil(count / HISTORY_ITEMS_PER_PAGE)
     return totalPages
   } catch (error) {
-    console.error('fetchHistoryTotalPages:', error)
-    throw new Error('fetchHistoryTotalPages: Failed')
+    console.error(`${functionName}:`, error)
+    writeLogging(functionName, 'Function failed')
+    throw new Error(`${functionName}: Failed`)
   }
 }
 //---------------------------------------------------------------------
 //  History data
 //---------------------------------------------------------------------
 export async function fetchHistoryFiltered(query: string, currentPage: number) {
+  const functionName = 'fetchHistoryFiltered'
   // noStore()
   const offset = (currentPage - 1) * HISTORY_ITEMS_PER_PAGE
   try {
@@ -309,14 +323,16 @@ export async function fetchHistoryFiltered(query: string, currentPage: number) {
     const rows = data.rows
     return rows
   } catch (error) {
-    console.error('fetchHistoryFiltered:', error)
-    throw new Error('fetchHistoryFiltered: Failed')
+    console.error(`${functionName}:`, error)
+    writeLogging(functionName, 'Function failed')
+    throw new Error(`${functionName}: Failed`)
   }
 }
 //---------------------------------------------------------------------
 //  History where clause
 //---------------------------------------------------------------------
 export async function buildWhere_History(query: string) {
+  const functionName = 'buildWhere_History'
   //
   //  Empty search
   //
@@ -414,6 +430,7 @@ export async function buildWhere_History(query: string) {
 //  History data by ID
 //---------------------------------------------------------------------
 export async function fetchHistoryById(r_hid: number) {
+  const functionName = 'fetchHistoryById'
   // noStore()
   try {
     const data = await sql<UsershistoryTable>`
@@ -427,14 +444,16 @@ export async function fetchHistoryById(r_hid: number) {
     const row = data.rows[0]
     return row
   } catch (error) {
-    console.error('fetchHistoryById:', error)
-    throw new Error('fetchHistoryById: Failed')
+    console.error(`${functionName}:`, error)
+    writeLogging(functionName, 'Function failed')
+    throw new Error(`${functionName}: Failed`)
   }
 }
 //---------------------------------------------------------------------
 //  Fetch User by email
 //---------------------------------------------------------------------
 export async function fetchUserByEmail(email: string): Promise<UsersTable | undefined> {
+  const functionName = 'fetchUserByEmail'
   noStore()
   try {
     const userrecord = await sql<UsersTable>`SELECT * FROM users WHERE u_email=${email}`
@@ -450,14 +469,16 @@ export async function fetchUserByEmail(email: string): Promise<UsersTable | unde
     const row = userrecord.rows[0]
     return row
   } catch (error) {
-    console.error('fetchHistoryById:', error)
-    throw new Error('fetchUserByEmail: Failed')
+    console.error(`${functionName}:`, error)
+    writeLogging(functionName, 'Function failed')
+    throw new Error(`${functionName}: Failed`)
   }
 }
 //---------------------------------------------------------------------
 //  Fetch Userpwd by email
 //---------------------------------------------------------------------
 export async function fetchUserPwdByEmail(email: string): Promise<UserspwdTable | undefined> {
+  const functionName = 'fetchUserPwdByEmail'
   noStore()
   try {
     const data = await sql<UserspwdTable>`SELECT * FROM userspwd WHERE upemail=${email}`
@@ -473,14 +494,16 @@ export async function fetchUserPwdByEmail(email: string): Promise<UserspwdTable 
     const row = data.rows[0]
     return row
   } catch (error) {
-    console.error('fetchUserPwdByEmail:', error)
-    throw new Error('fetchUserPwdByEmail: Failed')
+    console.error(`${functionName}:`, error)
+    writeLogging(functionName, 'Function failed')
+    throw new Error(`${functionName}: Failed`)
   }
 }
 //---------------------------------------------------------------------
 //  Fetch User by ID
 //---------------------------------------------------------------------
 export async function fetchUserById(uid: number): Promise<UsersTable | undefined> {
+  const functionName = 'fetchUserById'
   noStore()
   try {
     const userrecord = await sql<UsersTable>`SELECT * FROM users WHERE u_uid=${uid}`
@@ -496,14 +519,16 @@ export async function fetchUserById(uid: number): Promise<UsersTable | undefined
     const row = userrecord.rows[0]
     return row
   } catch (error) {
-    console.error('fetchUserById:', error)
-    throw new Error('fetchUserById: Failed')
+    console.error(`${functionName}:`, error)
+    writeLogging(functionName, 'Function failed')
+    throw new Error(`${functionName}: Failed`)
   }
 }
 //---------------------------------------------------------------------
 //  Top results data
 //---------------------------------------------------------------------
 export async function fetchTopResultsData() {
+  const functionName = 'fetchTopResultsData'
   // noStore()
   // ????????????
   // await new Promise(resolve => setTimeout(resolve, 3000))
@@ -537,14 +562,16 @@ export async function fetchTopResultsData() {
     const rows = data.rows
     return rows
   } catch (error) {
-    console.error('fetchTopResultsData:', error)
-    throw new Error('fetchTopResultsData: Failed')
+    console.error(`${functionName}:`, error)
+    writeLogging(functionName, 'Function failed')
+    throw new Error(`${functionName}: Failed`)
   }
 }
 //---------------------------------------------------------------------
 //  Recent result data last
 //---------------------------------------------------------------------
 export async function fetchRecentResultsData1() {
+  const functionName = 'fetchRecentResultsData1'
   // noStore()
   // ????????????
   // await new Promise(resolve => setTimeout(resolve, 3000))
@@ -578,14 +605,16 @@ export async function fetchRecentResultsData1() {
     const rows = data.rows
     return rows
   } catch (error) {
-    console.error('fetchRecentResultsData1:', error)
-    throw new Error('fetchRecentResultsData1: Failed')
+    console.error(`${functionName}:`, error)
+    writeLogging(functionName, 'Function failed')
+    throw new Error(`${functionName}: Failed`)
   }
 }
 //---------------------------------------------------------------------
 //  Recent results data
 //---------------------------------------------------------------------
 export async function fetchRecentResultsData5(userIds: number[]) {
+  const functionName = 'fetchRecentResultsData5'
   // noStore()
   // ????????????
   // await new Promise(resolve => setTimeout(resolve, 3000))
@@ -611,14 +640,16 @@ ORDER BY r_uid;
     const rows = data.rows
     return rows
   } catch (error) {
-    console.error('fetchRecentResultsData5:', error)
-    throw new Error('fetchRecentResultsData5: Failed')
+    console.error(`${functionName}:`, error)
+    writeLogging(functionName, 'Function failed')
+    throw new Error(`${functionName}: Failed`)
   }
 }
 //---------------------------------------------------------------------
 //  Write User History
 //---------------------------------------------------------------------
 export async function writeUsershistory(NewUsershistoryTable: NewUsershistoryTable) {
+  const functionName = 'writeUsershistory'
   try {
     //
     //  Deconstruct history
@@ -652,14 +683,16 @@ export async function writeUsershistory(NewUsershistoryTable: NewUsershistoryTab
     const UsershistoryTable = rows[0]
     return UsershistoryTable
   } catch (error) {
-    console.error('writeUsershistory:', error)
-    throw new Error('writeUsershistory: Failed')
+    console.error(`${functionName}:`, error)
+    writeLogging(functionName, 'Function failed')
+    throw new Error(`${functionName}: Failed`)
   }
 }
 //---------------------------------------------------------------------
 //  Write User Sessions
 //---------------------------------------------------------------------
 export async function writeSessions(s_uid: number) {
+  const functionName = 'writeSessions'
   try {
     const s_datetime = new Date().toISOString().replace('T', ' ').replace('Z', '').substring(0, 23)
     const { rows } = await sql`
@@ -673,14 +706,16 @@ export async function writeSessions(s_uid: number) {
   `
     return rows[0]
   } catch (error) {
-    console.error('writeSessions:', error)
-    throw new Error('writeSessions: Failed')
+    console.error(`${functionName}:`, error)
+    writeLogging(functionName, 'Function failed')
+    throw new Error(`${functionName}: Failed`)
   }
 }
 //---------------------------------------------------------------------
 //  Update Sessions to signed out
 //---------------------------------------------------------------------
 export async function SessionsSignout(s_id: number) {
+  const functionName = 'SessionsSignout'
   try {
     await sql`
     UPDATE sessions
@@ -689,6 +724,8 @@ export async function SessionsSignout(s_id: number) {
     WHERE s_id = ${s_id}
     `
   } catch (error) {
+    console.error(`${functionName}:`, error)
+    writeLogging(functionName, 'Function failed')
     return {
       message: 'SessionsSignout: Failed to Update session.'
     }
@@ -698,6 +735,7 @@ export async function SessionsSignout(s_id: number) {
 //  Update User Sessions to signed out - ALL
 //---------------------------------------------------------------------
 export async function SessionsSignoutAll() {
+  const functionName = 'SessionsSignoutAll'
   try {
     await sql`
     UPDATE sessions
@@ -708,6 +746,8 @@ export async function SessionsSignoutAll() {
       s_datetime < NOW() - INTERVAL '3 HOURS'
     `
   } catch (error) {
+    console.error(`${functionName}:`, error)
+    writeLogging(functionName, 'Function failed')
     return {
       message: 'SessionsSignoutAll: Failed to Update ssession.'
     }
@@ -717,6 +757,7 @@ export async function SessionsSignoutAll() {
 //  sessions data by ID
 //---------------------------------------------------------------------
 export async function fetchSessionsById(s_id: number) {
+  const functionName = 'fetchSessionsById'
   noStore()
   try {
     const data = await sql<SessionsTable>`
@@ -727,8 +768,9 @@ export async function fetchSessionsById(s_id: number) {
     const row = data.rows[0]
     return row
   } catch (error) {
-    console.error('fetchSessionsById:', error)
-    throw new Error('fetchSessionsById: Failed')
+    console.error(`${functionName}:`, error)
+    writeLogging(functionName, 'Function failed')
+    throw new Error(`${functionName}: Failed`)
   }
 }
 //---------------------------------------------------------------------
@@ -740,6 +782,7 @@ export async function UpdateSessions(
   s_sortquestions: boolean,
   s_skipcorrect: boolean
 ) {
+  const functionName = 'UpdateSessions'
   try {
     await sql`
     UPDATE sessions
@@ -750,6 +793,8 @@ export async function UpdateSessions(
     WHERE s_id = ${s_id}
     `
   } catch (error) {
+    console.error(`${functionName}:`, error)
+    writeLogging(functionName, 'Function failed')
     return {
       message: 'UpdateSessions: Failed to Update session.'
     }
@@ -759,6 +804,7 @@ export async function UpdateSessions(
 //  Fetch SessionInfo data by ID
 //---------------------------------------------------------------------
 export async function fetchSessionInfo(sessionId: number) {
+  const functionName = 'fetchSessionInfo'
   // noStore()
   try {
     const data = await sql`
@@ -766,6 +812,7 @@ export async function fetchSessionInfo(sessionId: number) {
         u_uid,
         u_name,
         u_email,
+        u_admin,
         s_id,
         s_signedin,
         s_sortquestions,
@@ -782,6 +829,7 @@ export async function fetchSessionInfo(sessionId: number) {
       bsuid: row.u_uid,
       bsname: row.u_name,
       bsemail: row.u_email,
+      bsadmin: row.u_admin,
       bsid: row.s_id,
       bssignedin: row.s_signedin,
       bssortquestions: row.s_sortquestions,
@@ -790,14 +838,16 @@ export async function fetchSessionInfo(sessionId: number) {
     }
     return SessionInfo
   } catch (error) {
-    console.error('fetchSessionInfo:', error)
-    throw new Error('fetchSessionInfo: Failed')
+    console.error(`${functionName}:`, error)
+    writeLogging(functionName, 'Function failed')
+    throw new Error(`${functionName}: Failed`)
   }
 }
 // ----------------------------------------------------------------------
 //  Update Cookie information
 // ----------------------------------------------------------------------
 export async function updateCookieSessionId(sessionId: number) {
+  const functionName = 'updateCookieSessionId'
   try {
     //
     //  Cookiename
@@ -814,23 +864,29 @@ export async function updateCookieSessionId(sessionId: number) {
       path: '/'
     })
   } catch (error) {
-    throw new Error('updateCookieSessionId: Failed')
+    console.error(`${functionName}:`, error)
+    writeLogging(functionName, 'Function failed')
+    throw new Error(`${functionName}: Failed`)
   }
 }
 // ----------------------------------------------------------------------
 //  Delete Cookie
 // ----------------------------------------------------------------------
 export async function deleteCookie(cookieName: string = 'SessionId') {
+  const functionName = 'deleteCookie'
   try {
     cookies().delete(cookieName)
   } catch (error) {
-    throw new Error('deleteCookie: Failed')
+    console.error(`${functionName}:`, error)
+    writeLogging(functionName, 'Function failed')
+    throw new Error(`${functionName}: Failed`)
   }
 }
 // ----------------------------------------------------------------------
 //  Get Cookie information
 // ----------------------------------------------------------------------
 export async function getCookieSessionId(cookieName: string = 'SessionId'): Promise<string | null> {
+  const functionName = 'getCookieSessionId'
   try {
     const cookie = cookies().get(cookieName)
     if (!cookie) return null
@@ -849,14 +905,42 @@ export async function getCookieSessionId(cookieName: string = 'SessionId'): Prom
     //
     return JSON_cookie
   } catch (error) {
-    console.error('Failed to get cookie info.')
+    console.error(`${functionName}:`, error)
+    writeLogging(functionName, 'Function failed')
     return null
   }
+}
+// ----------------------------------------------------------------------
+//  Determine if Admin User
+// ----------------------------------------------------------------------
+export async function isAdmin() {
+  const functionName = 'isAdmin'
+  //
+  //  Get session id
+  //
+  const cookie = await getCookieSessionId()
+  //
+  //  No cookie then not logged in
+  //
+  if (!cookie) return false
+  //
+  //  Session ID
+  //
+  const sessionId = parseInt(cookie, 10)
+  //
+  //  Session info
+  //
+  const sessionInfo = await fetchSessionInfo(sessionId)
+  //
+  //  Return admin flag
+  //
+  return sessionInfo.bsadmin
 }
 // ----------------------------------------------------------------------
 //  Nav signout
 // ----------------------------------------------------------------------
 export async function navsignout() {
+  const functionName = 'navsignout'
   try {
     //
     //  Get the Bridge School session cookie
@@ -876,13 +960,16 @@ export async function navsignout() {
     //  Errors
     //
   } catch (error) {
-    throw new Error('navsignout: Failed')
+    console.error(`${functionName}:`, error)
+    writeLogging(functionName, 'Function failed')
+    throw new Error(`${functionName}: Failed`)
   }
 }
 // ----------------------------------------------------------------------
 //  Write New User
 // ----------------------------------------------------------------------
 export async function writeUser(provider: string, email: string, name?: string) {
+  const functionName = 'writeUser'
   //
   // Insert data into the database
   //
@@ -925,14 +1012,16 @@ export async function writeUser(provider: string, email: string, name?: string) 
   `
     return rows[0]
   } catch (error) {
-    console.error('writeUser: Failed to write User')
-    throw new Error('writeUser: Failed')
+    console.error(`${functionName}:`, error)
+    writeLogging(functionName, 'Function failed')
+    throw new Error(`${functionName}: Failed`)
   }
 }
 // ----------------------------------------------------------------------
 //  Write UserOwner records
 // ----------------------------------------------------------------------
 export async function writeUsersOwner(userid: number) {
+  const functionName = 'writeUsersOwner'
   //
   // Insert data into the database
   //
@@ -953,14 +1042,16 @@ export async function writeUsersOwner(userid: number) {
   `
     return rows[0]
   } catch (error) {
-    console.error('writeUsersOwner: Failed to write Userowners')
-    throw new Error('writeUsersOwner: Failed')
+    console.error(`${functionName}:`, error)
+    writeLogging(functionName, 'Function failed')
+    throw new Error(`${functionName}: Failed`)
   }
 }
 // ----------------------------------------------------------------------
 //  Write Userpwd record
 // ----------------------------------------------------------------------
 export async function writeUsersPwd(userid: number, userhash: string, email: string) {
+  const functionName = 'writeUsersPwd'
   //
   // Insert data into the database
   //
@@ -984,14 +1075,16 @@ export async function writeUsersPwd(userid: number, userhash: string, email: str
   `
     return rows[0]
   } catch (error) {
-    console.error('writeUserpwd: Failed to write Userpwd')
-    throw new Error('writeUsersPwd: Failed')
+    console.error(`${functionName}:`, error)
+    writeLogging(functionName, 'Function failed')
+    throw new Error(`${functionName}: Failed`)
   }
 }
 // ----------------------------------------------------------------------
 //  Google Provider
 // ----------------------------------------------------------------------
 export async function providerSignIn({ provider, email, name }: ProviderSignInParams) {
+  const functionName = 'providerSignIn'
   try {
     //
     //  Get user from database
@@ -1030,25 +1123,30 @@ export async function providerSignIn({ provider, email, name }: ProviderSignInPa
     //  Errors
     //
   } catch (error) {
-    throw new Error('providerSignIn: Failed')
+    console.error(`${functionName}:`, error)
+    writeLogging(functionName, 'Function failed')
+    throw new Error(`${functionName}: Failed`)
   }
 }
 // ----------------------------------------------------------------------
 //  Get Auth Session information
 // ----------------------------------------------------------------------
 export async function getAuthSession() {
+  const functionName = 'getAuthSession'
   try {
     const session = await auth()
     return session
   } catch (error) {
-    console.error('getAuthSession Failed')
-    throw new Error('getAuthSession: Failed')
+    console.error(`${functionName}:`, error)
+    writeLogging(functionName, 'Function failed')
+    throw new Error(`${functionName}: Failed`)
   }
 }
 //---------------------------------------------------------------------
 //  Users data
 //---------------------------------------------------------------------
 export async function fetchUsersFiltered(query: string, currentPage: number) {
+  const functionName = 'fetchUsersFiltered'
   // noStore()
   const offset = (currentPage - 1) * USERS_ITEMS_PER_PAGE
   try {
@@ -1077,14 +1175,16 @@ export async function fetchUsersFiltered(query: string, currentPage: number) {
     const rows = data.rows
     return rows
   } catch (error) {
-    console.error('fetchUsersFiltered:', error)
-    throw new Error('fetchUsersFiltered: Failed')
+    console.error(`${functionName}:`, error)
+    writeLogging(functionName, 'Function failed')
+    throw new Error(`${functionName}: Failed`)
   }
 }
 //---------------------------------------------------------------------
 //  Users totals
 //---------------------------------------------------------------------
 export async function fetchUsersTotalPages(query: string) {
+  const functionName = 'fetchUsersTotalPages'
   // noStore()
   try {
     //
@@ -1110,14 +1210,16 @@ export async function fetchUsersTotalPages(query: string) {
     const totalPages = Math.ceil(count / USERS_ITEMS_PER_PAGE)
     return totalPages
   } catch (error) {
-    console.error('fetchUsersTotalPages:', error)
-    throw new Error('fetchUsersTotalPages: Failed')
+    console.error(`${functionName}:`, error)
+    writeLogging(functionName, 'Function failed')
+    throw new Error(`${functionName}: Failed`)
   }
 }
 //---------------------------------------------------------------------
 //  Users where clause
 //---------------------------------------------------------------------
 export async function buildWhere_Users(query: string) {
+  const functionName = 'buildWhere_Users'
   //
   //  Empty search
   //
@@ -1127,6 +1229,10 @@ export async function buildWhere_Users(query: string) {
   //
   let uid = 0
   let name = ''
+  let email = ''
+  let fedid = ''
+  let fedcountry = ''
+  let provider = ''
   //
   // Split the search query into parts based on spaces
   //
@@ -1153,6 +1259,18 @@ export async function buildWhere_Users(query: string) {
         case 'name':
           name = value
           break
+        case 'email':
+          email = value
+          break
+        case 'fedid':
+          fedid = value
+          break
+        case 'fedcountry':
+          fedcountry = value
+          break
+        case 'provider':
+          provider = value
+          break
         default:
           name = value
           break
@@ -1170,6 +1288,10 @@ export async function buildWhere_Users(query: string) {
   let whereClause = ''
   if (uid !== 0) whereClause += `u_uid = ${uid} AND `
   if (name !== '') whereClause += `u_name ILIKE '%${name}%' AND `
+  if (email !== '') whereClause += `u_email ILIKE '%${email}%' AND `
+  if (fedid !== '') whereClause += `u_fedid ILIKE '%${fedid}%' AND `
+  if (fedcountry !== '') whereClause += `u_fedcountry ILIKE '%${fedcountry}%' AND `
+  if (provider !== '') whereClause += `u_provider ILIKE '%${provider}%' AND `
   //
   //  No where clause
   //
@@ -1179,4 +1301,98 @@ export async function buildWhere_Users(query: string) {
   //
   const whereClauseUpdate = `WHERE ${whereClause.slice(0, -5)}`
   return whereClauseUpdate
+}
+//---------------------------------------------------------------------
+//  Delete by a User and related tables rows by UID - users, sessions, usershistory,usersowner, userspwd
+//---------------------------------------------------------------------
+export async function deleteByUid(uid: number): Promise<string> {
+  const functionName = 'deleteByUid'
+  noStore()
+  //
+  //  Counts
+  //
+  const deletedCounts = {
+    users: 0,
+    sessions: 0,
+    usersHistory: 0,
+    usersOwner: 0,
+    usersPwd: 0
+  }
+
+  try {
+    //
+    // usershistory
+    //
+    const usersHistoryDeleteResult = await sql`DELETE FROM usershistory WHERE r_uid=${uid}`
+    deletedCounts.usersHistory = usersHistoryDeleteResult.rowCount ?? 0
+    //
+    // sessions
+    //
+    const sessionDeleteResult = await sql`DELETE FROM sessions WHERE s_uid=${uid}`
+    deletedCounts.sessions = sessionDeleteResult.rowCount ?? 0
+    //
+    // usersowner
+    //
+    const usersOwnerDeleteResult = await sql`DELETE FROM usersowner WHERE uouid=${uid}`
+    deletedCounts.usersOwner = usersOwnerDeleteResult.rowCount ?? 0
+    //
+    // userspwd
+    //
+    const usersPwdDeleteResult = await sql`DELETE FROM userspwd WHERE upuid=${uid}`
+    deletedCounts.usersPwd = usersPwdDeleteResult.rowCount ?? 0
+    //
+    // users
+    //
+    const userDeleteResult = await sql`DELETE FROM users WHERE u_uid=${uid}`
+    deletedCounts.users = userDeleteResult.rowCount ?? 0
+    //
+    // Prepare a summary message
+    //
+    const summaryMessage = `
+      Deleted Records:
+      Users: ${deletedCounts.users}
+      Sessions: ${deletedCounts.sessions}
+      Users History: ${deletedCounts.usersHistory}
+      Users Owner: ${deletedCounts.usersOwner}
+      Users Passwords: ${deletedCounts.usersPwd}
+    `
+    console.log(summaryMessage)
+    return summaryMessage
+  } catch (error) {
+    console.error(`${functionName}:`, error)
+    writeLogging(functionName, 'Function failed')
+    throw new Error(`${functionName}: Failed`)
+  }
+}
+//---------------------------------------------------------------------
+//  Write User Logging
+//---------------------------------------------------------------------
+export async function writeLogging(lgfunctionname: string, lgmsg: string) {
+  //
+  //  Get session id
+  //
+  let lgsession = 0
+  const cookie = await getCookieSessionId()
+  if (cookie) lgsession = parseInt(cookie, 10)
+
+  try {
+    const lgdatetime = new Date().toISOString().replace('T', ' ').replace('Z', '').substring(0, 23)
+    const { rows } = await sql`
+    INSERT INTO logging (
+      lgdatetime,
+      lgmsg,
+      lgfunctionname,
+      lgsession
+    ) VALUES (
+      ${lgdatetime},
+      ${lgmsg},
+      ${lgfunctionname},
+      ${lgsession}
+    ) RETURNING *
+  `
+    return rows[0]
+  } catch (error) {
+    console.error('writeLogging:', error)
+    throw new Error('writeLogging: Failed')
+  }
 }

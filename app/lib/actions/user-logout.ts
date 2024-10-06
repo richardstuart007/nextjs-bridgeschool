@@ -7,5 +7,5 @@ import { navsignout } from '@/app/lib/data'
 // ----------------------------------------------------------------------
 export async function logout() {
   await navsignout()
-  await signOut()
+  await signOut({ redirectTo: '/login' })
 }

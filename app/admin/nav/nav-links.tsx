@@ -1,27 +1,11 @@
 'use client'
 import { useEffect, useState, ForwardRefExoticComponent, SVGProps, RefAttributes } from 'react'
-import {
-  BuildingLibraryIcon,
-  HomeIcon,
-  ArchiveBoxIcon,
-  UserIcon,
-  Cog6ToothIcon,
-  CircleStackIcon
-} from '@heroicons/react/24/outline'
+import { HomeIcon, UserIcon, CircleStackIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import clsx from 'clsx'
-import { SessionInfo } from '@/app/lib/definitions'
 
-interface FormProps {
-  sessionInfo: SessionInfo
-}
-export default function NavLinks(props: FormProps): JSX.Element {
-  //
-  //  Deconstruct props
-  //
-  const sessionInfo = props.sessionInfo
-  const { bsuid, bsid } = sessionInfo
+export default function Page() {
   //
   // Define the Link type
   //
@@ -40,21 +24,15 @@ export default function NavLinks(props: FormProps): JSX.Element {
   //
   const [links, setLinks] = useState<Link[]>([])
   useEffect(() => {
-    const hrefUser = `/dashboard/user/${bsuid}`
-    const hrefSession = `/dashboard/session/${bsid}`
-    const hrefLibrary = `/dashboard/library/${bsuid}`
-    const hrefHistory = `/dashboard/history/${bsuid}`
+    const hrefUser = `/admin/users`
     const hrefAdmin = `/admin`
     const initialLinks = [
-      { name: 'Home', href: '/dashboard', icon: HomeIcon },
-      { name: 'Library', href: hrefLibrary, icon: BuildingLibraryIcon },
-      { name: 'History', href: hrefHistory, icon: ArchiveBoxIcon },
-      { name: 'User', href: hrefUser, icon: UserIcon },
-      { name: 'Session', href: hrefSession, icon: Cog6ToothIcon },
+      { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+      { name: 'Users', href: hrefUser, icon: UserIcon },
       { name: 'Admin', href: hrefAdmin, icon: CircleStackIcon }
     ]
     setLinks(initialLinks)
-  }, [bsuid, bsid])
+  }, [])
   //
   //  Get path name
   //

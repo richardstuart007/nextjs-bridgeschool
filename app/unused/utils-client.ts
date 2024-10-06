@@ -1,5 +1,5 @@
 'use client'
-import { SessionInfo } from './definitions'
+import { SessionInfo } from '../lib/definitions'
 
 // ----------------------------------------------------------------------
 //  Get cookie information from the client

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { COUNTRIES } from './countries.js'
+import { COUNTRIES } from './countries'
 
 interface Props {
   onChange: (code: string) => void

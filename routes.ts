@@ -1,9 +1,6 @@
-export const publicRoutes = ['/']
-
-export const authRoutes = ['/login', '/register']
-
-export const adminRoutePrefix = '/admin'
-
-export const apiAuthPrefix = '/api/auth'
-
-export const DEFAULT_LOGIN_REDIRECT = '/dashboard'
+export const Routes_App = ['/']
+export const Routes_LoginRegister = ['/login', '/register']
+export const Routes_Prefix_admin = '/admin'
+export const Routes_Prefix_auth = '/api/auth'
+export const Routes_AfterLogin_redirect = '/dashboard'
+export const Routes_Login = '/login'
