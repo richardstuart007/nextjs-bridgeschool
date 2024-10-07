@@ -1,14 +1,14 @@
 'use client'
 
-import { useEffect } from 'react'
 import { lusitana } from '@/app/ui/fonts'
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline'
 import { Button } from '../../ui/utils/button'
-import { useFormState, useFormStatus } from 'react-dom'
+import { useFormState } from 'react-dom'
 import { loginUser } from '@/app/lib/actions/user-login'
 import { usePathname, useRouter } from 'next/navigation'
 import { deleteCookie } from '@/app/lib/data'
 import Socials from './socials'
+import { useState, useEffect } from 'react'
 
 export default function LoginForm() {
   //
@@ -25,6 +25,16 @@ export default function LoginForm() {
   const initialState = { message: null, errors: {} }
   const [formState, formAction] = useFormState(loginUser, initialState)
   const errorMessage = formState?.message || null
+  //
+  // Local state to manage submitting status
+  //
+  const [submitting, setSubmitting] = useState(false)
+  //
+  //  Error message on submission
+  //
+  useEffect(() => {
+    if (errorMessage) setSubmitting(false)
+  }, [errorMessage])
   //
   //  One time only
   //
@@ -54,10 +64,9 @@ export default function LoginForm() {
   //  Login Button
   //-------------------------------------------------------------------------
   function LoginButton() {
-    const { pending } = useFormStatus()
     return (
-      <Button className='mt-4 w-full flex justify-center' aria-disabled={pending}>
-        Login
+      <Button className='mt-4 w-full flex justify-center' disabled={submitting} type='submit'>
+        {submitting ? 'Logging In...' : 'Login'}
       </Button>
     )
   }
@@ -80,14 +89,21 @@ export default function LoginForm() {
   //--------------------------------------------------------------------------------
   //  Register User
   //--------------------------------------------------------------------------------
-  function handleRegisterClick() {
+  function onClick_registration() {
     router.push('/register')
+  }
+  //-------------------------------------------------------------------------
+  //  Handle Login
+  //-------------------------------------------------------------------------
+  const onSubmit_login = () => {
+    setSubmitting(true)
+    if (formState) formState.message = null
   }
   //--------------------------------------------------------------------------------
   return (
-    <form action={formAction} className='space-y-3'>
+    <form action={formAction} className='space-y-3' onSubmit={onSubmit_login}>
       <div className='flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8'>
-        <h1 className={`${lusitana.className} mb-3 text-2xl`}>Login</h1>
+        <h1 className={`${lusitana.className} mb-3 text-2xl  text-orange-500`}>Login</h1>
         {/* -------------------------------------------------------------------------------- */}
         {/* email   */}
         {/* -------------------------------------------------------------------------------- */}
@@ -104,6 +120,7 @@ export default function LoginForm() {
               placeholder='Enter your email address'
               autoComplete='email'
               required
+              disabled={submitting}
             />
           </div>
         </div>
@@ -123,15 +140,10 @@ export default function LoginForm() {
               placeholder='Enter password'
               autoComplete='current-password'
               required
+              disabled={submitting}
             />
           </div>
         </div>
-        {/* -------------------------------------------------------------------------------- */}
-        {/* buttons */}
-        {/* -------------------------------------------------------------------------------- */}
-        <LoginButton />
-        <Socials />
-        <RegisterButton onClick={handleRegisterClick} />
         {/* -------------------------------------------------------------------------------- */}
         {/* Errors                                                */}
         {/* -------------------------------------------------------------------------------- */}
@@ -143,6 +155,12 @@ export default function LoginForm() {
             </>
           )}
         </div>
+        {/* -------------------------------------------------------------------------------- */}
+        {/* buttons */}
+        {/* -------------------------------------------------------------------------------- */}
+        <LoginButton />
+        {!submitting && <Socials />}
+        {!submitting && <RegisterButton onClick={onClick_registration} />}
       </div>
     </form>
   )

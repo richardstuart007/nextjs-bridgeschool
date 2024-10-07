@@ -9,12 +9,14 @@ import { signIn } from '@/auth'
 //  Register
 // ----------------------------------------------------------------------
 const FormSchemaRegister = z.object({
+  name: z.string(),
   email: z.string().email().toLowerCase(),
   password: z.string()
 })
 
 export type StateRegister = {
   errors?: {
+    name?: string[]
     email?: string[]
     password?: string[]
   }
@@ -28,6 +30,7 @@ export async function registerUser(prevState: StateRegister | undefined, formDat
   //  Validate the fields using Zod
   //
   const validatedFields = Register.safeParse({
+    name: formData.get('name'),
     email: formData.get('email'),
     password: formData.get('password')
   })
@@ -43,7 +46,7 @@ export async function registerUser(prevState: StateRegister | undefined, formDat
   //
   // Unpack form data
   //
-  const { email, password } = validatedFields.data
+  const { name, email, password } = validatedFields.data
   //
   // Check if email exists already
   //
@@ -56,7 +59,6 @@ export async function registerUser(prevState: StateRegister | undefined, formDat
   //
   // Insert data into the database
   //
-  const name = email.split('@')[0]
   const provider = 'email'
   //
   //  Write User
