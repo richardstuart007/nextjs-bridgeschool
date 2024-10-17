@@ -2,7 +2,6 @@
 
 import { z } from 'zod'
 import { writeUser, writeUsersOwner, writeUsersPwd, fetchUserByEmail } from '@/app/lib/data'
-import bcrypt from 'bcryptjs'
 import type { UsersTable } from '@/app/lib/definitions'
 import { signIn } from '@/auth'
 // ----------------------------------------------------------------------
@@ -11,7 +10,7 @@ import { signIn } from '@/auth'
 const FormSchemaRegister = z.object({
   name: z.string(),
   email: z.string().email().toLowerCase(),
-  password: z.string()
+  password: z.string().min(1)
 })
 
 export type StateRegister = {
@@ -71,8 +70,7 @@ export async function registerUser(prevState: StateRegister | undefined, formDat
   //  Write the userspwd data
   //
   const userid = userRecord.u_uid
-  const uphash = await bcrypt.hash(password, 10)
-  await writeUsersPwd(userid, uphash, email)
+  await writeUsersPwd(userid, password, email)
   //
   //  Write the usersowner data
   //

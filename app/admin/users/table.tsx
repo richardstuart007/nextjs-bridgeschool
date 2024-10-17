@@ -2,7 +2,8 @@
 
 import { lusitana } from '@/app/ui/fonts'
 import { useState, useEffect } from 'react'
-import UserEditPopup from '@/app/admin/users/userEditPopup'
+import UserEditPopup from '@/app/admin/users/useredit/userEditPopup'
+import PwdEditPopup from '@/app/admin/users/pwdedit/pwdEditPopup'
 import ConfirmDialog from '@/app/ui/utils/confirmDialog'
 import { UsersTable } from '@/app/lib/definitions'
 import { deleteByUid } from '@/app/lib/data'
@@ -26,6 +27,7 @@ export default function Table() {
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedUser, setSelectedUser] = useState<UsersTable | null>(null)
+  const [selectedPwd, setSelectedPwd] = useState<UsersTable | null>(null)
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
     title: '',
@@ -70,11 +72,19 @@ export default function Table() {
     setIsModalOpen(true)
   }
   //----------------------------------------------------------------------------------------------
+  //  Password User
+  //----------------------------------------------------------------------------------------------
+  function handlePwdClick(user: UsersTable) {
+    setSelectedPwd(user)
+    setIsModalOpen(true)
+  }
+  //----------------------------------------------------------------------------------------------
   //  Close Modal
   //----------------------------------------------------------------------------------------------
   function handleCloseModal() {
     setIsModalOpen(false)
     setSelectedUser(null)
+    setSelectedPwd(null)
     setShouldFetchUsers(true)
   }
   //----------------------------------------------------------------------------------------------
@@ -144,6 +154,9 @@ export default function Table() {
                     Edit
                   </th>
                   <th scope='col' className='px-2 py-2 font-medium text-left'>
+                    Pwd
+                  </th>
+                  <th scope='col' className='px-2 py-2 font-medium text-left'>
                     Delete
                   </th>
                 </tr>
@@ -168,6 +181,16 @@ export default function Table() {
                       >
                         Edit
                       </button>
+                    </td>
+                    <td className='px-2 py-1 text-sm'>
+                      {user.u_provider === 'email' && (
+                        <button
+                          onClick={() => handlePwdClick(user)}
+                          className='bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600'
+                        >
+                          Pwd
+                        </button>
+                      )}
                     </td>
                     <td className='px-2 py-1 text-sm'>
                       <button
@@ -195,6 +218,11 @@ export default function Table() {
             isOpen={isModalOpen}
             onClose={handleCloseModal}
           />
+        )}
+
+        {/* Password Edit Modal */}
+        {selectedPwd && (
+          <PwdEditPopup userRecord={selectedPwd} isOpen={isModalOpen} onClose={handleCloseModal} />
         )}
 
         {/* Confirmation Dialog */}

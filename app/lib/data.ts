@@ -3,6 +3,7 @@
 import { sql, db } from '@vercel/postgres'
 import { unstable_noStore as noStore } from 'next/cache'
 import { cookies } from 'next/headers'
+import bcrypt from 'bcryptjs'
 import { auth } from '@/auth'
 import {
   LibraryTable,
@@ -983,7 +984,7 @@ export async function writeUser(provider: string, email: string, name?: string) 
   //  Use default values
   //
   const u_joined = new Date().toISOString().slice(0, 19).replace('T', ' ')
-  const u_fedid = 'none'
+  const u_fedid = ''
   const u_admin = false
   const u_fedcountry = 'ZZ'
   const u_provider = provider
@@ -1050,13 +1051,13 @@ export async function writeUsersOwner(userid: number) {
 // ----------------------------------------------------------------------
 //  Write Userpwd record
 // ----------------------------------------------------------------------
-export async function writeUsersPwd(userid: number, userhash: string, email: string) {
+export async function writeUsersPwd(userid: number, userpwd: string, email: string) {
   const functionName = 'writeUsersPwd'
   //
   // Insert data into the database
   //
   const upuid = userid
-  const uphash = userhash
+  const uphash = await bcrypt.hash(userpwd, 10)
   const upemail = email
   try {
     const { rows } = await sql`
@@ -1071,7 +1072,36 @@ export async function writeUsersPwd(userid: number, userhash: string, email: str
       ${upuid},
       ${uphash},
       ${upemail}
-     ) RETURNING *
+     ) 
+    RETURNING *
+  `
+    return rows[0]
+  } catch (error) {
+    console.error(`${functionName}:`, error)
+    writeLogging(functionName, 'Function failed')
+    throw new Error(`${functionName}: Failed`)
+  }
+}
+// ----------------------------------------------------------------------
+//  Update Userspwd record
+// ----------------------------------------------------------------------
+export async function updateUsersPwd(userid: number, userpwd: string) {
+  const functionName = 'updateUsersPwd'
+  //
+  // Encrypt the password
+  //
+  const upuid = userid
+  const uphash = await bcrypt.hash(userpwd, 10)
+  //
+  // Update the data
+  //
+  try {
+    const { rows } = await sql`
+    UPDATE userspwd
+    SET
+      uphash = ${uphash}
+    WHERE upuid = ${upuid}
+    RETURNING *
   `
     return rows[0]
   } catch (error) {

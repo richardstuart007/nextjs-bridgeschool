@@ -21,7 +21,7 @@ export default function NavLinks(props: FormProps): JSX.Element {
   //  Deconstruct props
   //
   const sessionInfo = props.sessionInfo
-  const { bsuid, bsid } = sessionInfo
+  const { bsuid, bsid, bsadmin } = sessionInfo
   //
   // Define the Link type
   //
@@ -45,16 +45,26 @@ export default function NavLinks(props: FormProps): JSX.Element {
     const hrefLibrary = `/dashboard/library/${bsuid}`
     const hrefHistory = `/dashboard/history/${bsuid}`
     const hrefAdmin = `/admin`
-    const initialLinks = [
+    //
+    //  Base links
+    //
+    const links_base = [
       { name: 'Home', href: '/dashboard', icon: HomeIcon },
       { name: 'Library', href: hrefLibrary, icon: BuildingLibraryIcon },
       { name: 'History', href: hrefHistory, icon: ArchiveBoxIcon },
       { name: 'User', href: hrefUser, icon: UserIcon },
-      { name: 'Session', href: hrefSession, icon: Cog6ToothIcon },
-      { name: 'Admin', href: hrefAdmin, icon: CircleStackIcon }
+      { name: 'Session', href: hrefSession, icon: Cog6ToothIcon }
     ]
-    setLinks(initialLinks)
-  }, [bsuid, bsid])
+    //
+    //  Links authorised to Admin users only
+    //
+    const links_admin = [{ name: 'Admin', href: hrefAdmin, icon: CircleStackIcon }]
+    const linksupdate = bsadmin ? links_base.concat(links_admin) : links_base
+    //
+    //  Update the links
+    //
+    setLinks(linksupdate)
+  }, [bsuid, bsid, bsadmin])
   //
   //  Get path name
   //
