@@ -184,3 +184,35 @@ export type LoggingTable = {
   lgfunctionname: string
   lgsession: number
 }
+
+export type reftypeTable = {
+  rttype: string
+  rttitle: string
+  rtrid: number
+}
+
+export type ownerTable = {
+  oowner: string
+  otitle: string
+  ooid: number
+}
+
+export type ownergroupTable = {
+  ogowner: string
+  oggroup: string
+  ogtitle: string
+  ogcntquestions: number
+  ogcntlibrary: number
+  oggid: number
+}
+
+export type usersownerTable = {
+  uouid: number
+  uoowner: string
+}
+
+export type whoTable = {
+  wwho: string
+  wtitle: string
+  wwid: number
+}

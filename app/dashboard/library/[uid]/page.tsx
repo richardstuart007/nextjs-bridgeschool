@@ -4,7 +4,7 @@ import Table from '@/app/dashboard/library/[uid]/table'
 import { lusitana } from '@/app/ui/fonts'
 import { TableSkeleton } from '@/app/dashboard/library/[uid]/skeleton'
 import { Suspense } from 'react'
-import { fetchLibraryTotalPages } from '@/app/lib/data'
+import { fetchLibraryUserTotalPages } from '@/app/lib/data'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -40,7 +40,7 @@ export default async function Page({
   //
   //  Fetch Data
   //
-  const totalPages = await fetchLibraryTotalPages(query, uid)
+  const totalPages = await fetchLibraryUserTotalPages(query, uid)
 
   return (
     <div className='w-full md:p-6'>

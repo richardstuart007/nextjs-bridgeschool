@@ -1,5 +1,5 @@
 import { BookView, BookQuiz } from '@/app/ui/utils/link-buttons'
-import { fetchLibraryFiltered } from '@/app/lib/data'
+import { fetchLibraryUserFiltered } from '@/app/lib/data'
 export default async function LibraryTable({
   query,
   currentPage,
@@ -13,7 +13,7 @@ export default async function LibraryTable({
   //  Fetch Data
   //
   // await new Promise(resolve => setTimeout(resolve, 23000))
-  const library = await fetchLibraryFiltered(query, currentPage, uid)
+  const library = await fetchLibraryUserFiltered(query, currentPage, uid)
   return (
     <div className='mt-2 md:mt-6 flow-root'>
       <div className='inline-block min-w-full align-middle'>
