@@ -3,12 +3,12 @@ const nextConfig = {
   async redirects() {
     return [
       {
-        source: '/:path*',  // Redirect all paths
-        destination: 'https://nextjs14-bridgeschool.vercel.app/:path*',  // Redirect to corresponding paths on the new site
-        permanent: true,
-      },
-    ];
-  },
-};
+        source: '/:path*', // Redirect all paths
+        destination: 'https://nextjs15-bridgeschool.vercel.app/',
+        permanent: true
+      }
+    ]
+  }
+}
 
-module.exports = nextConfig;
+module.exports = nextConfig
